@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>迪士尼园区规划项目 | Version 0 数据看板</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Version 0 数据看板版</p>
+        <h1>迪士尼园区规划项目</h1>
+        <p class="header-copy">
+          先把 Disneyland 和 Disney California Adventure 的排队时间、状态、地图点位、活动时间和本地趋势展示出来，为后续预测和路线推荐打基础。
+        </p>
+      </div>
+      <div class="header-actions">
+        <button id="refreshButton" type="button">刷新实时数据</button>
+        <p id="lastUpdated" class="muted">等待加载</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="筛选工具">
+        <label>
+          园区
+          <select id="parkSelect">
+            <option value="all">全部园区</option>
+            <option value="disneyland">Disneyland</option>
+            <option value="dca">Disney California Adventure</option>
+          </select>
+        </label>
+        <label>
+          状态
+          <select id="statusSelect">
+            <option value="all">全部状态</option>
+            <option value="open">仅开放</option>
+            <option value="closed">仅关闭</option>
+          </select>
+        </label>
+        <label>
+          排序
+          <select id="sortSelect">
+            <option value="wait-desc">等待时间从高到低</option>
+            <option value="wait-asc">等待时间从低到高</option>
+            <option value="name">项目名称</option>
+          </select>
+        </label>
+        <label class="search-field">
+          搜索项目
+          <input id="searchInput" type="search" placeholder="例如 Space Mountain" />
+        </label>
+      </section>
+
+      <section class="summary-grid" aria-label="实时概览">
+        <article>
+          <span class="stat-label">开放项目</span>
+          <strong id="openCount">0</strong>
+        </article>
+        <article>
+          <span class="stat-label">平均等待</span>
+          <strong id="averageWait">0 分钟</strong>
+        </article>
+        <article>
+          <span class="stat-label">最高等待</span>
+          <strong id="maxWait">0 分钟</strong>
+        </article>
+        <article>
+          <span class="stat-label">数据来源</span>
+          <strong id="dataSource">加载中</strong>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel ride-board">
+          <div class="panel-heading">
+            <div>
+              <h2>实时 Wait Time Board</h2>
+              <p>展示当前项目排队时间和开放状态。</p>
+            </div>
+            <span id="rideCount" class="pill">0 项</span>
+          </div>
+          <div id="rideList" class="ride-list" aria-live="polite"></div>
+        </article>
+
+        <article class="panel map-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>园区地图点位</h2>
+              <p>颜色越深代表等待时间越长。</p>
+            </div>
+          </div>
+          <div id="parkMap" class="park-map" aria-label="园区项目地图"></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid lower-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>表演和烟花时间</h2>
+              <p>先用手动整理数据，后续可接入更完整 schedule。</p>
+            </div>
+          </div>
+          <div id="eventList" class="event-list"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>历史排队趋势</h2>
+              <p>当前版本记录本浏览器刷新快照，作为训练数据采集前的雏形。</p>
+            </div>
+          </div>
+          <div id="trendChart" class="trend-chart" aria-label="按小时等待趋势"></div>
+          <p id="trendNote" class="muted trend-note"></p>
+        </article>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Live wait time data:
+        <a href="https://queue-times.com/en-US" target="_blank" rel="noreferrer">Powered by Queue-Times.com</a>.
+        Schedule API configuration references
+        <a href="https://api.themeparks.wiki/docs/v1/" target="_blank" rel="noreferrer">ThemeParks.wiki</a>.
+      </p>
+    </footer>
+
+    <script src="src/data.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
