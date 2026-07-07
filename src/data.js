@@ -2,8 +2,11 @@ const PARKS = {
   disneyland: {
     id: "disneyland",
     name: "Disneyland",
+    displayName: "Disneyland Park",
     queueTimesParkId: 16,
     themeParksEntityId: "7340550b-c14d-4def-80bb-acdb51d49a66",
+    timezone: "America/Los_Angeles",
+    fallbackHours: ["08:00 - 24:00"],
     bounds: {
       north: 33.8152,
       south: 33.8078,
@@ -14,8 +17,11 @@ const PARKS = {
   dca: {
     id: "dca",
     name: "Disney California Adventure",
+    displayName: "Disney California Adventure Park",
     queueTimesParkId: 17,
     themeParksEntityId: "832fcd51-ea19-4e77-85c7-75d5843b127c",
+    timezone: "America/Los_Angeles",
+    fallbackHours: ["08:00 - 22:00"],
     bounds: {
       north: 33.8102,
       south: 33.803,
@@ -39,7 +45,7 @@ const ATTRACTION_META = {
   "Pirates of the Caribbean": { lat: 33.8113, lon: -117.9206, land: "New Orleans Square" },
   "Space Mountain": { lat: 33.8129, lon: -117.9167, land: "Tomorrowland" },
   "Star Wars: Rise of the Resistance": { lat: 33.8146, lon: -117.922, land: "Star Wars: Galaxy's Edge" },
-  "Tiana's Bayou Adventure": { lat: 33.8116, lon: -117.9226, land: "Critter Country" },
+  "Tiana's Bayou Adventure": { lat: 33.8116, lon: -117.9226, land: "Bayou Country" },
   "Toy Story Midway Mania!": { lat: 33.8049, lon: -117.9213, land: "Pixar Pier" },
   "Incredicoaster": { lat: 33.8054, lon: -117.9222, land: "Pixar Pier" },
   "Radiator Springs Racers": { lat: 33.8059, lon: -117.9183, land: "Cars Land" },
@@ -49,37 +55,45 @@ const ATTRACTION_META = {
   "Grizzly River Run": { lat: 33.8074, lon: -117.9201, land: "Grizzly Peak" },
   "Monsters, Inc. Mike & Sulley to the Rescue!": { lat: 33.8075, lon: -117.9169, land: "Hollywood Land" },
   "The Little Mermaid - Ariel's Undersea Adventure": { lat: 33.8058, lon: -117.9202, land: "Paradise Gardens Park" },
-  "Goofy's Sky School": { lat: 33.8048, lon: -117.9194, land: "Paradise Gardens Park" }
+  "Goofy's Sky School": { lat: 33.8048, lon: -117.9194, land: "Paradise Gardens Park" },
+  "World of Color": { lat: 33.8054, lon: -117.921, land: "Paradise Bay" },
+  "Fireworks / Nighttime Spectacular": { lat: 33.8128, lon: -117.9189, land: "Main Street U.S.A." },
+  "Magic Happens Parade": { lat: 33.8119, lon: -117.9188, land: "Parade Route" }
 };
 
 const MANUAL_EVENTS = [
   {
+    id: "manual-magic-happens",
     park: "disneyland",
-    title: "Magic Happens Parade",
-    type: "Parade",
+    name: "Magic Happens Parade",
+    category: "entertainment",
+    entityType: "SHOW",
+    land: "Parade Route",
+    status: "SCHEDULED",
     times: ["15:30", "18:30"],
-    note: "示例时间，请出行前核对官方日程。"
+    note: "Manual sample time. Check official schedule before visiting."
   },
   {
+    id: "manual-fireworks",
     park: "disneyland",
-    title: "Fireworks / Nighttime Spectacular",
-    type: "Fireworks",
+    name: "Fireworks / Nighttime Spectacular",
+    category: "entertainment",
+    entityType: "SHOW",
+    land: "Main Street U.S.A.",
+    status: "SCHEDULED",
     times: ["21:30"],
-    note: "烟花会受天气影响取消。"
+    note: "Fireworks can be canceled because of weather."
   },
   {
+    id: "manual-world-of-color",
     park: "dca",
-    title: "World of Color",
-    type: "Night Show",
+    name: "World of Color",
+    category: "entertainment",
+    entityType: "SHOW",
+    land: "Paradise Bay",
+    status: "SCHEDULED",
     times: ["21:00", "22:15"],
-    note: "示例时间，后续可接入 schedule 数据。"
-  },
-  {
-    park: "dca",
-    title: "Avengers Campus Character Moments",
-    type: "Show",
-    times: ["12:15", "14:45", "17:15"],
-    note: "适合做路线规划中的固定时间约束。"
+    note: "Manual sample time. Replace with schedule API when available."
   }
 ];
 
@@ -87,25 +101,26 @@ const SAMPLE_QUEUE_TIMES = {
   disneyland: {
     lands: [
       {
-        name: "Tomorrowland",
+        name: "Adventureland",
         rides: [
-          { id: 1, name: "Space Mountain", is_open: true, wait_time: 65, last_updated: "2026-07-07T19:05:00.000Z" },
-          { id: 2, name: "Buzz Lightyear Astro Blasters", is_open: true, wait_time: 25, last_updated: "2026-07-07T19:05:00.000Z" },
-          { id: 3, name: "Autopia", is_open: false, wait_time: 0, last_updated: "2026-07-07T19:05:00.000Z" }
+          { id: 326, name: "Indiana Jones Adventure", is_open: true, wait_time: 35, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 296, name: "Jungle Cruise", is_open: true, wait_time: 20, last_updated: "2026-07-07T19:05:00.000Z" }
         ]
       },
       {
-        name: "Adventureland",
+        name: "Tomorrowland",
         rides: [
-          { id: 4, name: "Indiana Jones Adventure", is_open: true, wait_time: 55, last_updated: "2026-07-07T19:05:00.000Z" },
-          { id: 5, name: "Pirates of the Caribbean", is_open: true, wait_time: 35, last_updated: "2026-07-07T19:05:00.000Z" }
+          { id: 284, name: "Space Mountain", is_open: true, wait_time: 60, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 273, name: "Buzz Lightyear Astro Blasters", is_open: true, wait_time: 25, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 317, name: "Autopia", is_open: true, wait_time: 30, last_updated: "2026-07-07T19:05:00.000Z" }
         ]
       },
       {
         name: "Star Wars: Galaxy's Edge",
         rides: [
-          { id: 6, name: "Star Wars: Rise of the Resistance", is_open: true, wait_time: 80, last_updated: "2026-07-07T19:05:00.000Z" },
-          { id: 7, name: "Millennium Falcon: Smugglers Run", is_open: true, wait_time: 45, last_updated: "2026-07-07T19:05:00.000Z" }
+          { id: 6340, name: "Star Wars: Rise of the Resistance", is_open: true, wait_time: 40, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 6339, name: "Millennium Falcon: Smugglers Run", is_open: true, wait_time: 15, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 10903, name: "Millennium Falcon: Smugglers Run Single Rider", is_open: true, wait_time: 0, last_updated: "2026-07-07T19:05:00.000Z" }
         ]
       }
     ],
@@ -116,21 +131,22 @@ const SAMPLE_QUEUE_TIMES = {
       {
         name: "Cars Land",
         rides: [
-          { id: 11, name: "Radiator Springs Racers", is_open: true, wait_time: 70, last_updated: "2026-07-07T19:05:00.000Z" }
+          { id: 979, name: "Radiator Springs Racers", is_open: true, wait_time: 70, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 980, name: "Radiator Springs Racers Single Rider", is_open: true, wait_time: 0, last_updated: "2026-07-07T19:05:00.000Z" }
         ]
       },
       {
         name: "Avengers Campus",
         rides: [
-          { id: 12, name: "Guardians of the Galaxy - Mission: BREAKOUT!", is_open: true, wait_time: 50, last_updated: "2026-07-07T19:05:00.000Z" },
-          { id: 13, name: "WEB SLINGERS: A Spider-Man Adventure", is_open: true, wait_time: 40, last_updated: "2026-07-07T19:05:00.000Z" }
+          { id: 12220, name: "WEB SLINGERS: A Spider-Man Adventure", is_open: true, wait_time: 40, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 732, name: "Guardians of the Galaxy - Mission: BREAKOUT!", is_open: true, wait_time: 50, last_updated: "2026-07-07T19:05:00.000Z" }
         ]
       },
       {
         name: "Pixar Pier",
         rides: [
-          { id: 14, name: "Incredicoaster", is_open: true, wait_time: 30, last_updated: "2026-07-07T19:05:00.000Z" },
-          { id: 15, name: "Toy Story Midway Mania!", is_open: false, wait_time: 0, last_updated: "2026-07-07T19:05:00.000Z" }
+          { id: 731, name: "Incredicoaster", is_open: true, wait_time: 30, last_updated: "2026-07-07T19:05:00.000Z" },
+          { id: 7321, name: "Toy Story Midway Mania!", is_open: false, wait_time: 0, last_updated: "2026-07-07T19:05:00.000Z" }
         ]
       }
     ],

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>园区地图 | 迪士尼园区规划项目</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body data-page="map">
+    <header class="sub-header">
+      <nav class="top-nav" aria-label="主导航">
+        <a class="brand" href="index.html">Disney Planner</a>
+        <div class="nav-links">
+          <a href="attractions.html">项目与演出</a>
+          <a href="schedule.html">时间表</a>
+          <a href="map.html" aria-current="page">园区地图</a>
+        </div>
+      </nav>
+      <div>
+        <p class="eyebrow">Map</p>
+        <h1>真实交互地图 + 经纬度项目点位</h1>
+        <p>地图使用 Leaflet + OpenStreetMap。项目点位绑定真实经纬度，缩放和拖动地图时会随地图尺度正确移动。</p>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="toolbar compact" aria-label="筛选工具">
+        <label>
+          园区
+          <select id="parkSelect">
+            <option value="all" selected>全部园区</option>
+            <option value="disneyland">Disneyland 主园区</option>
+            <option value="dca">Disney California Adventure 冒险园区</option>
+          </select>
+        </label>
+        <label>
+          类型
+          <select id="typeSelect">
+            <option value="all">全部类型</option>
+            <option value="attraction">游玩项目 Attractions</option>
+            <option value="entertainment">演出活动 Entertainment</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="map-layout">
+        <article class="real-map-panel">
+          <div id="leafletMap" class="leaflet-map" aria-label="Disneyland Resort 交互地图"></div>
+          <p id="mapFallback" class="map-fallback" hidden>地图组件没有加载成功。请确认网络可访问 Leaflet 和 OpenStreetMap。</p>
+        </article>
+        <aside class="panel map-list-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>地图项目列表</h2>
+              <p>列表与地图 marker 使用同一批经纬度数据。</p>
+            </div>
+          </div>
+          <div id="mapList" class="compact-list"></div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Map background by
+        <a href="https://www.openstreetmap.org/" target="_blank" rel="noreferrer">OpenStreetMap</a>.
+        Interactive map powered by
+        <a href="https://leafletjs.com/" target="_blank" rel="noreferrer">Leaflet</a>.
+        Live wait time data:
+        <a href="https://queue-times.com/en-US" target="_blank" rel="noreferrer">Powered by Queue-Times.com</a>.
+      </p>
+    </footer>
+
+    <script src="src/data.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>

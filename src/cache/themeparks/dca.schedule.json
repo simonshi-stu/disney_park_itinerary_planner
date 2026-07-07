@@ -1,0 +1,309 @@
+{
+  "id": "832fcd51-ea19-4e77-85c7-75d5843b127c",
+  "name": "Disney California Adventure Park",
+  "entityType": "PARK",
+  "timezone": "America/Los_Angeles",
+  "schedule": [
+    {
+      "date": "2026-07-07",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "lightninglanemultipass_336894",
+          "name": "Lightning Lane Multi Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 3700,
+            "currency": "USD",
+            "formatted": "$37.00"
+          },
+          "available": true
+        },
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 39900,
+            "currency": "USD",
+            "formatted": "$399.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-07T22:00:00-07:00",
+      "openingTime": "2026-07-07T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-08",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 39900,
+            "currency": "USD",
+            "formatted": "$399.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-08T22:00:00-07:00",
+      "openingTime": "2026-07-08T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-09",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 39900,
+            "currency": "USD",
+            "formatted": "$399.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-09T21:00:00-07:00",
+      "openingTime": "2026-07-09T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-10",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 39900,
+            "currency": "USD",
+            "formatted": "$399.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-10T22:00:00-07:00",
+      "openingTime": "2026-07-10T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-11",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 39900,
+            "currency": "USD",
+            "formatted": "$399.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-11T22:00:00-07:00",
+      "openingTime": "2026-07-11T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-12",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 34900,
+            "currency": "USD",
+            "formatted": "$349.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-12T22:00:00-07:00",
+      "openingTime": "2026-07-12T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-13",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 39900,
+            "currency": "USD",
+            "formatted": "$399.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-13T22:00:00-07:00",
+      "openingTime": "2026-07-13T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-14",
+      "type": "OPERATING",
+      "purchases": [
+        {
+          "id": "premierpass_dlr",
+          "name": "Lightning Lane Premier Pass",
+          "type": "PACKAGE",
+          "price": {
+            "amount": 44900,
+            "currency": "USD",
+            "formatted": "$449.00"
+          },
+          "available": true
+        }
+      ],
+      "closingTime": "2026-07-14T22:00:00-07:00",
+      "openingTime": "2026-07-14T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-15",
+      "type": "OPERATING",
+      "closingTime": "2026-07-15T22:00:00-07:00",
+      "openingTime": "2026-07-15T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-16",
+      "type": "OPERATING",
+      "closingTime": "2026-07-16T22:00:00-07:00",
+      "openingTime": "2026-07-16T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-17",
+      "type": "OPERATING",
+      "closingTime": "2026-07-17T22:00:00-07:00",
+      "openingTime": "2026-07-17T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-18",
+      "type": "OPERATING",
+      "closingTime": "2026-07-18T22:00:00-07:00",
+      "openingTime": "2026-07-18T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-19",
+      "type": "OPERATING",
+      "closingTime": "2026-07-19T22:00:00-07:00",
+      "openingTime": "2026-07-19T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-20",
+      "type": "OPERATING",
+      "closingTime": "2026-07-20T22:00:00-07:00",
+      "openingTime": "2026-07-20T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-21",
+      "type": "OPERATING",
+      "closingTime": "2026-07-21T22:00:00-07:00",
+      "openingTime": "2026-07-21T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-22",
+      "type": "OPERATING",
+      "closingTime": "2026-07-22T22:00:00-07:00",
+      "openingTime": "2026-07-22T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-23",
+      "type": "OPERATING",
+      "closingTime": "2026-07-23T22:00:00-07:00",
+      "openingTime": "2026-07-23T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-24",
+      "type": "OPERATING",
+      "closingTime": "2026-07-24T22:00:00-07:00",
+      "openingTime": "2026-07-24T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-25",
+      "type": "OPERATING",
+      "closingTime": "2026-07-25T22:00:00-07:00",
+      "openingTime": "2026-07-25T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-26",
+      "type": "OPERATING",
+      "closingTime": "2026-07-26T22:00:00-07:00",
+      "openingTime": "2026-07-26T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-27",
+      "type": "OPERATING",
+      "closingTime": "2026-07-27T22:00:00-07:00",
+      "openingTime": "2026-07-27T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-28",
+      "type": "OPERATING",
+      "closingTime": "2026-07-28T22:00:00-07:00",
+      "openingTime": "2026-07-28T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-29",
+      "type": "OPERATING",
+      "closingTime": "2026-07-29T22:00:00-07:00",
+      "openingTime": "2026-07-29T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-30",
+      "type": "OPERATING",
+      "closingTime": "2026-07-30T22:00:00-07:00",
+      "openingTime": "2026-07-30T08:00:00-07:00"
+    },
+    {
+      "date": "2026-07-31",
+      "type": "OPERATING",
+      "closingTime": "2026-07-31T22:00:00-07:00",
+      "openingTime": "2026-07-31T08:00:00-07:00"
+    },
+    {
+      "date": "2026-08-01",
+      "type": "OPERATING",
+      "closingTime": "2026-08-01T22:00:00-07:00",
+      "openingTime": "2026-08-01T08:00:00-07:00"
+    },
+    {
+      "date": "2026-08-02",
+      "type": "OPERATING",
+      "closingTime": "2026-08-02T22:00:00-07:00",
+      "openingTime": "2026-08-02T08:30:00-07:00"
+    },
+    {
+      "date": "2026-08-03",
+      "type": "OPERATING",
+      "closingTime": "2026-08-03T22:00:00-07:00",
+      "openingTime": "2026-08-03T08:00:00-07:00"
+    },
+    {
+      "date": "2026-08-04",
+      "type": "OPERATING",
+      "closingTime": "2026-08-04T22:00:00-07:00",
+      "openingTime": "2026-08-04T08:00:00-07:00"
+    },
+    {
+      "date": "2026-08-05",
+      "type": "OPERATING",
+      "closingTime": "2026-08-05T22:00:00-07:00",
+      "openingTime": "2026-08-05T08:00:00-07:00"
+    },
+    {
+      "date": "2026-08-06",
+      "type": "OPERATING",
+      "closingTime": "2026-08-06T22:00:00-07:00",
+      "openingTime": "2026-08-06T08:00:00-07:00"
+    }
+  ]
+}

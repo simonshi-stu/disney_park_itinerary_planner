@@ -1,0 +1,1424 @@
+{
+  "id": "7340550b-c14d-4def-80bb-acdb51d49a66",
+  "name": "Disneyland Park",
+  "entityType": "PARK",
+  "timezone": "America/Los_Angeles",
+  "children": [
+    {
+      "id": "def0286a-660d-4eff-ae04-b8b643adaed0",
+      "name": "Welcome Pride Cavalcade",
+      "entityType": "SHOW",
+      "externalId": "411944405;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9189609,
+        "latitude": 33.81097757
+      }
+    },
+    {
+      "id": "3638ac09-9fce-4a43-8c79-8ebbe17afce2",
+      "name": "\"it's a small world\"",
+      "entityType": "ATTRACTION",
+      "externalId": "367492;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "itsasmallworld",
+      "location": {
+        "longitude": -117.917782,
+        "latitude": 33.8144
+      }
+    },
+    {
+      "id": "a4742f3c-1594-4851-9947-f0cfed217a6a",
+      "name": "Country Line Dancing",
+      "entityType": "SHOW",
+      "externalId": "411944410;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9203117258,
+        "latitude": 33.8120514864
+      }
+    },
+    {
+      "id": "3507bed6-ddc6-4e28-892f-8d88db2ef86d",
+      "name": "A Musical Celebration of Pride",
+      "entityType": "SHOW",
+      "externalId": "412155315;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.91784,
+        "latitude": 33.81414
+      }
+    },
+    {
+      "id": "6387d964-4e0f-4d96-b183-a9d7c37bdf29",
+      "name": "Welcome Fireworks",
+      "entityType": "SHOW",
+      "externalId": "411943655;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918965,
+        "latitude": 33.812694
+      }
+    },
+    {
+      "id": "461e07bb-03db-4cbb-8e89-bb0f77a04a79",
+      "name": "Dance Party",
+      "entityType": "SHOW",
+      "externalId": "411944412;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.917055,
+        "latitude": 33.812391
+      }
+    },
+    {
+      "id": "6ad46aa1-8e0e-4ae7-8eeb-347f3f64f8d0",
+      "name": "Fond Farewell with Mickey Mouse & Friends",
+      "entityType": "SHOW",
+      "externalId": "411944414;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918975,
+        "latitude": 33.810058
+      }
+    },
+    {
+      "id": "ff9c3639-2edd-4ece-8515-54e71ccf1067",
+      "name": "The Celebrate Happy Cavalcade",
+      "entityType": "SHOW",
+      "externalId": "412333563;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9189609,
+        "latitude": 33.81097757
+      }
+    },
+    {
+      "id": "7884bda0-7016-4dea-9626-d97372dff10b",
+      "name": "Main Street Straw Hatters",
+      "entityType": "SHOW",
+      "externalId": "401554;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "thestrawhatters",
+      "location": {
+        "longitude": -117.9187268,
+        "latitude": 33.81044479
+      }
+    },
+    {
+      "id": "888525b0-5a6f-4b8e-9f07-b6a32812b04d",
+      "name": "Bluey’s Best Day Ever! at Fantasyland Theatre",
+      "entityType": "ATTRACTION",
+      "externalId": "412592390;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918825,
+        "latitude": 33.814615
+      }
+    },
+    {
+      "id": "cd670bff-81d1-4f34-8676-7bafdf49220a",
+      "name": "Mickey & Minnie's Runaway Railway",
+      "entityType": "ATTRACTION",
+      "externalId": "411821333;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.91839,
+        "latitude": 33.815507
+      }
+    },
+    {
+      "id": "c2997e65-6db0-413f-a2db-ee995711d931",
+      "name": "Fortune Tellers",
+      "entityType": "ATTRACTION",
+      "externalId": "19094413;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "fortunetellers",
+      "location": {
+        "longitude": -117.919057,
+        "latitude": 33.811237
+      }
+    },
+    {
+      "id": "34b1d70f-11c4-42df-935e-d5582c9f1a8e",
+      "name": "Star Wars: Rise of the Resistance",
+      "entityType": "ATTRACTION",
+      "externalId": "19193461;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "starwarsriseoftheresistance",
+      "location": {
+        "longitude": -117.923079,
+        "latitude": 33.813859
+      }
+    },
+    {
+      "id": "1da85181-bf0f-4ccc-b98e-243142f7347b",
+      "name": "Autopia",
+      "entityType": "ATTRACTION",
+      "externalId": "353293;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "autopia",
+      "location": {
+        "longitude": -117.9165033178,
+        "latitude": 33.8124087477
+      }
+    },
+    {
+      "id": "6c225598-91c9-44a3-95e2-7c423475db61",
+      "name": "Astro Orbitor",
+      "entityType": "ATTRACTION",
+      "externalId": "353291;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "astroorbitor",
+      "location": {
+        "longitude": -117.9181900145,
+        "latitude": 33.812108371
+      }
+    },
+    {
+      "id": "88197808-3c56-4198-a5a4-6066541251cf",
+      "name": "Buzz Lightyear Astro Blasters",
+      "entityType": "ATTRACTION",
+      "externalId": "353301;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "buzzlightyearastroblasters",
+      "location": {
+        "longitude": -117.917806,
+        "latitude": 33.812204
+      }
+    },
+    {
+      "id": "5bd95ae8-181d-449c-8f04-a621e2448961",
+      "name": "Davy Crockett's Explorer Canoes",
+      "entityType": "ATTRACTION",
+      "externalId": "353311;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "davycrockettsexplorercanoes",
+      "location": {
+        "longitude": -117.9221264816,
+        "latitude": 33.8125062856
+      }
+    },
+    {
+      "id": "8e686e4c-f3db-4d9c-a185-2d54b1fa8899",
+      "name": "Casey Jr. Circus Train",
+      "entityType": "ATTRACTION",
+      "externalId": "353305;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "caseyjrcircustrain",
+      "location": {
+        "longitude": -117.9191704019,
+        "latitude": 33.8137301217
+      }
+    },
+    {
+      "id": "ca32ef8a-ae0d-4c24-bf4f-e59192122e01",
+      "name": "Donald's Duck Pond",
+      "entityType": "ATTRACTION",
+      "externalId": "353321;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "donaldsboat",
+      "location": {
+        "longitude": -117.919019,
+        "latitude": 33.815232
+      }
+    },
+    {
+      "id": "cc980e8e-192f-48b6-848c-27784084e54b",
+      "name": "Dumbo the Flying Elephant",
+      "entityType": "ATTRACTION",
+      "externalId": "353323;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "dumbotheflyingelephant",
+      "location": {
+        "longitude": -117.9188292111,
+        "latitude": 33.8136094534
+      }
+    },
+    {
+      "id": "106c1e5a-a5e7-42d7-96ab-bc100d8faf71",
+      "name": "Walt Disney's Enchanted Tiki Room",
+      "entityType": "ATTRACTION",
+      "externalId": "353325;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "waltdisneysenchantedtikiroom",
+      "location": {
+        "longitude": -117.919569,
+        "latitude": 33.811829
+      }
+    },
+    {
+      "id": "64d44aaa-6857-4693-b24b-bcff6c6dcfa1",
+      "name": "Finding Nemo Submarine Voyage",
+      "entityType": "ATTRACTION",
+      "externalId": "353327;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "findingnemosubmarinevoyage",
+      "location": {
+        "longitude": -117.916947,
+        "latitude": 33.812618
+      }
+    },
+    {
+      "id": "2aedc657-1ee2-4545-a1ce-14753f28cc66",
+      "name": "Indiana Jones™ Adventure",
+      "entityType": "ATTRACTION",
+      "externalId": "353355;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "indianajonesadventure",
+      "location": {
+        "longitude": -117.9203269,
+        "latitude": 33.81130552
+      }
+    },
+    {
+      "id": "f7904912-3f08-4563-b99e-fd59f43cc9f2",
+      "name": "King Arthur Carrousel",
+      "entityType": "ATTRACTION",
+      "externalId": "353365;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "kingarthurcarrousel",
+      "location": {
+        "longitude": -117.918974,
+        "latitude": 33.813474
+      }
+    },
+    {
+      "id": "835deb74-de54-4d7f-9dc4-dacab90fcb60",
+      "name": "Frontierland Shootin' Exposition",
+      "entityType": "ATTRACTION",
+      "externalId": "353335;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "frontierlandshootinexposition",
+      "location": {
+        "longitude": -117.919855621,
+        "latitude": 33.8122300089
+      }
+    },
+    {
+      "id": "1b83fda8-d60e-48e4-9a3d-90ddcbcd1001",
+      "name": "Jungle Cruise",
+      "entityType": "ATTRACTION",
+      "externalId": "353363;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "junglecruise",
+      "location": {
+        "longitude": -117.920092,
+        "latitude": 33.81144
+      }
+    },
+    {
+      "id": "faaa8be9-cc1e-4535-ac20-04a535654bd0",
+      "name": "Matterhorn Bobsleds",
+      "entityType": "ATTRACTION",
+      "externalId": "353377;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "matterhornbobsleds",
+      "location": {
+        "longitude": -117.91782,
+        "latitude": 33.813453
+      }
+    },
+    {
+      "id": "f5bb0d14-7eee-4ede-9230-eb256ce3664c",
+      "name": "Main Street Cinema",
+      "entityType": "ATTRACTION",
+      "externalId": "353371;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "mainstreetcinema",
+      "location": {
+        "longitude": -117.918887,
+        "latitude": 33.810768
+      }
+    },
+    {
+      "id": "6c30d5b0-8c0a-406f-9258-0b6c55d4a5e4",
+      "name": "Mark Twain Riverboat",
+      "entityType": "ATTRACTION",
+      "externalId": "353375;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "marktwainriverboat",
+      "location": {
+        "longitude": -117.9204627872,
+        "latitude": 33.8122772066
+      }
+    },
+    {
+      "id": "c23af6ba-8515-406a-8a48-d0818ba0bfc9",
+      "name": "Peter Pan's Flight",
+      "entityType": "ATTRACTION",
+      "externalId": "353399;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "peterpansflight",
+      "location": {
+        "longitude": -117.9188762605,
+        "latitude": 33.8131949042
+      }
+    },
+    {
+      "id": "82aeb29b-504a-416f-b13f-f41fa5b766aa",
+      "name": "Pirates of the Caribbean",
+      "entityType": "ATTRACTION",
+      "externalId": "353405;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "piratesofthecaribbean",
+      "location": {
+        "longitude": -117.920819,
+        "latitude": 33.811387
+      }
+    },
+    {
+      "id": "90ee50d4-7cc9-4824-b29d-2aac801acc29",
+      "name": "Pinocchio's Daring Journey",
+      "entityType": "ATTRACTION",
+      "externalId": "353401;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "pinocchiosdaringjourney",
+      "location": {
+        "longitude": -117.9190900509,
+        "latitude": 33.8132880704
+      }
+    },
+    {
+      "id": "07952343-3498-404b-8337-734de9a185c1",
+      "name": "Pirate's Lair on Tom Sawyer Island",
+      "entityType": "ATTRACTION",
+      "externalId": "353403;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "pirateslairontomsawyerisland",
+      "location": {
+        "longitude": -117.921538353,
+        "latitude": 33.8116538616
+      }
+    },
+    {
+      "id": "6ce9cdd1-0a43-459e-83cd-f4cace9cfa7b",
+      "name": "Roger Rabbit's Car Toon Spin",
+      "entityType": "ATTRACTION",
+      "externalId": "353421;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "rogerrabbitscartoonspin",
+      "location": {
+        "longitude": -117.918085,
+        "latitude": 33.815204
+      }
+    },
+    {
+      "id": "c9e39189-7e99-4e0a-97e0-4a0d5654d257",
+      "name": "Sailing Ship Columbia",
+      "entityType": "ATTRACTION",
+      "externalId": "353425;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "sailingshipcolumbia",
+      "location": {
+        "longitude": -117.9204627872,
+        "latitude": 33.8122772066
+      }
+    },
+    {
+      "id": "90d5a091-478c-4df1-adfe-c605b4005013",
+      "name": "Sleeping Beauty Castle Walkthrough",
+      "entityType": "ATTRACTION",
+      "externalId": "353427;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "sleepingbeautycastlewalkthrough",
+      "location": {
+        "longitude": -117.919078,
+        "latitude": 33.812912
+      }
+    },
+    {
+      "id": "4f0053e7-b8db-4833-b02f-35e1c91b4523",
+      "name": "Snow White's Enchanted Wish",
+      "entityType": "ATTRACTION",
+      "externalId": "353429;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "snowwhitesenchantedwish",
+      "location": {
+        "longitude": -117.9190614653,
+        "latitude": 33.8131664471
+      }
+    },
+    {
+      "id": "cb929138-d77a-4dd2-983c-f651bbd1bd92",
+      "name": "Storybook Land Canal Boats",
+      "entityType": "ATTRACTION",
+      "externalId": "353443;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "storybooklandcanalboats",
+      "location": {
+        "longitude": -117.9182008987,
+        "latitude": 33.8136306683
+      }
+    },
+    {
+      "id": "a07f3110-013e-43bb-a182-e66bb8b5e28d",
+      "name": "Alice in Wonderland",
+      "entityType": "ATTRACTION",
+      "externalId": "367495;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "aliceinwonderland",
+      "location": {
+        "longitude": -117.9182459414,
+        "latitude": 33.8133130163
+      }
+    },
+    {
+      "id": "bcfd1e17-3eab-4203-b597-6257a257d427",
+      "name": "Main Street Vehicles",
+      "entityType": "ATTRACTION",
+      "externalId": "393385;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "mainstreetvehicles",
+      "location": {
+        "longitude": -117.9189620912,
+        "latitude": 33.8102153073
+      }
+    },
+    {
+      "id": "645c11b7-51f7-41d5-9764-5a7fa9d2535c",
+      "name": "Fantasy Faire",
+      "entityType": "SHOW",
+      "externalId": "17315126;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "fantasyfaire",
+      "location": {
+        "longitude": -117.919379,
+        "latitude": 33.812591
+      }
+    },
+    {
+      "id": "72340a8a-b6d2-474f-aca5-5ea7d2d52335",
+      "name": "Storytelling at Royal Theatre",
+      "entityType": "SHOW",
+      "externalId": "17346575;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "storytellingatroyaltheatre",
+      "location": {
+        "longitude": -117.919443,
+        "latitude": 33.812495
+      }
+    },
+    {
+      "id": "33cbbd09-6d93-40d7-b758-9d7b7d3fd2eb",
+      "name": "Meet Disney Princesses at Royal Hall",
+      "entityType": "SHOW",
+      "externalId": "18738682;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "meetdisneyprincessesatroyalhall",
+      "location": {
+        "longitude": -117.919419,
+        "latitude": 33.812669
+      }
+    },
+    {
+      "id": "a6760f7b-3489-47df-9547-d70dd2d8cb76",
+      "name": "Disneyland Band at Main Street, U.S.A.",
+      "entityType": "SHOW",
+      "externalId": "401473;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "disneylandbandatmainstreetusa",
+      "location": {
+        "longitude": -117.9189609,
+        "latitude": 33.81097757
+      }
+    },
+    {
+      "id": "4119dd28-6da8-46a0-9246-bea86e07ac61",
+      "name": "Pearly Band near \"it's a small world\"",
+      "entityType": "SHOW",
+      "externalId": "401530;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "pearlyband",
+      "location": {
+        "longitude": -117.917863,
+        "latitude": 33.814016
+      }
+    },
+    {
+      "id": "1822fb68-5f64-4329-b7e2-d4065f7159ac",
+      "name": "Ronto Roasters",
+      "entityType": "RESTAURANT",
+      "externalId": "19268333;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "rontoroasters",
+      "location": {
+        "longitude": -117.921484,
+        "latitude": 33.814424
+      }
+    },
+    {
+      "id": "4784fd0f-9ba3-4a5d-a4b9-ed33b93c4489",
+      "name": "Blue Bayou Restaurant",
+      "entityType": "RESTAURANT",
+      "externalId": "354099;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "bluebayourestaurant",
+      "location": {
+        "longitude": -117.921126,
+        "latitude": 33.811049
+      }
+    },
+    {
+      "id": "d2feb649-41ea-4097-a45b-10cfb48d13aa",
+      "name": "Royal Street Veranda",
+      "entityType": "RESTAURANT",
+      "externalId": "354456;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "royalstreetveranda",
+      "location": {
+        "longitude": -117.9209163877,
+        "latitude": 33.8112279116
+      }
+    },
+    {
+      "id": "057872ed-3f27-496f-80e2-edd3639ba084",
+      "name": "River Belle Terrace",
+      "entityType": "RESTAURANT",
+      "externalId": "354450;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "riverbelleterrace",
+      "location": {
+        "longitude": -117.9205917872,
+        "latitude": 33.8116150928
+      }
+    },
+    {
+      "id": "27ab9530-4fd5-4e9c-a5b1-d553fed56655",
+      "name": "Refreshment Corner",
+      "entityType": "RESTAURANT",
+      "externalId": "354444;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "refreshmentcorner",
+      "location": {
+        "longitude": -117.9190483181,
+        "latitude": 33.8114464994
+      }
+    },
+    {
+      "id": "7bf706cd-0cf5-4640-a079-23a7a46f4f5b",
+      "name": "Bengal Barbecue",
+      "entityType": "RESTAURANT",
+      "externalId": "368519;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "bengalbarbecue",
+      "location": {
+        "longitude": -117.920299,
+        "latitude": 33.811555
+      }
+    },
+    {
+      "id": "c85a7726-e2c8-45c1-8b45-00e12f76d080",
+      "name": "Disney’s Celebrate America! - A Fourth of July Concert in the Sky",
+      "entityType": "SHOW",
+      "externalId": "16077305;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9189633,
+        "latitude": 33.81258922
+      }
+    },
+    {
+      "id": "c48369cc-e341-4066-96b8-3687ccad1e49",
+      "name": "Tiki Juice Bar",
+      "entityType": "RESTAURANT",
+      "externalId": "354516;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "tikijuicebar",
+      "location": {
+        "longitude": -117.9195771195,
+        "latitude": 33.8118490285
+      }
+    },
+    {
+      "id": "8abfd370-4c29-4154-bb96-41e031b78d29",
+      "name": "Docking Bay 7 Food and Cargo",
+      "entityType": "RESTAURANT",
+      "externalId": "19268345;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "dockingbay7foodandcargo",
+      "location": {
+        "longitude": -117.921432,
+        "latitude": 33.814742
+      }
+    },
+    {
+      "id": "e88cbd63-e385-423b-9565-fbe5faeb9050",
+      "name": "Galactic Grill",
+      "entityType": "RESTAURANT",
+      "externalId": "18246297;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "galacticgrill",
+      "location": {
+        "longitude": -117.917296,
+        "latitude": 33.812449
+      }
+    },
+    {
+      "id": "1cdd0f00-de40-4f7f-bf1b-014926d51aca",
+      "name": "Little Red Wagon",
+      "entityType": "RESTAURANT",
+      "externalId": "354348;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "littleredwagon",
+      "location": {
+        "longitude": -117.9186756938,
+        "latitude": 33.8114840141
+      }
+    },
+    {
+      "id": "fb686e53-e10d-4cd5-836c-7a4a93207361",
+      "name": "Hungry Bear Barbecue Jamboree",
+      "entityType": "RESTAURANT",
+      "externalId": "354303;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "hungrybearrestaurant",
+      "location": {
+        "longitude": -117.922435,
+        "latitude": 33.812554
+      }
+    },
+    {
+      "id": "8b12916b-a384-4305-838a-c4b07affbb14",
+      "name": "Main Street Piano Player",
+      "entityType": "SHOW",
+      "externalId": "401517;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "mainstreetpianoplayer",
+      "location": {
+        "longitude": -117.9192024,
+        "latitude": 33.81144329
+      }
+    },
+    {
+      "id": "3220fd76-38e4-49a4-afa3-4842c07203fa",
+      "name": "Jambalaya Jazz",
+      "entityType": "SHOW",
+      "externalId": "401501;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "jambalayajazz",
+      "location": {
+        "longitude": -117.921742,
+        "latitude": 33.81136
+      }
+    },
+    {
+      "id": "34f7bd8a-ec8e-41ac-9d63-d94ffc54f1ef",
+      "name": "Tapestry of Happiness",
+      "entityType": "SHOW",
+      "externalId": "412343720;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.917926,
+        "latitude": 33.814359
+      }
+    },
+    {
+      "id": "a529bc93-e528-4e28-a7aa-47c168f90218",
+      "name": "Galactic Grill’s Seasonal Novelty Release",
+      "entityType": "RESTAURANT",
+      "externalId": "411820662;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.917296,
+        "latitude": 33.812449
+      }
+    },
+    {
+      "id": "2426de0a-55b7-4994-b31b-fc08b296c79a",
+      "name": "Troubadour Tavern's Seasonal Novelty Release",
+      "entityType": "RESTAURANT",
+      "externalId": "412250380;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9187180102,
+        "latitude": 33.8145219838
+      }
+    },
+    {
+      "id": "115863ac-0880-4630-afd3-b1a1b5033d51",
+      "name": "Wondrous Journeys with Fireworks",
+      "entityType": "SHOW",
+      "externalId": "411805943;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9189732,
+        "latitude": 33.8123896
+      }
+    },
+    {
+      "id": "11209961-2ac2-4f76-a11b-ed793939f796",
+      "name": "Key to Disneyland",
+      "entityType": "ATTRACTION",
+      "externalId": "412360763;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.919968,
+        "latitude": 33.811732
+      }
+    },
+    {
+      "id": "6e2af074-3a67-4f38-9bcf-2f5a572c87df",
+      "name": "Opera House - Walt Disney - A Magical Life",
+      "entityType": "ATTRACTION",
+      "externalId": "412420542;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.91843056689687,
+        "latitude": 33.81025839377293
+      }
+    },
+    {
+      "id": "ff52cb64-c1d5-4feb-9d43-5dbd429bac81",
+      "name": "Haunted Mansion",
+      "entityType": "ATTRACTION",
+      "externalId": "353347;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "hauntedmansion",
+      "location": {
+        "longitude": -117.921873,
+        "latitude": 33.811656
+      }
+    },
+    {
+      "id": "1b23667a-d8fb-436d-8952-c3e3f2e56d13",
+      "name": "Great Moments with Mr. Lincoln",
+      "entityType": "ATTRACTION",
+      "externalId": "353461;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "thedisneylandstorypresentinggreatmomentswithmrlincoln",
+      "location": {
+        "longitude": -117.918559,
+        "latitude": 33.810265
+      }
+    },
+    {
+      "id": "59647168-d239-4161-8b24-92eb128e96fb",
+      "name": "Chip 'n' Dale's GADGETcoaster",
+      "entityType": "ATTRACTION",
+      "externalId": "353337;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "gadgetsgocoaster",
+      "location": {
+        "longitude": -117.919157,
+        "latitude": 33.815296
+      }
+    },
+    {
+      "id": "e27b1db8-9ec9-4f8b-9ca6-fd6377de66ee",
+      "name": "Adventureland Treehouse inspired by Walt Disney’s Swiss Family Robinson",
+      "entityType": "ATTRACTION",
+      "externalId": "411936760;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.920585,
+        "latitude": 33.811325
+      }
+    },
+    {
+      "id": "e2d460e9-2bef-4613-b126-092ab7cb37e5",
+      "name": "Disneyland Railroad",
+      "entityType": "ATTRACTION",
+      "externalId": "353315;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "disneylandrailroad",
+      "location": {
+        "longitude": -117.921876,
+        "latitude": 33.811256
+      }
+    },
+    {
+      "id": "37858b2a-9c11-4ac6-9f8d-db7fa9088703",
+      "name": "The Disney Gallery",
+      "entityType": "ATTRACTION",
+      "externalId": "17734741;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "thedisneygallery",
+      "location": {
+        "longitude": -117.918559,
+        "latitude": 33.810265
+      }
+    },
+    {
+      "id": "b2c2549c-e9da-4fdd-98ea-1dcff596fed7",
+      "name": "Millennium Falcon: Smugglers Run",
+      "entityType": "ATTRACTION",
+      "externalId": "19193459;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "millenniumfalconsmugglersrun",
+      "location": {
+        "longitude": -117.921379,
+        "latitude": 33.814867
+      }
+    },
+    {
+      "id": "0de1413a-73ee-46cf-af2e-c491cc7c7d3b",
+      "name": "Big Thunder Mountain Railroad",
+      "entityType": "ATTRACTION",
+      "externalId": "353295;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "bigthundermountainrailroad",
+      "location": {
+        "longitude": -117.9203568914,
+        "latitude": 33.8124773145
+      }
+    },
+    {
+      "id": "56d0bd6d-5106-4420-8f60-0005475c04c3",
+      "name": "Disneyland Monorail",
+      "entityType": "ATTRACTION",
+      "externalId": "353313;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "disneylandmonorail",
+      "location": {
+        "longitude": -117.91679,
+        "latitude": 33.812618
+      }
+    },
+    {
+      "id": "b0eca3d3-a519-47f9-a5a7-9911126da2df",
+      "name": "Goofy's How-to-Play Yard",
+      "entityType": "ATTRACTION",
+      "externalId": "353343;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "goofysplayhouse",
+      "location": {
+        "longitude": -117.9186858237,
+        "latitude": 33.8151987474
+      }
+    },
+    {
+      "id": "e0cfed11-96d7-40f3-907f-5cfed172592a",
+      "name": "Mad Tea Party",
+      "entityType": "ATTRACTION",
+      "externalId": "353369;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "madteaparty",
+      "location": {
+        "longitude": -117.9184149206,
+        "latitude": 33.8135273725
+      }
+    },
+    {
+      "id": "52a8ef64-d54c-4974-883f-027c3026e3f1",
+      "name": "The Many Adventures of Winnie the Pooh",
+      "entityType": "ATTRACTION",
+      "externalId": "353449;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "themanyadventuresofwinniethepooh",
+      "location": {
+        "longitude": -117.922632,
+        "latitude": 33.812376
+      }
+    },
+    {
+      "id": "cc718d11-fa15-44ee-87d0-ded989ad61bc",
+      "name": "Star Tours - The Adventures Continue",
+      "entityType": "ATTRACTION",
+      "externalId": "353439;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "startourstheadventurescontinue",
+      "location": {
+        "longitude": -117.917978,
+        "latitude": 33.811997
+      }
+    },
+    {
+      "id": "9167db1d-e5e7-46da-a07f-ae30a87bc4c4",
+      "name": "Space Mountain",
+      "entityType": "ATTRACTION",
+      "externalId": "353435;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "spacemountain",
+      "location": {
+        "longitude": -117.917056,
+        "latitude": 33.811548
+      }
+    },
+    {
+      "id": "c02fb82d-0860-4e95-8c61-899fa594d20e",
+      "name": "Minnie's House",
+      "entityType": "ATTRACTION",
+      "externalId": "353383;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "minnieshouse",
+      "location": {
+        "longitude": -117.9189902544,
+        "latitude": 33.815524801
+      }
+    },
+    {
+      "id": "9d401ad3-49b2-469f-ac73-93eb429428fb",
+      "name": "Mr. Toad's Wild Ride",
+      "entityType": "ATTRACTION",
+      "externalId": "353389;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "mrtoadswildride",
+      "location": {
+        "longitude": -117.9187763289,
+        "latitude": 33.8133812161
+      }
+    },
+    {
+      "id": "a9076acd-7630-4bad-a8da-e6bd689ddcac",
+      "name": "Tiana's Bayou Adventure",
+      "entityType": "ATTRACTION",
+      "externalId": "412062678;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.922802,
+        "latitude": 33.812245
+      }
+    },
+    {
+      "id": "05b17c11-fd4c-4b85-ab45-3e269dc56559",
+      "name": "Walt Disney - A Magical Life",
+      "entityType": "ATTRACTION",
+      "externalId": "412413688;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918559,
+        "latitude": 33.810265
+      }
+    },
+    {
+      "id": "87387057-47ab-4d0b-8eed-2e6c9d23577b",
+      "name": "Mickey's House and Meet Mickey Mouse",
+      "entityType": "ATTRACTION",
+      "externalId": "353381;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "mickeyshouseandmeetmickey",
+      "location": {
+        "longitude": -117.9191337526,
+        "latitude": 33.8155052074
+      }
+    },
+    {
+      "id": "526ada11-4688-442b-96d4-4077eac4f988",
+      "name": "Pixar Short Film Spotlight",
+      "entityType": "ATTRACTION",
+      "externalId": "412643052;entityType=Attraction",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.917208,
+        "latitude": 33.811604
+      }
+    },
+    {
+      "id": "2e062fa5-42fd-4167-859c-aa00fddfa22c",
+      "name": "Wondrous Journeys with Projections",
+      "entityType": "SHOW",
+      "externalId": "411805942;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9189732,
+        "latitude": 33.8123896
+      }
+    },
+    {
+      "id": "eeafc865-a4e0-4dc5-9cea-446108bf7d48",
+      "name": "Flag Retreat Ceremony",
+      "entityType": "SHOW",
+      "externalId": "401487;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "flagretreatceremony",
+      "location": {
+        "longitude": -117.9189595,
+        "latitude": 33.81034344
+      }
+    },
+    {
+      "id": "78568c55-6dcb-4893-a14e-ba7ed9bddaff",
+      "name": "Disneyland Band at \"it's a small world\" Promenade",
+      "entityType": "SHOW",
+      "externalId": "412054818;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.917863,
+        "latitude": 33.814016
+      }
+    },
+    {
+      "id": "9212c98b-3638-4f0b-bf42-2e2848330e1d",
+      "name": "Pearly Band at Castle Courtyard",
+      "entityType": "SHOW",
+      "externalId": "411755028;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918967,
+        "latitude": 33.813093
+      }
+    },
+    {
+      "id": "228b9736-f889-469f-92f7-0e89bf150d5c",
+      "name": "Disneyland Band at Castle Promenade",
+      "entityType": "SHOW",
+      "externalId": "411713851;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918969,
+        "latitude": 33.812523
+      }
+    },
+    {
+      "id": "e9ef1443-c735-43b6-81c6-45e53527cf93",
+      "name": "Fire of the Rising Moons",
+      "entityType": "SHOW",
+      "externalId": "412107646;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.921212,
+        "latitude": 33.814816
+      }
+    },
+    {
+      "id": "640525ab-75db-4f3c-b917-27ecb7b5ef97",
+      "name": "Jambalaya Jazz Band on the Mark Twain Riverboat",
+      "entityType": "SHOW",
+      "externalId": "411992760;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.921151,
+        "latitude": 33.811687
+      }
+    },
+    {
+      "id": "fdf0e3b1-2eeb-42b4-9516-5d43463d021e",
+      "name": "The Dapper Dans",
+      "entityType": "SHOW",
+      "externalId": "401463;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "thedapperdans",
+      "location": {
+        "longitude": -117.918962,
+        "latitude": 33.810308
+      }
+    },
+    {
+      "id": "5a107a57-9174-4f3f-9be7-625a5d5bb899",
+      "name": "Mickey's House and Meet Mickey Mouse",
+      "entityType": "SHOW",
+      "externalId": "401526;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9191226037,
+        "latitude": 33.8154677877
+      }
+    },
+    {
+      "id": "8160b905-b318-41be-84bf-869fb6a55b14",
+      "name": "The Bootstrappers",
+      "entityType": "SHOW",
+      "externalId": "15751758;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "thebootstrappers",
+      "location": {
+        "longitude": -117.921011,
+        "latitude": 33.811384
+      }
+    },
+    {
+      "id": "8c36ff0b-3a32-4d7b-9388-0516c19277db",
+      "name": "Fantasmic!",
+      "entityType": "SHOW",
+      "externalId": "401483;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "fantasmic",
+      "location": {
+        "longitude": -117.921151,
+        "latitude": 33.811687
+      }
+    },
+    {
+      "id": "cb84b53c-dbb5-483d-a717-00d9259c6484",
+      "name": "Disneyland Band at Frontierland",
+      "entityType": "SHOW",
+      "externalId": "18154861;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "disneylandbandatfrontierland",
+      "location": {
+        "longitude": -117.9203231,
+        "latitude": 33.81207964
+      }
+    },
+    {
+      "id": "fa0ef252-8002-4c39-934b-46c3231d206e",
+      "name": "Shadows of Memory: A Skywalker Saga",
+      "entityType": "SHOW",
+      "externalId": "412349422;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.921242,
+        "latitude": 33.814988
+      }
+    },
+    {
+      "id": "95a9cde3-ff1f-40a3-8276-2477ded688f8",
+      "name": "Bluey's Best Day Ever!",
+      "entityType": "SHOW",
+      "externalId": "412549121;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918938,
+        "latitude": 33.814668
+      }
+    },
+    {
+      "id": "09388e7a-9a38-4f8f-97a9-57719c9f9f8d",
+      "name": "Stitch's Interplanetary Beach Party Blast",
+      "entityType": "SHOW",
+      "externalId": "411706675;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.917055,
+        "latitude": 33.812391
+      }
+    },
+    {
+      "id": "c60e9de0-df2b-4484-9b05-299939dc247a",
+      "name": "Paint the Night",
+      "entityType": "SHOW",
+      "externalId": "412287389;entityType=Entertainment",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9189609,
+        "latitude": 33.81097757
+      }
+    },
+    {
+      "id": "3c8d7efa-b0a5-4e2d-811e-9da29d65f2f0",
+      "name": "The Tropical Hideaway Express",
+      "entityType": "RESTAURANT",
+      "externalId": "412234712;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.91955,
+        "latitude": 33.81147
+      }
+    },
+    {
+      "id": "1db8443f-624c-4d95-967c-1766a52b24ec",
+      "name": "Red Rose Taverne",
+      "entityType": "RESTAURANT",
+      "externalId": "18674905;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "redrosetaverne",
+      "location": {
+        "longitude": -117.9194486939,
+        "latitude": 33.8134853951
+      }
+    },
+    {
+      "id": "3665b38e-3e56-4c84-ad20-3e39672079a1",
+      "name": "Cafe Orleans",
+      "entityType": "RESTAURANT",
+      "externalId": "354117;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "cafeorleans",
+      "location": {
+        "longitude": -117.921262,
+        "latitude": 33.811205
+      }
+    },
+    {
+      "id": "2e0d0726-07c7-42f6-b839-68a56a41e268",
+      "name": "Mint Julep Bar",
+      "entityType": "RESTAURANT",
+      "externalId": "354369;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "mintjulepbar",
+      "location": {
+        "longitude": -117.921656,
+        "latitude": 33.811176
+      }
+    },
+    {
+      "id": "f8d61baa-dc1a-4e82-ab6b-f24bdd83e6e1",
+      "name": "Café Daisy",
+      "entityType": "RESTAURANT",
+      "externalId": "411845026;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.918682,
+        "latitude": 33.81547
+      }
+    },
+    {
+      "id": "f0f57b5c-5bc5-49d6-8b7f-34e4aa03c2e8",
+      "name": "Tiana’s Palace",
+      "entityType": "RESTAURANT",
+      "externalId": "411936931;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.921516,
+        "latitude": 33.811266
+      }
+    },
+    {
+      "id": "fae2515c-777b-4f37-b647-06383c1904d3",
+      "name": "Stage Door Café",
+      "entityType": "RESTAURANT",
+      "externalId": "354465;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "stagedoorcaf",
+      "location": {
+        "longitude": -117.9203,
+        "latitude": 33.811889
+      }
+    },
+    {
+      "id": "92f45ae9-5e6d-4923-88d4-7f676c2d10b2",
+      "name": "Harbour Galley",
+      "entityType": "RESTAURANT",
+      "externalId": "354273;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "harbourgalley",
+      "location": {
+        "longitude": -117.921936614,
+        "latitude": 33.8120188925
+      }
+    },
+    {
+      "id": "8deb6338-b65f-467c-9dd3-56ed8c02c355",
+      "name": "Plaza Inn",
+      "entityType": "RESTAURANT",
+      "externalId": "354414;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "plazainn",
+      "location": {
+        "longitude": -117.918622265,
+        "latitude": 33.8117514713
+      }
+    },
+    {
+      "id": "fbee3a16-4be3-47f3-97a7-70ef09aff088",
+      "name": "Edelweiss Snacks",
+      "entityType": "RESTAURANT",
+      "externalId": "369431;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "edelweisssnacks",
+      "location": {
+        "longitude": -117.9177229106,
+        "latitude": 33.8137108075
+      }
+    },
+    {
+      "id": "3a63d923-413a-4512-b873-c690596fb479",
+      "name": "Troubadour Tavern",
+      "entityType": "RESTAURANT",
+      "externalId": "354228;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "troubadourtavern",
+      "location": {
+        "longitude": -117.9187180102,
+        "latitude": 33.8145219838
+      }
+    },
+    {
+      "id": "94453dec-3f16-43a6-94c9-be55144606b8",
+      "name": "Milk Stand",
+      "entityType": "RESTAURANT",
+      "externalId": "19267431;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "milkstand",
+      "location": {
+        "longitude": -117.92069,
+        "latitude": 33.814428
+      }
+    },
+    {
+      "id": "d295c224-299f-4fda-9d14-1d7780401929",
+      "name": "Jolly Holiday Bakery Cafe",
+      "entityType": "RESTAURANT",
+      "externalId": "16363584;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "jollyholidaybakerycafe",
+      "location": {
+        "longitude": -117.9193308949,
+        "latitude": 33.8117051187
+      }
+    },
+    {
+      "id": "2215958d-c6b0-4513-912c-706dbf3e46e9",
+      "name": "Gibson Girl Ice Cream Parlor",
+      "entityType": "RESTAURANT",
+      "externalId": "354255;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "gibsongirlicecreamparlor",
+      "location": {
+        "longitude": -117.9190407415,
+        "latitude": 33.8111392429
+      }
+    },
+    {
+      "id": "ce05c344-81fc-4b32-8717-cb1c26c65292",
+      "name": "Alien Pizza Planet Express",
+      "entityType": "RESTAURANT",
+      "externalId": "412601775;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": null,
+      "location": {
+        "longitude": -117.9168865347,
+        "latitude": 33.8117081571
+      }
+    },
+    {
+      "id": "eb29424b-42ed-41a2-891c-d4c9494eab12",
+      "name": "Oga's Cantina at the Disneyland Resort",
+      "entityType": "RESTAURANT",
+      "externalId": "19268344;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "ogascantinaatthedisneylandresort",
+      "location": {
+        "longitude": -117.920943,
+        "latitude": 33.814717
+      }
+    },
+    {
+      "id": "c7ce633e-1f6b-4699-98c9-6772bb196b16",
+      "name": "Carnation Café",
+      "entityType": "RESTAURANT",
+      "externalId": "354129;entityType=restaurant",
+      "parentId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "slug": "carnationcafe",
+      "location": {
+        "longitude": -117.9190407415,
+        "latitude": 33.8110402999
+      }
+    }
+  ]
+}

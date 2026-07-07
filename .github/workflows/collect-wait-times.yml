@@ -1,0 +1,25 @@
+name: Collect wait times
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/15 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Collect Queue Times snapshots
+        run: node scripts/collect-wait-times.mjs
+      - name: Commit updated wait-time data
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Collect wait-time snapshot"
+          file_pattern: data/wait_times/*.csv data/wait_times/latest_snapshot.json

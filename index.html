@@ -3,56 +3,30 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>迪士尼园区规划项目 | Version 0 数据看板</title>
+    <title>迪士尼园区规划项目</title>
     <link rel="stylesheet" href="src/styles.css" />
   </head>
-  <body>
-    <header class="app-header">
-      <div>
-        <p class="eyebrow">Version 0 数据看板版</p>
-        <h1>迪士尼园区规划项目</h1>
-        <p class="header-copy">
-          先把 Disneyland 和 Disney California Adventure 的排队时间、状态、地图点位、活动时间和本地趋势展示出来，为后续预测和路线推荐打基础。
+  <body data-page="home">
+    <header class="site-header">
+      <nav class="top-nav" aria-label="主导航">
+        <a class="brand" href="index.html">Disney Planner</a>
+        <div class="nav-links">
+          <a href="attractions.html">项目与演出</a>
+          <a href="schedule.html">时间表</a>
+          <a href="map.html">园区地图</a>
+        </div>
+      </nav>
+      <section class="hero">
+        <p class="eyebrow">迪士尼园区规划项目</p>
+        <h1>从数据看板开始，逐步走向预测和路线推荐</h1>
+        <p>
+          当前 Version 0 不做路线推荐，先把 Disneyland 主园区和 Disney California Adventure
+          冒险园区的 attractions、演出活动、开放状态、等待时间和时间表分开展示清楚。
         </p>
-      </div>
-      <div class="header-actions">
-        <button id="refreshButton" type="button">刷新实时数据</button>
-        <p id="lastUpdated" class="muted">等待加载</p>
-      </div>
+      </section>
     </header>
 
-    <main>
-      <section class="toolbar" aria-label="筛选工具">
-        <label>
-          园区
-          <select id="parkSelect">
-            <option value="all">全部园区</option>
-            <option value="disneyland">Disneyland</option>
-            <option value="dca">Disney California Adventure</option>
-          </select>
-        </label>
-        <label>
-          状态
-          <select id="statusSelect">
-            <option value="all">全部状态</option>
-            <option value="open">仅开放</option>
-            <option value="closed">仅关闭</option>
-          </select>
-        </label>
-        <label>
-          排序
-          <select id="sortSelect">
-            <option value="wait-desc">等待时间从高到低</option>
-            <option value="wait-asc">等待时间从低到高</option>
-            <option value="name">项目名称</option>
-          </select>
-        </label>
-        <label class="search-field">
-          搜索项目
-          <input id="searchInput" type="search" placeholder="例如 Space Mountain" />
-        </label>
-      </section>
-
+    <main class="page-shell">
       <section class="summary-grid" aria-label="实时概览">
         <article>
           <span class="stat-label">开放项目</span>
@@ -72,59 +46,54 @@
         </article>
       </section>
 
-      <section class="dashboard-grid">
-        <article class="panel ride-board">
-          <div class="panel-heading">
-            <div>
-              <h2>实时 Wait Time Board</h2>
-              <p>展示当前项目排队时间和开放状态。</p>
-            </div>
-            <span id="rideCount" class="pill">0 项</span>
-          </div>
-          <div id="rideList" class="ride-list" aria-live="polite"></div>
-        </article>
-
-        <article class="panel map-panel">
-          <div class="panel-heading">
-            <div>
-              <h2>园区地图点位</h2>
-              <p>颜色越深代表等待时间越长。</p>
-            </div>
-          </div>
-          <div id="parkMap" class="park-map" aria-label="园区项目地图"></div>
-        </article>
+      <section class="version-grid">
+        <a class="feature-card" href="attractions.html">
+          <span>01</span>
+          <h2>项目与演出</h2>
+          <p>按照“园区 -> Attractions / Entertainment -> 时间与状态”查看完整列表。</p>
+        </a>
+        <a class="feature-card" href="schedule.html">
+          <span>02</span>
+          <h2>时间表</h2>
+          <p>集中查看演出时间、烟花时间、项目运营时间，为路线规划做约束。</p>
+        </a>
+        <a class="feature-card" href="map.html">
+          <span>03</span>
+          <h2>园区地图</h2>
+          <p>使用真实地图背景展示两个园区的位置，不再用抽象圆圈代替地图。</p>
+        </a>
       </section>
 
-      <section class="dashboard-grid lower-grid">
-        <article class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>表演和烟花时间</h2>
-              <p>先用手动整理数据，后续可接入更完整 schedule。</p>
-            </div>
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>下一阶段开发路线</h2>
+            <p>这个项目不应该停在单页看板，后面会逐步拆成完整产品。</p>
           </div>
-          <div id="eventList" class="event-list"></div>
-        </article>
-
-        <article class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>历史排队趋势</h2>
-              <p>当前版本记录本浏览器刷新快照，作为训练数据采集前的雏形。</p>
-            </div>
-          </div>
-          <div id="trendChart" class="trend-chart" aria-label="按小时等待趋势"></div>
-          <p id="trendNote" class="muted trend-note"></p>
-        </article>
+        </div>
+        <div class="roadmap">
+          <article>
+            <h3>Version 1 数据采集</h3>
+            <p>后端定时抓取等待时间、状态、日程和天气，进入数据库。</p>
+          </article>
+          <article>
+            <h3>Version 2 Forecasting</h3>
+            <p>用历史数据预测未来 30 分钟到数小时的排队变化。</p>
+          </article>
+          <article>
+            <h3>Version 3 Recommendation</h3>
+            <p>根据用户偏好、等待时间、步行距离和演出时间生成 itinerary。</p>
+          </article>
+        </div>
       </section>
     </main>
 
-    <footer>
+    <footer class="site-footer">
       <p>
         Live wait time data:
         <a href="https://queue-times.com/en-US" target="_blank" rel="noreferrer">Powered by Queue-Times.com</a>.
-        Schedule API configuration references
-        <a href="https://api.themeparks.wiki/docs/v1/" target="_blank" rel="noreferrer">ThemeParks.wiki</a>.
+        Entity and schedule data:
+        <a href="https://api.themeparks.wiki/docs/v1/" target="_blank" rel="noreferrer">ThemeParks.wiki API</a>.
       </p>
     </footer>
 

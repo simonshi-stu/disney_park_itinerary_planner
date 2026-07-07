@@ -1,0 +1,4644 @@
+{
+  "id": "7340550b-c14d-4def-80bb-acdb51d49a66",
+  "name": "Disneyland Park",
+  "entityType": "PARK",
+  "timezone": "America/Los_Angeles",
+  "liveData": [
+    {
+      "id": "87387057-47ab-4d0b-8eed-2e6c9d23577b",
+      "name": "Mickey's House and Meet Mickey Mouse",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353381;entityType=Attraction",
+      "status": "CLOSED",
+      "operatingHours": [],
+      "lastUpdated": "2026-06-23T09:22:45.675Z"
+    },
+    {
+      "id": "7884bda0-7016-4dea-9626-d97372dff10b",
+      "name": "Main Street Straw Hatters",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401554;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T08:15:00-07:00",
+          "startTime": "2026-07-07T08:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T09:10:00-07:00",
+          "startTime": "2026-07-07T09:10:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:00:00-07:00",
+          "startTime": "2026-07-07T11:00:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T12:45:00-07:00",
+          "startTime": "2026-07-07T12:45:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T13:55:00-07:00",
+          "startTime": "2026-07-07T13:55:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.139Z"
+    },
+    {
+      "id": "115863ac-0880-4630-afd3-b1a1b5033d51",
+      "name": "Wondrous Journeys with Fireworks",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411805943;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T21:35:00-07:00",
+          "startTime": "2026-07-07T21:35:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.168Z"
+    },
+    {
+      "id": "fa0ef252-8002-4c39-934b-46c3231d206e",
+      "name": "Shadows of Memory: A Skywalker Saga",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412349422;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T20:45:00-07:00",
+          "startTime": "2026-07-07T20:45:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T22:15:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.222Z"
+    },
+    {
+      "id": "2e062fa5-42fd-4167-859c-aa00fddfa22c",
+      "name": "Wondrous Journeys with Projections",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411805942;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-06-03T11:34:22.642Z"
+    },
+    {
+      "id": "8b12916b-a384-4305-838a-c4b07affbb14",
+      "name": "Main Street Piano Player",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401517;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:00:00-07:00",
+          "startTime": "2026-07-07T11:00:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:55:00-07:00",
+          "startTime": "2026-07-07T11:55:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T12:50:00-07:00",
+          "startTime": "2026-07-07T12:50:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T14:00:00-07:00",
+          "startTime": "2026-07-07T14:00:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T15:20:00-07:00",
+          "startTime": "2026-07-07T15:20:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T16:15:00-07:00",
+          "startTime": "2026-07-07T16:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T17:05:00-07:00",
+          "startTime": "2026-07-07T17:05:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.123Z"
+    },
+    {
+      "id": "8160b905-b318-41be-84bf-869fb6a55b14",
+      "name": "The Bootstrappers",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "15751758;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T08:30:00-07:00",
+          "startTime": "2026-07-07T08:30:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T09:30:00-07:00",
+          "startTime": "2026-07-07T09:30:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T10:30:00-07:00",
+          "startTime": "2026-07-07T10:30:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:30:00-07:00",
+          "startTime": "2026-07-07T11:30:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T12:35:00-07:00",
+          "startTime": "2026-07-07T12:35:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T14:30:00-07:00",
+          "startTime": "2026-07-07T14:30:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:43.991Z"
+    },
+    {
+      "id": "64d44aaa-6857-4693-b24b-bcff6c6dcfa1",
+      "name": "Finding Nemo Submarine Voyage",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353327;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 25
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:07:12.218Z"
+    },
+    {
+      "id": "8c36ff0b-3a32-4d7b-9388-0516c19277db",
+      "name": "Fantasmic!",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401483;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T21:05:00-07:00",
+          "startTime": "2026-07-07T21:05:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T22:30:00-07:00",
+          "startTime": "2026-07-07T22:30:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.099Z"
+    },
+    {
+      "id": "8deb6338-b65f-467c-9dd3-56ed8c02c355",
+      "name": "Plaza Inn",
+      "entityType": "RESTAURANT",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "354414;entityType=restaurant",
+      "status": "OPERATING",
+      "lastUpdated": "2026-06-03T11:34:22.831Z"
+    },
+    {
+      "id": "c60e9de0-df2b-4484-9b05-299939dc247a",
+      "name": "Paint the Night",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412287389;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T20:45:00-07:00",
+          "startTime": "2026-07-07T20:45:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T22:45:00-07:00",
+          "startTime": "2026-07-07T22:45:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.199Z"
+    },
+    {
+      "id": "a4742f3c-1594-4851-9947-f0cfed217a6a",
+      "name": "Country Line Dancing",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411944410;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Special Ticketed Event",
+          "endTime": "2026-06-19T01:00:00-07:00",
+          "startTime": "2026-06-18T21:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-06-18T07:07:59.740Z"
+    },
+    {
+      "id": "6ad46aa1-8e0e-4ae7-8eeb-347f3f64f8d0",
+      "name": "Fond Farewell with Mickey Mouse & Friends",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411944414;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Special Ticketed Event",
+          "endTime": "2026-06-18T00:45:00-07:00",
+          "startTime": "2026-06-18T00:45:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-06-18T07:07:59.752Z"
+    },
+    {
+      "id": "3507bed6-ddc6-4e28-892f-8d88db2ef86d",
+      "name": "A Musical Celebration of Pride",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412155315;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-06-18T00:30:00-07:00",
+          "startTime": "2026-06-18T00:30:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-06-18T21:45:00-07:00",
+          "startTime": "2026-06-18T21:45:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-06-18T22:35:00-07:00",
+          "startTime": "2026-06-18T22:35:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-06-18T23:30:00-07:00",
+          "startTime": "2026-06-18T23:30:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-06-18T07:07:59.776Z"
+    },
+    {
+      "id": "3220fd76-38e4-49a4-afa3-4842c07203fa",
+      "name": "Jambalaya Jazz",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401501;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-07-07T07:01:44.113Z"
+    },
+    {
+      "id": "eeafc865-a4e0-4dc5-9cea-446108bf7d48",
+      "name": "Flag Retreat Ceremony",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401487;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T16:15:00-07:00",
+          "startTime": "2026-07-07T16:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.106Z"
+    },
+    {
+      "id": "b2c2549c-e9da-4fdd-98ea-1dcff596fed7",
+      "name": "Millennium Falcon: Smugglers Run",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "19193459;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 10
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T16:55:00-07:00",
+          "returnStart": "2026-07-07T15:55:00-07:00"
+        },
+        "SINGLE_RIDER": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.106Z"
+    },
+    {
+      "id": "37858b2a-9c11-4ac6-9f8d-db7fa9088703",
+      "name": "The Disney Gallery",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "17734741;entityType=Attraction",
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:00:04.601Z"
+    },
+    {
+      "id": "835deb74-de54-4d7f-9dc4-dacab90fcb60",
+      "name": "Frontierland Shootin' Exposition",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353335;entityType=Attraction",
+      "status": "REFURBISHMENT",
+      "operatingHours": [],
+      "lastUpdated": "2026-07-06T14:24:16.667Z"
+    },
+    {
+      "id": "f5bb0d14-7eee-4ede-9230-eb256ce3664c",
+      "name": "Main Street Cinema",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353371;entityType=Attraction",
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:00:04.882Z"
+    },
+    {
+      "id": "c02fb82d-0860-4e95-8c61-899fa594d20e",
+      "name": "Minnie's House",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353383;entityType=Attraction",
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T19:00:00-07:00",
+          "startTime": "2026-07-07T09:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T16:00:01.807Z"
+    },
+    {
+      "id": "6c30d5b0-8c0a-406f-9258-0b6c55d4a5e4",
+      "name": "Mark Twain Riverboat",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353375;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 10
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T17:40:00-07:00",
+          "startTime": "2026-07-07T09:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T16:01:05.905Z"
+    },
+    {
+      "id": "640525ab-75db-4f3c-b917-27ecb7b5ef97",
+      "name": "Jambalaya Jazz Band on the Mark Twain Riverboat",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411992760;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2024-12-29T15:32:21.740Z"
+    },
+    {
+      "id": "cb84b53c-dbb5-483d-a717-00d9259c6484",
+      "name": "Disneyland Band at Frontierland",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "18154861;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T10:30:00-07:00",
+          "startTime": "2026-07-07T10:30:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T14:15:00-07:00",
+          "startTime": "2026-07-07T14:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.040Z"
+    },
+    {
+      "id": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "name": "Disneyland Park",
+      "entityType": "PARK",
+      "parkId": null,
+      "externalId": "330339;entityType=theme-park",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "lastUpdated": "2024-04-05T15:54:30.308Z"
+    },
+    {
+      "id": "526ada11-4688-442b-96d4-4077eac4f988",
+      "name": "Pixar Short Film Spotlight",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412643052;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T18:00:00-07:00",
+          "startTime": "2026-07-07T11:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T13:15:18.440Z"
+    },
+    {
+      "id": "5bd95ae8-181d-449c-8f04-a621e2448961",
+      "name": "Davy Crockett's Explorer Canoes",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353311;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        }
+      ],
+      "operatingHours": [],
+      "lastUpdated": "2026-07-07T13:15:18.020Z"
+    },
+    {
+      "id": "9212c98b-3638-4f0b-bf42-2e2848330e1d",
+      "name": "Pearly Band at Castle Courtyard",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411755028;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-07-07T07:01:44.160Z"
+    },
+    {
+      "id": "e9ef1443-c735-43b6-81c6-45e53527cf93",
+      "name": "Fire of the Rising Moons",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412107646;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T21:35:00-07:00",
+          "startTime": "2026-07-07T21:35:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.175Z"
+    },
+    {
+      "id": "ff9c3639-2edd-4ece-8515-54e71ccf1067",
+      "name": "The Celebrate Happy Cavalcade",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412333563;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T13:30:00-07:00",
+          "startTime": "2026-07-07T13:30:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T14:45:00-07:00",
+          "startTime": "2026-07-07T14:45:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.208Z"
+    },
+    {
+      "id": "34f7bd8a-ec8e-41ac-9d63-d94ffc54f1ef",
+      "name": "Tapestry of Happiness",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412343720;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T22:10:00-07:00",
+          "startTime": "2026-07-07T22:10:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T23:35:00-07:00",
+          "startTime": "2026-07-07T23:35:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T23:55:00-07:00",
+          "startTime": "2026-07-07T23:55:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.215Z"
+    },
+    {
+      "id": "78568c55-6dcb-4893-a14e-ba7ed9bddaff",
+      "name": "Disneyland Band at \"it's a small world\" Promenade",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412054818;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-06-03T11:34:22.655Z"
+    },
+    {
+      "id": "6c225598-91c9-44a3-95e2-7c423475db61",
+      "name": "Astro Orbitor",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353291;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 20
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:16:02.131Z"
+    },
+    {
+      "id": "09388e7a-9a38-4f8f-97a9-57719c9f9f8d",
+      "name": "Stitch's Interplanetary Beach Party Blast",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411706675;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T21:30:00-07:00",
+          "startTime": "2026-07-07T17:30:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.146Z"
+    },
+    {
+      "id": "9d401ad3-49b2-469f-ac73-93eb429428fb",
+      "name": "Mr. Toad's Wild Ride",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353389;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 15
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:30:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T20:59:08.354Z"
+    },
+    {
+      "id": "c7ce633e-1f6b-4699-98c9-6772bb196b16",
+      "name": "Carnation Café",
+      "entityType": "RESTAURANT",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "354129;entityType=restaurant",
+      "status": "OPERATING",
+      "lastUpdated": "2026-07-07T21:46:31.449Z"
+    },
+    {
+      "id": "34b1d70f-11c4-42df-935e-d5582c9f1a8e",
+      "name": "Star Wars: Rise of the Resistance",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "19193461;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 35
+        },
+        "PAID_RETURN_TIME": {
+          "price": {
+            "amount": 2900,
+            "currency": "USD",
+            "formatted": "$29.00"
+          },
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T16:15:00-07:00",
+          "returnStart": "2026-07-07T15:15:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 47
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 51
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 65,
+          "percentage": 56
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 70,
+          "percentage": 60
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 70,
+          "percentage": 60
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 65,
+          "percentage": 56
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 51
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 65,
+          "percentage": 56
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 51
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 51
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 51
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 51
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 47
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 43
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T22:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.255Z"
+    },
+    {
+      "id": "a9076acd-7630-4bad-a8da-e6bd689ddcac",
+      "name": "Tiana's Bayou Adventure",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412062678;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 55
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T21:55:00-07:00",
+          "returnStart": "2026-07-07T20:55:00-07:00"
+        },
+        "SINGLE_RIDER": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:14:40.830Z"
+    },
+    {
+      "id": "07952343-3498-404b-8337-734de9a185c1",
+      "name": "Pirate's Lair on Tom Sawyer Island",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353403;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 5
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T17:00:00-07:00",
+          "startTime": "2026-07-07T09:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T16:04:00.341Z"
+    },
+    {
+      "id": "a6760f7b-3489-47df-9547-d70dd2d8cb76",
+      "name": "Disneyland Band at Main Street, U.S.A.",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401473;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:25:00-07:00",
+          "startTime": "2026-07-07T11:25:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T12:15:00-07:00",
+          "startTime": "2026-07-07T12:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T15:15:00-07:00",
+          "startTime": "2026-07-07T15:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T16:15:00-07:00",
+          "startTime": "2026-07-07T16:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.092Z"
+    },
+    {
+      "id": "fdf0e3b1-2eeb-42b4-9516-5d43463d021e",
+      "name": "The Dapper Dans",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401463;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:00:00-07:00",
+          "startTime": "2026-07-07T11:00:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T12:15:00-07:00",
+          "startTime": "2026-07-07T12:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T13:10:00-07:00",
+          "startTime": "2026-07-07T13:10:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T14:20:00-07:00",
+          "startTime": "2026-07-07T14:20:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T16:15:00-07:00",
+          "startTime": "2026-07-07T16:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T17:00:00-07:00",
+          "startTime": "2026-07-07T17:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.077Z"
+    },
+    {
+      "id": "bcfd1e17-3eab-4203-b597-6257a257d427",
+      "name": "Main Street Vehicles",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "393385;entityType=Attraction",
+      "status": "CLOSED",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T15:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:00:00.721Z"
+    },
+    {
+      "id": "f7904912-3f08-4563-b99e-fd59f43cc9f2",
+      "name": "King Arthur Carrousel",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353365;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "REFURBISHMENT",
+      "operatingHours": [],
+      "lastUpdated": "2026-07-06T14:52:45.235Z"
+    },
+    {
+      "id": "0de1413a-73ee-46cf-af2e-c491cc7c7d3b",
+      "name": "Big Thunder Mountain Railroad",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353295;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 30
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T17:40:00-07:00",
+          "returnStart": "2026-07-07T16:40:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.457Z"
+    },
+    {
+      "id": "1b23667a-d8fb-436d-8952-c3e3f2e56d13",
+      "name": "Great Moments with Mr. Lincoln",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353461;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T13:30:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T20:31:10.028Z"
+    },
+    {
+      "id": "106c1e5a-a5e7-42d7-96ab-bc100d8faf71",
+      "name": "Walt Disney's Enchanted Tiki Room",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353325;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:01:08.639Z"
+    },
+    {
+      "id": "3665b38e-3e56-4c84-ad20-3e39672079a1",
+      "name": "Cafe Orleans",
+      "entityType": "RESTAURANT",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "354117;entityType=restaurant",
+      "status": "OPERATING",
+      "diningAvailability": [
+        {
+          "waitTime": 15,
+          "partySize": 1
+        },
+        {
+          "waitTime": 15,
+          "partySize": 2
+        },
+        {
+          "waitTime": 15,
+          "partySize": 3
+        },
+        {
+          "waitTime": 15,
+          "partySize": 4
+        },
+        {
+          "waitTime": 25,
+          "partySize": 5
+        },
+        {
+          "waitTime": 25,
+          "partySize": 6
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:18:10.885Z"
+    },
+    {
+      "id": "82aeb29b-504a-416f-b13f-f41fa5b766aa",
+      "name": "Pirates of the Caribbean",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353405;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "DOWN",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:01:38.701Z"
+    },
+    {
+      "id": "228b9736-f889-469f-92f7-0e89bf150d5c",
+      "name": "Disneyland Band at Castle Promenade",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411713851;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T13:05:00-07:00",
+          "startTime": "2026-07-07T13:05:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.153Z"
+    },
+    {
+      "id": "6e2af074-3a67-4f38-9bcf-2f5a572c87df",
+      "name": "Opera House - Walt Disney - A Magical Life",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412420542;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:01:08.887Z"
+    },
+    {
+      "id": "ca32ef8a-ae0d-4c24-bf4f-e59192122e01",
+      "name": "Donald's Duck Pond",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353321;entityType=Attraction",
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:00:04.717Z"
+    },
+    {
+      "id": "cc718d11-fa15-44ee-87d0-ded989ad61bc",
+      "name": "Star Tours - The Adventures Continue",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353439;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 15
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T16:15:00-07:00",
+          "returnStart": "2026-07-07T15:15:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.889Z"
+    },
+    {
+      "id": "90d5a091-478c-4df1-adfe-c605b4005013",
+      "name": "Sleeping Beauty Castle Walkthrough",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353427;entityType=Attraction",
+      "status": "CLOSED",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T19:30:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T13:15:18.292Z"
+    },
+    {
+      "id": "4784fd0f-9ba3-4a5d-a4b9-ed33b93c4489",
+      "name": "Blue Bayou Restaurant",
+      "entityType": "RESTAURANT",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "354099;entityType=restaurant",
+      "status": "OPERATING",
+      "lastUpdated": "2026-07-07T18:08:44.654Z"
+    },
+    {
+      "id": "888525b0-5a6f-4b8e-9f07-b6a32812b04d",
+      "name": "Bluey’s Best Day Ever! at Fantasyland Theatre",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412592390;entityType=Attraction",
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-04-09T16:30:00-07:00",
+          "startTime": "2026-04-09T09:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-04-09T07:20:29.758Z"
+    },
+    {
+      "id": "cd670bff-81d1-4f34-8676-7bafdf49220a",
+      "name": "Mickey & Minnie's Runaway Railway",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411821333;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 30
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T18:05:00-07:00",
+          "returnStart": "2026-07-07T17:05:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:04.067Z"
+    },
+    {
+      "id": "cc980e8e-192f-48b6-848c-27784084e54b",
+      "name": "Dumbo the Flying Elephant",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353323;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 20
+        }
+      },
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T20:33:10.363Z"
+    },
+    {
+      "id": "95a9cde3-ff1f-40a3-8276-2477ded688f8",
+      "name": "Bluey's Best Day Ever!",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412549121;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:00:00-07:00",
+          "startTime": "2026-07-07T11:00:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T12:20:00-07:00",
+          "startTime": "2026-07-07T12:20:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T13:40:00-07:00",
+          "startTime": "2026-07-07T13:40:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T15:20:00-07:00",
+          "startTime": "2026-07-07T15:20:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T16:40:00-07:00",
+          "startTime": "2026-07-07T16:40:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.241Z"
+    },
+    {
+      "id": "def0286a-660d-4eff-ae04-b8b643adaed0",
+      "name": "Welcome Pride Cavalcade",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411944405;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-06-19T07:03:48.275Z"
+    },
+    {
+      "id": "6387d964-4e0f-4d96-b183-a9d7c37bdf29",
+      "name": "Welcome Fireworks",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411943655;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-06-19T07:03:48.268Z"
+    },
+    {
+      "id": "461e07bb-03db-4cbb-8e89-bb0f77a04a79",
+      "name": "Dance Party",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411944412;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-06-19T07:03:48.283Z"
+    },
+    {
+      "id": "c85a7726-e2c8-45c1-8b45-00e12f76d080",
+      "name": "Disney’s Celebrate America! - A Fourth of July Concert in the Sky",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "16077305;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-07-06T07:03:29.405Z"
+    },
+    {
+      "id": "1da85181-bf0f-4ccc-b98e-243142f7347b",
+      "name": "Autopia",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353293;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 10
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T16:55:00-07:00",
+          "returnStart": "2026-07-07T15:55:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:18:03.009Z"
+    },
+    {
+      "id": "56d0bd6d-5106-4420-8f60-0005475c04c3",
+      "name": "Disneyland Monorail",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353313;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "DOWN",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T20:31:10.018Z"
+    },
+    {
+      "id": "1b83fda8-d60e-48e4-9a3d-90ddcbcd1001",
+      "name": "Jungle Cruise",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353363;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 25
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:13:12.607Z"
+    },
+    {
+      "id": "e0cfed11-96d7-40f3-907f-5cfed172592a",
+      "name": "Mad Tea Party",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353369;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 5
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T20:09:28.665Z"
+    },
+    {
+      "id": "52a8ef64-d54c-4974-883f-027c3026e3f1",
+      "name": "The Many Adventures of Winnie the Pooh",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353449;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 20
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:08:05.503Z"
+    },
+    {
+      "id": "2aedc657-1ee2-4545-a1ce-14753f28cc66",
+      "name": "Indiana Jones™ Adventure",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353355;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 45
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T22:00:00-07:00",
+          "returnStart": "2026-07-07T21:00:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 55,
+          "percentage": 45
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.737Z"
+    },
+    {
+      "id": "6ce9cdd1-0a43-459e-83cd-f4cace9cfa7b",
+      "name": "Roger Rabbit's Car Toon Spin",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353421;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 35
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T17:05:00-07:00",
+          "returnStart": "2026-07-07T16:05:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:17:08.358Z"
+    },
+    {
+      "id": "4f0053e7-b8db-4833-b02f-35e1c91b4523",
+      "name": "Snow White's Enchanted Wish",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353429;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 10
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:30:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:08:05.493Z"
+    },
+    {
+      "id": "c9e39189-7e99-4e0a-97e0-4a0d5654d257",
+      "name": "Sailing Ship Columbia",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353425;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "CLOSED",
+      "operatingHours": [],
+      "lastUpdated": "2026-07-06T14:52:45.350Z"
+    },
+    {
+      "id": "33cbbd09-6d93-40d7-b758-9d7b7d3fd2eb",
+      "name": "Meet Disney Princesses at Royal Hall",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "18738682;entityType=Entertainment",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 15
+        }
+      },
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T19:00:00-07:00",
+          "startTime": "2026-07-07T10:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:03:11.183Z"
+    },
+    {
+      "id": "b0eca3d3-a519-47f9-a5a7-9911126da2df",
+      "name": "Goofy's How-to-Play Yard",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353343;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:01:08.669Z"
+    },
+    {
+      "id": "8e686e4c-f3db-4d9c-a185-2d54b1fa8899",
+      "name": "Casey Jr. Circus Train",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353305;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 5
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T19:00:00.800Z"
+    },
+    {
+      "id": "eb29424b-42ed-41a2-891c-d4c9494eab12",
+      "name": "Oga's Cantina at the Disneyland Resort",
+      "entityType": "RESTAURANT",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "19268344;entityType=restaurant",
+      "status": "OPERATING",
+      "diningAvailability": [
+        {
+          "waitTime": 10,
+          "partySize": 1
+        },
+        {
+          "waitTime": 10,
+          "partySize": 2
+        },
+        {
+          "waitTime": 10,
+          "partySize": 3
+        },
+        {
+          "waitTime": 10,
+          "partySize": 4
+        },
+        {
+          "waitTime": 10,
+          "partySize": 5
+        },
+        {
+          "waitTime": 10,
+          "partySize": 6
+        },
+        {
+          "waitTime": 10,
+          "partySize": 7
+        },
+        {
+          "waitTime": 10,
+          "partySize": 8
+        },
+        {
+          "waitTime": 10,
+          "partySize": 9
+        },
+        {
+          "waitTime": 10,
+          "partySize": 10
+        }
+      ],
+      "lastUpdated": "2026-07-07T17:00:42.084Z"
+    },
+    {
+      "id": "faaa8be9-cc1e-4535-ac20-04a535654bd0",
+      "name": "Matterhorn Bobsleds",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353377;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 25
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T20:05:00-07:00",
+          "returnStart": "2026-07-07T19:05:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:10.317Z"
+    },
+    {
+      "id": "ff52cb64-c1d5-4feb-9d43-5dbd429bac81",
+      "name": "Haunted Mansion",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353347;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 25
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T17:20:00-07:00",
+          "returnStart": "2026-07-07T16:20:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.699Z"
+    },
+    {
+      "id": "057872ed-3f27-496f-80e2-edd3639ba084",
+      "name": "River Belle Terrace",
+      "entityType": "RESTAURANT",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "354450;entityType=restaurant",
+      "status": "OPERATING",
+      "diningAvailability": [
+        {
+          "waitTime": 15,
+          "partySize": 1
+        },
+        {
+          "waitTime": 15,
+          "partySize": 2
+        },
+        {
+          "waitTime": 15,
+          "partySize": 3
+        },
+        {
+          "waitTime": 15,
+          "partySize": 4
+        },
+        {
+          "waitTime": 15,
+          "partySize": 6
+        },
+        {
+          "waitTime": 15,
+          "partySize": 7
+        },
+        {
+          "waitTime": 15,
+          "partySize": 8
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:13:41.389Z"
+    },
+    {
+      "id": "c23af6ba-8515-406a-8a48-d0818ba0bfc9",
+      "name": "Peter Pan's Flight",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353399;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 20
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 40,
+          "percentage": 33
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:02:02.271Z"
+    },
+    {
+      "id": "05b17c11-fd4c-4b85-ab45-3e269dc56559",
+      "name": "Walt Disney - A Magical Life",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "412413688;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T14:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T21:01:08.320Z"
+    },
+    {
+      "id": "88197808-3c56-4198-a5a4-6066541251cf",
+      "name": "Buzz Lightyear Astro Blasters",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353301;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 25
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T16:35:00-07:00",
+          "returnStart": "2026-07-07T15:35:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.529Z"
+    },
+    {
+      "id": "9167db1d-e5e7-46da-a07f-ae30a87bc4c4",
+      "name": "Space Mountain",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353435;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 55
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T21:10:00-07:00",
+          "returnStart": "2026-07-07T20:10:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 45,
+          "percentage": 37
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 65,
+          "percentage": 54
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 65,
+          "percentage": 54
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 65,
+          "percentage": 54
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 60,
+          "percentage": 50
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 50,
+          "percentage": 41
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.862Z"
+    },
+    {
+      "id": "59647168-d239-4161-8b24-92eb128e96fb",
+      "name": "Chip 'n' Dale's GADGETcoaster",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353337;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 20
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 35,
+          "percentage": 29
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T21:54:02.178Z"
+    },
+    {
+      "id": "e27b1db8-9ec9-4f8b-9ca6-fd6377de66ee",
+      "name": "Adventureland Treehouse inspired by Walt Disney’s Swiss Family Robinson",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "411936760;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": null
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:15:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T23:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T15:01:08.866Z"
+    },
+    {
+      "id": "a07f3110-013e-43bb-a182-e66bb8b5e28d",
+      "name": "Alice in Wonderland",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "367495;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 20
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 30,
+          "percentage": 25
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T20:59:08.364Z"
+    },
+    {
+      "id": "3638ac09-9fce-4a43-8c79-8ebbe17afce2",
+      "name": "\"it's a small world\"",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "367492;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 5
+        },
+        "RETURN_TIME": {
+          "state": "AVAILABLE",
+          "returnEnd": "2026-07-07T16:15:00-07:00",
+          "returnStart": "2026-07-07T15:15:00-07:00"
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 25,
+          "percentage": 20
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 20,
+          "percentage": 16
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:15:03.970Z"
+    },
+    {
+      "id": "72340a8a-b6d2-474f-aca5-5ea7d2d52335",
+      "name": "Storytelling at Royal Theatre",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "17346575;entityType=Entertainment",
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T10:15:00-07:00",
+          "startTime": "2026-07-07T10:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T11:25:00-07:00",
+          "startTime": "2026-07-07T11:25:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T12:40:00-07:00",
+          "startTime": "2026-07-07T12:40:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T14:15:00-07:00",
+          "startTime": "2026-07-07T14:15:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T15:25:00-07:00",
+          "startTime": "2026-07-07T15:25:00-07:00"
+        },
+        {
+          "type": "Performance Time",
+          "endTime": "2026-07-07T16:35:00-07:00",
+          "startTime": "2026-07-07T16:35:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T07:01:44.027Z"
+    },
+    {
+      "id": "4119dd28-6da8-46a0-9246-bea86e07ac61",
+      "name": "Pearly Band near \"it's a small world\"",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401530;entityType=Entertainment",
+      "status": "CLOSED",
+      "showtimes": [],
+      "lastUpdated": "2026-07-07T07:01:44.130Z"
+    },
+    {
+      "id": "5a107a57-9174-4f3f-9be7-625a5d5bb899",
+      "name": "Mickey's House and Meet Mickey Mouse",
+      "entityType": "SHOW",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "401526;entityType=Entertainment",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 30
+        }
+      },
+      "status": "OPERATING",
+      "showtimes": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T19:30:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T20:33:10.371Z"
+    },
+    {
+      "id": "e2d460e9-2bef-4613-b126-092ab7cb37e5",
+      "name": "Disneyland Railroad",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353315;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 10
+        }
+      },
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T18:28:01.371Z"
+    },
+    {
+      "id": "90ee50d4-7cc9-4824-b29d-2aac801acc29",
+      "name": "Pinocchio's Daring Journey",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353401;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 10
+        }
+      },
+      "status": "OPERATING",
+      "forecast": [
+        {
+          "time": "2026-07-07T08:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        },
+        {
+          "time": "2026-07-07T09:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T10:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T11:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T12:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T13:00:00-07:00",
+          "waitTime": 15,
+          "percentage": 12
+        },
+        {
+          "time": "2026-07-07T14:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T15:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T16:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T17:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T18:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T19:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T20:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T21:00:00-07:00",
+          "waitTime": 0,
+          "percentage": 0
+        },
+        {
+          "time": "2026-07-07T22:00:00-07:00",
+          "waitTime": 10,
+          "percentage": 8
+        },
+        {
+          "time": "2026-07-07T23:00:00-07:00",
+          "waitTime": 5,
+          "percentage": 4
+        }
+      ],
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-07T20:30:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        },
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T22:15:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T21:37:17.287Z"
+    },
+    {
+      "id": "cb929138-d77a-4dd2-983c-f651bbd1bd92",
+      "name": "Storybook Land Canal Boats",
+      "entityType": "ATTRACTION",
+      "parkId": "7340550b-c14d-4def-80bb-acdb51d49a66",
+      "externalId": "353443;entityType=Attraction",
+      "queue": {
+        "STANDBY": {
+          "waitTime": 10
+        }
+      },
+      "status": "OPERATING",
+      "operatingHours": [
+        {
+          "type": "Operating",
+          "endTime": "2026-07-08T00:00:00-07:00",
+          "startTime": "2026-07-07T08:00:00-07:00"
+        }
+      ],
+      "lastUpdated": "2026-07-07T22:00:04.584Z"
+    }
+  ]
+}

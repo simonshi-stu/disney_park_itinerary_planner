@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-07-07T22:19:07.022Z",
+  "source": "https://api.themeparks.wiki/v1",
+  "files": [
+    {
+      "park": "Disneyland",
+      "endpoint": "children",
+      "url": "https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/children",
+      "file": "src/cache/themeparks/disneyland.children.json"
+    },
+    {
+      "park": "Disneyland",
+      "endpoint": "live",
+      "url": "https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/live",
+      "file": "src/cache/themeparks/disneyland.live.json"
+    },
+    {
+      "park": "Disneyland",
+      "endpoint": "schedule",
+      "url": "https://api.themeparks.wiki/v1/entity/7340550b-c14d-4def-80bb-acdb51d49a66/schedule",
+      "file": "src/cache/themeparks/disneyland.schedule.json"
+    },
+    {
+      "park": "Disney California Adventure",
+      "endpoint": "children",
+      "url": "https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/children",
+      "file": "src/cache/themeparks/dca.children.json"
+    },
+    {
+      "park": "Disney California Adventure",
+      "endpoint": "live",
+      "url": "https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/live",
+      "file": "src/cache/themeparks/dca.live.json"
+    },
+    {
+      "park": "Disney California Adventure",
+      "endpoint": "schedule",
+      "url": "https://api.themeparks.wiki/v1/entity/832fcd51-ea19-4e77-85c7-75d5843b127c/schedule",
+      "file": "src/cache/themeparks/dca.schedule.json"
+    }
+  ]
+}

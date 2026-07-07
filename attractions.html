@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>项目与演出 | 迪士尼园区规划项目</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body data-page="attractions">
+    <header class="sub-header">
+      <nav class="top-nav" aria-label="主导航">
+        <a class="brand" href="index.html">Disney Planner</a>
+        <div class="nav-links">
+          <a href="attractions.html" aria-current="page">项目与演出</a>
+          <a href="schedule.html">时间表</a>
+          <a href="map.html">园区地图</a>
+        </div>
+      </nav>
+      <div>
+        <p class="eyebrow">Attractions & Entertainment</p>
+        <h1>园区 -> 游玩项目 / 表演 -> 时间</h1>
+        <p>默认分开显示两个园区，避免 Disneyland 主园区和 DCA 冒险园区混在一起。</p>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="toolbar" aria-label="筛选工具">
+        <label>
+          园区
+          <select id="parkSelect">
+            <option value="all" selected>全部园区</option>
+            <option value="disneyland">Disneyland 主园区</option>
+            <option value="dca">Disney California Adventure 冒险园区</option>
+          </select>
+        </label>
+        <label>
+          类型
+          <select id="typeSelect">
+            <option value="all">全部类型</option>
+            <option value="attraction">游玩项目 Attractions</option>
+            <option value="entertainment">演出活动 Entertainment</option>
+          </select>
+        </label>
+        <label>
+          状态
+          <select id="statusSelect">
+            <option value="all">全部状态</option>
+            <option value="open">仅开放</option>
+            <option value="closed">仅关闭</option>
+          </select>
+        </label>
+        <label class="search-field">
+          搜索
+          <input id="searchInput" type="search" placeholder="例如 Space Mountain / World of Color" />
+        </label>
+      </section>
+
+      <section class="summary-grid" aria-label="实时概览">
+        <article>
+          <span class="stat-label">开放项目</span>
+          <strong id="openCount">0</strong>
+        </article>
+        <article>
+          <span class="stat-label">平均等待</span>
+          <strong id="averageWait">0 分钟</strong>
+        </article>
+        <article>
+          <span class="stat-label">最高等待</span>
+          <strong id="maxWait">0 分钟</strong>
+        </article>
+        <article>
+          <span class="stat-label">数据来源</span>
+          <strong id="dataSource">加载中</strong>
+        </article>
+      </section>
+
+      <section id="catalogRoot" class="catalog-root" aria-live="polite"></section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Live wait time data:
+        <a href="https://queue-times.com/en-US" target="_blank" rel="noreferrer">Powered by Queue-Times.com</a>.
+        Entity and schedule data:
+        <a href="https://api.themeparks.wiki/docs/v1/" target="_blank" rel="noreferrer">ThemeParks.wiki API</a>.
+      </p>
+    </footer>
+
+    <script src="src/data.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>

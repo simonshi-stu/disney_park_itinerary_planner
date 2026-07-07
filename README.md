@@ -1,89 +1,239 @@
 # 迪士尼园区规划项目
 
-这是一个面向第一次或低频前往迪士尼游客的园区规划项目。长期目标不是复制官方 App，而是把“实时排队、未来等待时间预测、路线推荐、个人偏好”整合成一个更轻量、更决策友好的工具。
+英文版文档见 [README_EN.md](README_EN.md)。
 
-## 项目总 Outline
+这是一个面向 Disneyland Resort 游客的园区规划项目。当前 Version 0 的重点不是马上做推荐路线，而是先把实时数据、演出时间、园区地图、历史排队数据采集这些基础能力打稳，为后续 forecasting 和 itinerary recommendation 做准备。
 
-### Version 0: 数据看板版
+## 时区标准
 
-目标是先把公开数据接入并展示出来，不急着做推荐算法。
-
-- 实时 wait time board: 展示 Disneyland / Disney California Adventure 各项目当前排队时间。
-- 项目状态: 标记 open / closed / no data。
-- 园区地图点位: 把项目按园区位置可视化，帮助用户理解空间分布。
-- 表演和烟花时间: 先用手动整理数据展示，后续接入更完整 schedule 数据。
-- 历史排队趋势: 先在浏览器本地记录刷新快照，形成按小时的趋势图；后续升级为后端定时采集。
-
-### Version 1: 数据采集与存储版
-
-目标是把实时数据变成可训练数据。
-
-- 后端定时任务每 5 分钟抓取 wait times。
-- 数据库存储 wait time、项目状态、时间、星期、节假日、天气等特征。
-- 建立数据清洗和特征工程流程。
-- 输出基础分析页面，例如每个项目的高峰时段、平均等待时间、异常关闭情况。
-
-### Version 2: Forecasting 预测版
-
-目标是预测未来 30 分钟到数小时的排队时间。
-
-- 先做 baseline: rolling average、weekday/hour average。
-- 再做机器学习模型: XGBoost / LightGBM / Prophet / LSTM 可逐步尝试。
-- 输出每个项目未来等待时间曲线。
-- 用误差指标评估模型，例如 MAE、RMSE。
-
-### Version 3: Route Recommendation 路线推荐版
-
-目标是从“看数据”升级到“帮用户做决定”。
-
-- 用户输入偏好: 必玩项目、刺激程度、是否带小孩、是否看烟花、是否接受长距离步行。
-- 约束条件: 入园时间、离园时间、餐饮、表演、项目开放状态。
-- 推荐路线: 综合等待时间、步行时间、项目优先级，生成 itinerary。
-- 支持动态重排: 某项目突然关闭或等待时间变高时重新规划。
-
-### Version 4: 产品化 Portfolio 版
-
-目标是成为可以展示给招聘/作品集的完整项目。
-
-- 前端: React / Next.js。
-- 后端: FastAPI / Node.js。
-- 数据库: PostgreSQL + TimescaleDB 或 Supabase。
-- 地图: Mapbox / Leaflet。
-- 模型服务: 独立 forecasting API。
-- 部署: Vercel + Render/Fly.io + scheduled job。
-
-## 当前已完成: Version 0 静态数据看板
-
-当前版本是一个无构建依赖的前端原型，直接打开 `index.html` 即可运行。
-
-### 数据源
-
-- Queue Times API: `https://queue-times.com/parks/16/queue_times.json` 和 `https://queue-times.com/parks/17/queue_times.json`
-- Queue Times 官方要求在产品中展示 attribution，本项目页面底部已加入 `Powered by Queue-Times.com`。
-- ThemeParks.wiki schedule endpoint 已预留配置位；若接口或网络不可用，页面会显示手动维护的演出/烟花示例数据。
-
-### 文件结构
+本项目统一使用美国加州时区：
 
 ```text
-.
-├── index.html
-├── README.md
-└── src
-    ├── app.js
-    ├── data.js
-    └── styles.css
+America/Los_Angeles
 ```
 
-## 如何运行
+原因：
 
-直接用浏览器打开 `index.html`。
+- Disneyland Park 和 Disney California Adventure Park 都位于 California, Anaheim。
+- ThemeParks.wiki 和 Queue Times 返回的数据可能包含 UTC 时间或 ISO 时间戳。
+- 页面展示、演出时间过滤、园区开放时间判断，都必须统一转换成 `America/Los_Angeles`，否则会出现类似 `00:30`、`23:30` 这种看起来不合理的演出时间。
 
-也可以使用本地静态服务器：
+当前实现：
+
+- `src/data.js` 中两个园区都配置了 `timezone: "America/Los_Angeles"`。
+- `src/app.js` 中的 `formatClock()`、`getDateInZone()`、`getParkDate()` 会按园区时区解析时间。
+- `schedule.html` 只展示当天、加州时区下有效的 entertainment showtimes。
+- 等待时间采集 CSV 中的 `snapshot_utc` 保留 UTC，便于机器学习和跨系统分析；展示时再转换成加州时间。
+
+## 当前页面
+
+- `index.html`: 项目首页和版本路线。
+- `attractions.html`: 按“园区 -> Attractions / Entertainment -> 状态 / 排队时间 / 演出时间”展示。
+- `schedule.html`: 只展示当天表演、巡游、烟花等 entertainment 时间，并单独展示园区开放时间。
+- `map.html`: 使用 Leaflet + OpenStreetMap 的真实交互地图，marker 绑定经纬度。
+
+## 数据源
+
+### Queue Times API
+
+用于实时排队时间：
+
+```text
+Disneyland Park:
+https://queue-times.com/parks/16/queue_times.json
+
+Disney California Adventure Park:
+https://queue-times.com/parks/17/queue_times.json
+```
+
+页面中已展示 Queue Times attribution。
+
+### ThemeParks.wiki API
+
+用于完整项目、演出、live status 和 schedule：
+
+```text
+children: 完整 entity 列表
+live: live status / queues / showtimes
+schedule: 园区开放时间和 scheduled items
+```
+
+## 已完成的重要修改
+
+### 1. 多页面结构
+
+项目不再是 single page website，而是拆成首页、项目与演出、时间表、地图页。
+
+### 2. Disneyland 和 DCA 分开处理
+
+两个园区的 park id 已确认：
+
+```text
+16 = Disneyland Park
+17 = Disney California Adventure Park
+```
+
+页面可以分园区查看，也可以选择全部园区对比。
+
+### 3. 真实地图
+
+地图页改成 Leaflet + OpenStreetMap。项目 marker 使用经纬度坐标，不再是静态地图上贴固定圆点。
+
+为避免误导：
+
+- 有可信经纬度的项目才显示在地图上。
+- 估算点位不会画到地图上。
+- 没有可信坐标的项目仍会在 `attractions.html` 中展示。
+
+### 4. 时间表修正
+
+`schedule.html` 只展示 entertainment items，例如：
+
+- 表演
+- 巡游
+- 烟花
+- 夜间演出
+- Character / seasonal entertainment
+
+普通游玩项目不会出现在时间表里。<br>
+演出时间会按 `America/Los_Angeles` 解析，并过滤掉明显不在当天或不在园区开放时间附近的 showtimes。
+
+### 5. Single Rider 信息
+
+如果 API 中出现类似：
+
+```text
+Radiator Springs Racers Single Rider
+Millennium Falcon: Smugglers Run Single Rider
+```
+
+页面会把它合并到主项目下，用 `Single Rider` badge 显示，而不是当作独立项目混在列表里。
+
+### 6. 自动刷新
+
+前端页面会：
+
+- 每 5 分钟自动刷新一次实时数据。
+- 用户切回浏览器 tab 时刷新一次。
+- 右下角显示最后更新时间和自动刷新状态。
+
+## ThemeParks.wiki 本地 JSON Cache
+
+目的：把 ThemeParks.wiki 的完整 `children`、`live`、`schedule` 返回保存到本地，作为 API 失败时的 fallback，也方便调试数据结构。
+
+运行：
+
+```powershell
+node scripts/update-cache.mjs
+```
+
+输出：
+
+```text
+src/cache/themeparks/disneyland.children.json
+src/cache/themeparks/disneyland.live.json
+src/cache/themeparks/disneyland.schedule.json
+src/cache/themeparks/dca.children.json
+src/cache/themeparks/dca.live.json
+src/cache/themeparks/dca.schedule.json
+src/cache/themeparks/cache-manifest.json
+```
+
+如果在 Codex 沙盒里出现 `fetch failed` 或 `EACCES`，说明命令行联网被限制。把项目拉到你本机正常网络环境后再运行即可。
+
+## 排队时间数据采集
+
+目的：保存实时 wait time snapshots，为未来 forecasting 训练模型。
+
+运行一次采集：
+
+```powershell
+node scripts/collect-wait-times.mjs
+```
+
+输出：
+
+```text
+data/wait_times/wait_times_YYYY-MM-DD.csv
+data/wait_times/latest_snapshot.json
+```
+
+CSV 可以直接用 Excel 打开，也可以被 Python、R、机器学习 pipeline 读取。
+CSV 使用 UTF-8 BOM 写入，避免 Excel 直接打开时出现特殊符号乱码。文件名里的 `YYYY-MM-DD` 按 `America/Los_Angeles` 日期归档；表内同时保留 `snapshot_utc` 和 `snapshot_park_datetime`，方便机器分析和人工查看。
+
+如果需要整理已有 CSV 的编码和本地时间字段，可以运行：
+
+```powershell
+node scripts/collect-wait-times.mjs --normalize-only
+```
+
+建议采集量：
+
+- 最低可用 baseline: 4 周，每 15 分钟一次。
+- 更可靠 baseline: 60-90 天，每 5-15 分钟一次。
+- 更强的季节性模型: 6-12 个月，覆盖周末、节假日、暑假、Halloween、Christmas。
+
+按 15 分钟采集，每个项目每天约 96 条记录；按 5 分钟采集，每个项目每天约 288 条记录。
+
+## 云端自动采集
+
+项目已加入 GitHub Actions：
+
+```text
+.github/workflows/collect-wait-times.yml
+```
+
+它会每 15 分钟运行一次 `scripts/collect-wait-times.mjs`，并把 CSV commit 回 GitHub repo 的：
+
+```text
+data/wait_times/
+```
+
+推荐云端方案：
+
+- GitHub Actions + CSV: 最适合当前 portfolio 阶段，简单、免费、容易展示。
+- Google Drive / Google Sheets: 适合人工查看，但 OAuth 配置更麻烦。
+- Supabase / PostgreSQL: 最适合长期 forecasting 和查询分析。
+- S3 / Google Cloud Storage: 适合保存大量原始文件，但分析时通常还需要数据库。
+
+当前阶段建议先用 GitHub Actions + CSV。等数据超过几个月，再迁移到 Supabase/PostgreSQL。
+
+## 本地运行
+
+直接打开：
+
+```text
+index.html
+```
+
+或者启动本地静态服务器：
 
 ```powershell
 python -m http.server 5173
 ```
 
-然后访问 `http://localhost:5173`。
+然后访问：
 
-如果本机没有 Python，可以直接双击 `index.html`，页面仍然可以展示示例数据，并在浏览器允许时请求实时接口。
+```text
+http://localhost:5173
+```
+
+## 关键文件结构
+
+```text
+.
+├── .github/workflows/collect-wait-times.yml
+├── attractions.html
+├── index.html
+├── map.html
+├── schedule.html
+├── scripts
+│   ├── collect-wait-times.mjs
+│   └── update-cache.mjs
+├── src
+│   ├── app.js
+│   ├── data.js
+│   ├── styles.css
+│   └── cache/themeparks/
+└── data/wait_times/
+```

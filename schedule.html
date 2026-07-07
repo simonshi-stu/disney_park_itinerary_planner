@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>表演时间表 | 迪士尼园区规划项目</title>
+    <link rel="stylesheet" href="src/styles.css" />
+  </head>
+  <body data-page="schedule">
+    <header class="sub-header">
+      <nav class="top-nav" aria-label="主导航">
+        <a class="brand" href="index.html">Disney Planner</a>
+        <div class="nav-links">
+          <a href="attractions.html">项目与演出</a>
+          <a href="schedule.html" aria-current="page">时间表</a>
+          <a href="map.html">园区地图</a>
+        </div>
+      </nav>
+      <div>
+        <p class="eyebrow">Entertainment Schedule</p>
+        <h1>只展示当天表演、巡游和烟花时间</h1>
+        <p>普通游玩项目不再出现在这里；每个园区开放时间会单独显示，表演项目展示当天多个 showtimes。</p>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="toolbar compact" aria-label="筛选工具">
+        <label>
+          园区
+          <select id="parkSelect">
+            <option value="all" selected>全部园区</option>
+            <option value="disneyland">Disneyland 主园区</option>
+            <option value="dca">Disney California Adventure 冒险园区</option>
+          </select>
+        </label>
+      </section>
+
+      <section id="parkHoursRoot" class="hours-root" aria-live="polite"></section>
+      <section id="scheduleRoot" class="schedule-root" aria-live="polite"></section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        Entertainment and schedule data:
+        <a href="https://api.themeparks.wiki/docs/v1/" target="_blank" rel="noreferrer">ThemeParks.wiki API</a>.
+      </p>
+    </footer>
+
+    <script src="src/data.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
