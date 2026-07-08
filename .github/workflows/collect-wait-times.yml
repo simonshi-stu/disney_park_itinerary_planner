@@ -2,6 +2,8 @@ name: Collect wait times
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [collect-wait-times]
   schedule:
     - cron: "7,22,37,52 * * * *"
 

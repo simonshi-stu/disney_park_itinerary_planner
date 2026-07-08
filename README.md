@@ -58,7 +58,32 @@ node scripts/collect-wait-times.mjs --normalize-only
 node scripts/update-cache.mjs
 ```
 
-GitHub Actions 配置在 `.github/workflows/collect-wait-times.yml`，当前设置为每 15 分钟运行一次等待时间采集脚本，并把更新后的 CSV 和 `latest_snapshot.json` commit 回仓库。
+GitHub Actions 配置在 `.github/workflows/collect-wait-times.yml`。当前采集使用双触发方式：
+
+- GitHub `schedule`: 尝试每 15 分钟自动运行一次。
+- `repository_dispatch`: 给外部 cron 服务触发使用，适合用 cron-job.org 或 Cloudflare Workers Cron 做更稳定的定时触发。
+
+外部 cron 可以 POST 到：
+
+```text
+https://api.github.com/repos/simonshi-stu/disney_park_itinerary_planner/dispatches
+```
+
+请求 body：
+
+```json
+{"event_type":"collect-wait-times"}
+```
+
+请求 header 需要带 GitHub token：
+
+```text
+Authorization: Bearer YOUR_GITHUB_TOKEN
+Accept: application/vnd.github+json
+X-GitHub-Api-Version: 2022-11-28
+```
+
+采集脚本默认会跳过 5 分钟内的重复 snapshot，避免手动触发和定时触发撞在一起时写入重复数据。
 
 ### 本地运行
 
@@ -159,7 +184,32 @@ Update the local ThemeParks.wiki cache:
 node scripts/update-cache.mjs
 ```
 
-GitHub Actions is configured in `.github/workflows/collect-wait-times.yml`. It currently runs the wait-time collection script every 15 minutes and commits the updated CSV files and `latest_snapshot.json` back to the repository.
+GitHub Actions is configured in `.github/workflows/collect-wait-times.yml`. The current setup uses two scheduled paths:
+
+- GitHub `schedule`: attempts to run the collector every 15 minutes.
+- `repository_dispatch`: allows an external cron service, such as cron-job.org or Cloudflare Workers Cron, to trigger the collector more reliably.
+
+An external cron service can POST to:
+
+```text
+https://api.github.com/repos/simonshi-stu/disney_park_itinerary_planner/dispatches
+```
+
+Request body:
+
+```json
+{"event_type":"collect-wait-times"}
+```
+
+Required headers:
+
+```text
+Authorization: Bearer YOUR_GITHUB_TOKEN
+Accept: application/vnd.github+json
+X-GitHub-Api-Version: 2022-11-28
+```
+
+The collector skips snapshots that are less than 5 minutes apart, which prevents duplicate rows when manual and scheduled triggers happen close together.
 
 ### Local Run
 
