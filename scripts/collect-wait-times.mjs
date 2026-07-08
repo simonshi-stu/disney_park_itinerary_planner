@@ -10,10 +10,24 @@ const csvBom = "\uFEFF";
 const normalizeOnly = process.argv.includes("--normalize-only");
 const forceCollect = process.argv.includes("--force");
 const minSnapshotIntervalMinutes = Number(process.env.MIN_SNAPSHOT_INTERVAL_MINUTES || 5);
+const parkOpenBufferMinutes = Number(process.env.PARK_OPEN_BUFFER_MINUTES || 30);
+const parkCloseBufferMinutes = Number(process.env.PARK_CLOSE_BUFFER_MINUTES || 60);
 
 const parks = [
-  { id: "disneyland", name: "Disneyland", queueTimesParkId: 16, timezone: parkTimezone },
-  { id: "dca", name: "Disney California Adventure", queueTimesParkId: 17, timezone: parkTimezone }
+  {
+    id: "disneyland",
+    name: "Disneyland",
+    queueTimesParkId: 16,
+    themeParksEntityId: "7340550b-c14d-4def-80bb-acdb51d49a66",
+    timezone: parkTimezone
+  },
+  {
+    id: "dca",
+    name: "Disney California Adventure",
+    queueTimesParkId: 17,
+    themeParksEntityId: "832fcd51-ea19-4e77-85c7-75d5843b127c",
+    timezone: parkTimezone
+  }
 ];
 
 const snapshotTime = new Date();
@@ -70,8 +84,21 @@ if (!forceCollect && minutesSinceLatestSnapshot < minSnapshotIntervalMinutes) {
 }
 
 const rows = [];
+const skippedParks = [];
 
 for (const park of parks) {
+  const collectionWindow = await getCollectionWindow(park, snapshotTime);
+  if (!forceCollect && !collectionWindow.shouldCollect) {
+    skippedParks.push({
+      parkId: park.id,
+      reason: collectionWindow.reason,
+      openingTime: collectionWindow.openingTime,
+      closingTime: collectionWindow.closingTime
+    });
+    console.log(`Skipped ${park.name}: ${collectionWindow.reason}`);
+    continue;
+  }
+
   const url = `https://queue-times.com/parks/${park.queueTimesParkId}/queue_times.json`;
   const response = await fetch(url, { cache: "no-store" });
 
@@ -94,6 +121,11 @@ for (const park of parks) {
   }
 }
 
+if (!rows.length) {
+  console.log("Skipped wait-time collection because no parks are inside their collection windows.");
+  process.exit(0);
+}
+
 await writeCsv(csvPath, [...existingRows, ...rows]);
 await writeFile(
   latestPath,
@@ -104,6 +136,7 @@ await writeFile(
       snapshotParkDate: snapshotLocal.date,
       snapshotTimezone: parkTimezone,
       rowCount: rows.length,
+      skippedParks,
       rows
     },
     null,
@@ -133,6 +166,65 @@ function toRow(snapshotUtc, park, land, ride, sourceUrl) {
     source_last_updated_park_datetime: formatTimestampInTimezone(sourceLastUpdatedUtc, park.timezone),
     source_url: sourceUrl
   };
+}
+
+async function getCollectionWindow(park, snapshotDateTime) {
+  const scheduleData = await fetchParkSchedule(park);
+  const scheduleEntries = Array.isArray(scheduleData.schedule) ? scheduleData.schedule : [];
+  const activeEntries = scheduleEntries
+    .map((entry) => ({
+      openingTime: entry.openingTime,
+      closingTime: entry.closingTime,
+      open: new Date(entry.openingTime),
+      close: new Date(entry.closingTime)
+    }))
+    .filter((entry) => !Number.isNaN(entry.open.getTime()) && !Number.isNaN(entry.close.getTime()))
+    .filter((entry) => {
+      const startsAt = entry.open.getTime() - parkOpenBufferMinutes * 60000;
+      const endsAt = entry.close.getTime() + parkCloseBufferMinutes * 60000;
+      return snapshotDateTime.getTime() >= startsAt && snapshotDateTime.getTime() <= endsAt;
+    })
+    .sort((a, b) => a.open.getTime() - b.open.getTime());
+
+  if (activeEntries.length) {
+    const entry = activeEntries[0];
+    return {
+      shouldCollect: true,
+      reason: "inside park hours collection window",
+      openingTime: entry.openingTime,
+      closingTime: entry.closingTime
+    };
+  }
+
+  const closestEntry = scheduleEntries
+    .map((entry) => ({
+      openingTime: entry.openingTime,
+      closingTime: entry.closingTime,
+      open: new Date(entry.openingTime),
+      close: new Date(entry.closingTime)
+    }))
+    .filter((entry) => !Number.isNaN(entry.open.getTime()) && !Number.isNaN(entry.close.getTime()))
+    .sort((a, b) => Math.abs(a.open.getTime() - snapshotDateTime.getTime()) - Math.abs(b.open.getTime() - snapshotDateTime.getTime()))[0];
+
+  return {
+    shouldCollect: false,
+    reason: "outside park hours collection window",
+    openingTime: closestEntry?.openingTime || "",
+    closingTime: closestEntry?.closingTime || ""
+  };
+}
+
+async function fetchParkSchedule(park) {
+  const url = `https://api.themeparks.wiki/v1/entity/${park.themeParksEntityId}/schedule`;
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+    return response.json();
+  } catch (error) {
+    const cachePath = path.join(rootDir, "src", "cache", "themeparks", `${park.id}.schedule.json`);
+    console.warn(`Using cached schedule for ${park.name}: ${error.message}`);
+    return JSON.parse(await readFile(cachePath, "utf8"));
+  }
 }
 
 async function readExistingRows(filePath) {
