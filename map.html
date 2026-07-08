@@ -46,7 +46,13 @@
       <section class="map-layout">
         <article class="real-map-panel">
           <div id="leafletMap" class="leaflet-map" aria-label="Disneyland Resort 交互地图"></div>
-          <p id="mapFallback" class="map-fallback" hidden>地图组件没有加载成功。请确认网络可访问 Leaflet 和 OpenStreetMap。</p>
+          <div id="mapFallback" class="map-fallback" hidden>地图组件没有加载成功。请确认网络可访问 Leaflet 和 OpenStreetMap。</div>
+          <div class="map-legend" aria-label="Map marker legend">
+            <span><i class="legend-dot low"></i>0-29 min</span>
+            <span><i class="legend-dot medium"></i>30-59 min</span>
+            <span><i class="legend-dot high"></i>60+ min</span>
+            <span><i class="legend-dot show"></i>Show</span>
+          </div>
         </article>
         <aside class="panel map-list-panel">
           <div class="panel-heading">

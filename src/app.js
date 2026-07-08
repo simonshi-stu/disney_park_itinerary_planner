@@ -20,7 +20,8 @@
     sources: {},
     lastUpdated: null,
     isRefreshing: false,
-    leafletReady: false
+    leafletReady: false,
+    highlightedMapItemId: ""
   };
 
   const page = document.body.dataset.page || "home";
@@ -46,6 +47,7 @@
 
   let leafletMap = null;
   let markerLayer = null;
+  let markerByItemId = new Map();
   let refreshTimer = null;
 
   init();
@@ -686,11 +688,12 @@
       ${hiddenCount > 0 ? `<p class="muted">${hiddenCount} items do not have trusted coordinates yet, so they are not shown on the map.</p>` : ""}
       ${mappableItems.slice(0, 100).map(renderMapListItem).join("")}
     `;
+    bindMapListItems();
   }
 
   function renderLeafletMap(items) {
     if (!state.leafletReady || !window.L) {
-      if (elements.mapFallback) elements.mapFallback.hidden = false;
+      renderStaticMapFallback(items);
       return;
     }
 
@@ -713,38 +716,206 @@
     }
 
     markerLayer.clearLayers();
+    markerByItemId = new Map();
 
     const bounds = [];
     items.forEach((item) => {
       const marker = L.marker([item.lat, item.lon], {
         icon: L.divIcon({
-          className: `leaflet-wait-marker ${item.category === "entertainment" ? "show" : waitIntensity(item.waitTime)}`,
-          html: "",
-          iconSize: [20, 20],
-          iconAnchor: [10, 10]
+          className: "leaflet-map-marker",
+          html: renderMarkerHtml(item),
+          iconSize: [48, 48],
+          iconAnchor: [24, 40]
         })
       });
 
-      marker.bindPopup(`
-        <strong>${escapeHtml(item.name)}</strong><br>
-        ${escapeHtml(item.parkName)} · ${escapeHtml(item.land)}<br>
-        ${item.category === "attraction" ? escapeHtml(item.waitTime === null ? "No wait data" : `${item.waitTime} min`) : "Entertainment"}
-      `);
+      marker.bindPopup(renderMapPopup(item), { maxWidth: 320, className: "map-popup" });
+      marker.on("click", () => {
+        state.highlightedMapItemId = item.id;
+        updateMapSelectionClasses();
+      });
       marker.addTo(markerLayer);
+      markerByItemId.set(item.id, marker);
       bounds.push([item.lat, item.lon]);
     });
 
     if (bounds.length) leafletMap.fitBounds(bounds, { padding: [28, 28], maxZoom: 17 });
   }
 
+  function renderStaticMapFallback(items) {
+    if (!elements.mapFallback) return;
+
+    const bounds = getStaticMapBounds(items);
+    const markers = items.map((item) => {
+      const x = clamp(((item.lon - bounds.west) / (bounds.east - bounds.west)) * 100, 3, 97);
+      const y = clamp(((bounds.north - item.lat) / (bounds.north - bounds.south)) * 100, 3, 97);
+      const label = item.category === "entertainment" ? "S" : Number.isFinite(item.waitTime) ? item.waitTime : "?";
+
+      return `
+        <button
+          class="static-map-marker ${item.category === "entertainment" ? "show" : waitIntensity(item.waitTime)}${item.id === state.highlightedMapItemId ? " selected" : ""}"
+          style="left: ${x}%; top: ${y}%;"
+          type="button"
+          data-map-item-id="${escapeHtml(item.id)}"
+          title="${escapeHtml(item.name)} - ${escapeHtml(item.parkName)}"
+          aria-label="${escapeHtml(item.name)}"
+        >
+          ${escapeHtml(label)}
+        </button>
+      `;
+    });
+
+    elements.mapFallback.hidden = false;
+    elements.mapFallback.innerHTML = `
+      <div class="static-map-stage" aria-label="Built-in coordinate map fallback">
+        <div class="static-map-park disneyland">Disneyland</div>
+        <div class="static-map-park dca">DCA</div>
+        ${markers.join("")}
+      </div>
+      <div class="static-map-note">
+        Interactive map resources did not load, so this built-in coordinate view is shown instead.
+      </div>
+    `;
+  }
+
+  function getStaticMapBounds(items) {
+    const visibleParks = getVisibleParks().filter(Boolean);
+    const parkBounds = visibleParks.map((park) => park.bounds).filter(Boolean);
+
+    if (parkBounds.length) {
+      return addBoundsPadding({
+        north: Math.max(...parkBounds.map((bounds) => bounds.north)),
+        south: Math.min(...parkBounds.map((bounds) => bounds.south)),
+        west: Math.min(...parkBounds.map((bounds) => bounds.west)),
+        east: Math.max(...parkBounds.map((bounds) => bounds.east))
+      });
+    }
+
+    if (items.length) {
+      return addBoundsPadding({
+        north: Math.max(...items.map((item) => item.lat)),
+        south: Math.min(...items.map((item) => item.lat)),
+        west: Math.min(...items.map((item) => item.lon)),
+        east: Math.max(...items.map((item) => item.lon))
+      });
+    }
+
+    return addBoundsPadding({
+      north: 33.8152,
+      south: 33.803,
+      west: -117.924,
+      east: -117.9154
+    });
+  }
+
+  function addBoundsPadding(bounds) {
+    const latPadding = Math.max((bounds.north - bounds.south) * 0.08, 0.0008);
+    const lonPadding = Math.max((bounds.east - bounds.west) * 0.08, 0.0008);
+
+    return {
+      north: bounds.north + latPadding,
+      south: bounds.south - latPadding,
+      west: bounds.west - lonPadding,
+      east: bounds.east + lonPadding
+    };
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
   function renderMapListItem(item) {
     const wait = item.waitTime === null ? "No wait data" : `${item.waitTime} min`;
     return `
-      <article>
+      <article class="map-list-item${item.id === state.highlightedMapItemId ? " is-selected" : ""}" data-map-item-id="${escapeHtml(item.id)}">
         <strong>${escapeHtml(item.name)}</strong>
         <span>${escapeHtml(item.parkName)} · ${escapeHtml(item.land)} · ${item.category === "attraction" ? wait : "Show"}</span>
+        <button type="button">Show on map</button>
       </article>
     `;
+  }
+
+  function bindMapListItems() {
+    document.querySelectorAll("[data-map-item-id]").forEach((button) => {
+      button.addEventListener("click", () => focusMapItem(button.dataset.mapItemId));
+    });
+  }
+
+  function focusMapItem(itemId) {
+    const item = state.items.find((candidate) => candidate.id === itemId);
+    if (!item || !Number.isFinite(item.lat) || !Number.isFinite(item.lon)) return;
+
+    state.highlightedMapItemId = item.id;
+
+    if (leafletMap && markerByItemId.has(item.id)) {
+      const marker = markerByItemId.get(item.id);
+      leafletMap.setView([item.lat, item.lon], Math.max(leafletMap.getZoom(), 17), { animate: true });
+      marker.openPopup();
+      updateMapSelectionClasses();
+    } else {
+      renderMap(getFilteredItems());
+    }
+  }
+
+  function updateMapSelectionClasses() {
+    document.querySelectorAll(".map-list-item").forEach((item) => item.classList.remove("is-selected"));
+    document.querySelectorAll(".map-marker-pin").forEach((marker) => marker.classList.remove("selected"));
+    document.querySelectorAll(".static-map-marker").forEach((marker) => marker.classList.remove("selected"));
+
+    if (!state.highlightedMapItemId) return;
+
+    document
+      .querySelectorAll(`[data-map-item-id="${cssEscape(state.highlightedMapItemId)}"]`)
+      .forEach((element) => {
+        element.closest(".map-list-item")?.classList.add("is-selected");
+        element.classList.add("selected");
+        element.querySelector(".map-marker-pin")?.classList.add("selected");
+      });
+  }
+
+  function renderMarkerHtml(item) {
+    const intensity = item.category === "entertainment" ? "show" : waitIntensity(item.waitTime);
+    const selected = item.id === state.highlightedMapItemId ? " selected" : "";
+    const label = item.category === "entertainment" ? "Show" : Number.isFinite(item.waitTime) ? `${item.waitTime}` : "?";
+
+    return `
+      <button
+        class="map-marker-pin ${intensity}${selected}"
+        type="button"
+        data-map-item-id="${escapeHtml(item.id)}"
+        aria-label="${escapeHtml(item.name)}"
+      >
+        <span>${escapeHtml(label)}</span>
+      </button>
+    `;
+  }
+
+  function renderMapPopup(item) {
+    const wait = item.waitTime === null ? "No wait data" : `${item.waitTime} min wait`;
+    const timeText = item.times.length ? item.times.join(" / ") : "";
+    const artText = item.category === "entertainment" ? "Show" : Number.isFinite(item.waitTime) ? `${item.waitTime} min` : "Ride";
+
+    return `
+      <article class="map-popup-card">
+        <div class="map-popup-art ${item.category === "entertainment" ? "show" : waitIntensity(item.waitTime)}">
+          <span>${escapeHtml(artText)}</span>
+        </div>
+        <div class="map-popup-body">
+          <h3>${escapeHtml(item.name)}</h3>
+          <p>${escapeHtml(item.parkName)} · ${escapeHtml(item.land)}</p>
+          <div class="map-popup-meta">
+            <span>${escapeHtml(item.status || "UNKNOWN")}</span>
+            <span>${escapeHtml(item.category === "attraction" ? wait : "Entertainment")}</span>
+          </div>
+          ${timeText ? `<p class="map-popup-times">${escapeHtml(timeText)}</p>` : ""}
+        </div>
+      </article>
+    `;
+  }
+
+  function cssEscape(value) {
+    if (window.CSS?.escape) return window.CSS.escape(value);
+    return String(value).replace(/["\\]/g, "\\$&");
   }
 
   async function loadLeafletAssets() {

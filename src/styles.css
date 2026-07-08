@@ -407,40 +407,296 @@ input {
 
 .map-fallback {
   display: grid;
-  place-items: center;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 12px;
   margin: 0;
-  background: #fffaf2;
+  background:
+    linear-gradient(rgba(255, 250, 242, 0.78), rgba(255, 250, 242, 0.78)),
+    repeating-linear-gradient(0deg, transparent 0 42px, rgba(15, 47, 79, 0.08) 43px),
+    repeating-linear-gradient(90deg, transparent 0 42px, rgba(15, 47, 79, 0.08) 43px);
   color: var(--muted);
   padding: 24px;
   z-index: 2;
 }
 
-.leaflet-wait-marker {
-  width: 22px;
-  height: 22px;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.26);
+.map-fallback[hidden] {
+  display: none;
 }
 
-.leaflet-wait-marker.low {
-  background: #2f9c68;
+.map-legend {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: calc(100% - 28px);
+  border: 1px solid rgba(222, 212, 196, 0.92);
+  border-radius: 8px;
+  background: rgba(255, 250, 242, 0.94);
+  box-shadow: 0 10px 24px rgba(35, 43, 52, 0.14);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 8px 10px;
 }
 
-.leaflet-wait-marker.medium {
-  background: #d5841f;
+.map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 }
 
-.leaflet-wait-marker.high {
-  background: #c23c2a;
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
 }
 
-.leaflet-wait-marker.unknown {
+.legend-dot.low,
+.map-marker-pin.low {
+  background: #168c58;
+}
+
+.legend-dot.medium,
+.map-marker-pin.medium {
+  background: #be6b00;
+}
+
+.legend-dot.high,
+.map-marker-pin.high {
+  background: #9a3d32;
+}
+
+.legend-dot.show,
+.map-marker-pin.show {
+  background: #6f42c1;
+}
+
+.map-marker-pin.unknown {
   background: #627282;
 }
 
-.leaflet-wait-marker.show {
+.static-map-stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #d7c9b8;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 58% 45%, rgba(47, 156, 104, 0.18), transparent 32%),
+    radial-gradient(circle at 42% 58%, rgba(11, 107, 203, 0.14), transparent 34%),
+    #fffaf2;
+}
+
+.static-map-park {
+  position: absolute;
+  border: 1px solid rgba(15, 47, 79, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.44);
+  color: rgba(29, 38, 48, 0.36);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 16px;
+  text-transform: uppercase;
+}
+
+.static-map-park.disneyland {
+  inset: 9% 18% 48% 12%;
+}
+
+.static-map-park.dca {
+  inset: 48% 12% 9% 20%;
+}
+
+.static-map-marker {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 3px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+  color: #fff;
+  cursor: default;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 0;
+}
+
+.static-map-marker.low {
+  background: #2f9c68;
+}
+
+.static-map-marker.medium {
+  background: #d5841f;
+}
+
+.static-map-marker.high {
+  background: #c23c2a;
+}
+
+.static-map-marker.unknown {
+  background: #627282;
+}
+
+.static-map-marker.show {
   background: #6f42c1;
+}
+
+.static-map-marker.selected {
+  outline: 3px solid #0b6bcb;
+  outline-offset: 3px;
+}
+
+.static-map-note {
+  align-self: end;
+  border: 1px solid #d7c9b8;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 10px 12px;
+}
+
+.leaflet-map-marker {
+  background: transparent;
+  border: 0;
+}
+
+.map-marker-pin {
+  position: relative;
+  display: grid;
+  min-width: 42px;
+  height: 32px;
+  place-items: center;
+  transform: translateY(-4px);
+  border: 3px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.28);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 0 8px;
+}
+
+.map-marker-pin::after {
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translateX(-50%) rotate(45deg);
+  border-right: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  background: inherit;
+  content: "";
+}
+
+.map-marker-pin.selected {
+  outline: 3px solid #0b6bcb;
+  outline-offset: 3px;
+}
+
+.map-marker-pin span {
+  position: relative;
+  z-index: 1;
+}
+
+.map-popup .leaflet-popup-content-wrapper {
+  overflow: hidden;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.map-popup .leaflet-popup-content {
+  width: 280px !important;
+  margin: 0;
+}
+
+.map-popup-card {
+  background: #fffaf2;
+}
+
+.map-popup-art {
+  display: grid;
+  min-height: 116px;
+  place-items: end start;
+  background:
+    linear-gradient(135deg, rgba(15, 47, 79, 0.1), rgba(255, 255, 255, 0.2)),
+    radial-gradient(circle at 75% 28%, rgba(255, 255, 255, 0.38), transparent 28%),
+    #168c58;
+  color: #fff;
+  padding: 14px;
+}
+
+.map-popup-art.medium {
+  background-color: #be6b00;
+}
+
+.map-popup-art.high {
+  background-color: #9a3d32;
+}
+
+.map-popup-art.unknown {
+  background-color: #627282;
+}
+
+.map-popup-art.show {
+  background-color: #6f42c1;
+}
+
+.map-popup-art span {
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.22);
+  font-weight: 900;
+  padding: 7px 10px;
+}
+
+.map-popup-body {
+  padding: 14px;
+}
+
+.map-popup-body h3 {
+  margin-bottom: 6px;
+  font-size: 17px;
+}
+
+.map-popup-body p {
+  margin-bottom: 10px;
+}
+
+.map-popup-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.map-popup-meta span,
+.map-popup-times {
+  border-radius: 999px;
+  background: #e6f1fb;
+  color: var(--accent-dark);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 8px;
+}
+
+.map-popup-times {
+  display: inline-flex;
+  margin-top: 10px;
 }
 
 .hours-root {
@@ -519,6 +775,33 @@ input {
   gap: 4px;
   border-bottom: 1px solid #eadfce;
   padding: 10px 0;
+}
+
+.map-list-item {
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 0 -8px;
+  padding: 10px 8px !important;
+  transition: background 0.16s ease, box-shadow 0.16s ease;
+}
+
+.map-list-item:hover,
+.map-list-item.is-selected {
+  background: #e6f1fb;
+  box-shadow: inset 4px 0 0 var(--accent);
+}
+
+.map-list-item button {
+  width: fit-content;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 6px 9px;
 }
 
 .compact-list span {
