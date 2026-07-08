@@ -8,6 +8,8 @@ const outputDir = path.join(rootDir, "data", "wait_times");
 const parkTimezone = "America/Los_Angeles";
 const csvBom = "\uFEFF";
 const normalizeOnly = process.argv.includes("--normalize-only");
+const forceCollect = process.argv.includes("--force");
+const minSnapshotIntervalMinutes = Number(process.env.MIN_SNAPSHOT_INTERVAL_MINUTES || 5);
 
 const parks = [
   { id: "disneyland", name: "Disneyland", queueTimesParkId: 16, timezone: parkTimezone },
@@ -53,6 +55,20 @@ if (normalizeOnly) {
   process.exit(0);
 }
 
+const existingRows = await readExistingRows(csvPath);
+const latestExistingSnapshot = getLatestSnapshotTime(existingRows);
+const minutesSinceLatestSnapshot = latestExistingSnapshot
+  ? (snapshotTime.getTime() - latestExistingSnapshot.getTime()) / 60000
+  : Infinity;
+
+if (!forceCollect && minutesSinceLatestSnapshot < minSnapshotIntervalMinutes) {
+  console.log(
+    `Skipped wait-time collection because the latest snapshot is ${minutesSinceLatestSnapshot.toFixed(1)} minutes old. ` +
+      `Use --force to collect anyway.`
+  );
+  process.exit(0);
+}
+
 const rows = [];
 
 for (const park of parks) {
@@ -78,7 +94,7 @@ for (const park of parks) {
   }
 }
 
-await writeCsv(csvPath, [...await readExistingRows(csvPath), ...rows]);
+await writeCsv(csvPath, [...existingRows, ...rows]);
 await writeFile(
   latestPath,
   `${JSON.stringify(
@@ -165,6 +181,16 @@ function normalizeExistingRow(row) {
     source_last_updated_park_datetime: sourceLastUpdatedParkDatetime,
     source_url: row.source_url || ""
   };
+}
+
+function getLatestSnapshotTime(rows) {
+  const timestamps = rows
+    .map((row) => new Date(row.snapshot_utc))
+    .filter((date) => !Number.isNaN(date.getTime()));
+
+  if (!timestamps.length) return null;
+
+  return new Date(Math.max(...timestamps.map((date) => date.getTime())));
 }
 
 function cleanText(value) {
