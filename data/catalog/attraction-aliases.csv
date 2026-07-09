@@ -1,0 +1,10 @@
+park_id,alias_name,canonical_attraction_id,canonical_name,category,notes
+dca,Soarin' Over California,dca-soarin,Soarin',attraction,Historical or seasonal DCA Soarin film version; stale rows should lose to fresh current source rows
+dca,Soarin' Across America,dca-soarin,Soarin',attraction,Current 2026 DCA Soarin film version
+dca,Soarin’ Across America,dca-soarin,Soarin',attraction,Curly apostrophe variant for current 2026 DCA Soarin film version
+dca,Soarin' Around the World,dca-soarin,Soarin',attraction,Previous DCA Soarin film version in the same facility/project family
+dca,World of Color,dca-world-of-color,World of Color,entertainment,Schedule constraint
+dca,World of Color Happiness!,dca-world-of-color,World of Color,entertainment,Schedule constraint
+disneyland,Mickey's House and Meet Mickey Mouse,disneyland-mickeys-house-and-meet-mickey-mouse,Mickey's House and Meet Mickey Mouse,attraction,Duplicate source rows share this canonical attraction
+disneyland,Fireworks / Nighttime Spectacular,disneyland-fireworks,Fireworks / Nighttime Spectacular,entertainment,Schedule constraint
+disneyland,Magic Happens Parade,disneyland-magic-happens-parade,Magic Happens Parade,entertainment,Schedule constraint

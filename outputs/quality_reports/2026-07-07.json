@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-09T02:34:40.348Z",
+  "generatedAt": "2026-07-09T04:01:21.038Z",
   "sourceFile": "data/wait_times/wait_times_2026-07-07.csv",
   "date": "2026-07-07",
   "thresholds": {
@@ -10,6 +10,7 @@
     "totalRows": 1981,
     "snapshotCount": 24,
     "rideCount": 88,
+    "canonicalAttractionCount": 80,
     "closedRows": 725,
     "zeroWaitRows": 1016,
     "openZeroRows": 291,
@@ -770,6 +771,15 @@
       }
     ]
   },
+  "optimizerReadySummary": {
+    "rows": 1920,
+    "conflictResolvedRows": 44,
+    "standbyWaitRows": 1104,
+    "statusOnlyRows": 688,
+    "singleRiderAvailabilityOnlyRows": 108,
+    "singleRiderWaitReferenceRows": 0,
+    "staleSelectedRows": 0
+  },
   "rideQualitySummary": {
     "possibleFullDayClosed": [
       {
@@ -1171,27 +1181,6 @@
       "snapshotUtc": "2026-07-07T22:19:18.747Z",
       "snapshotParkDatetime": "2026-07-07 15:19:18",
       "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "55"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-07T22:19:18.747Z",
-      "snapshotParkDatetime": "2026-07-07 15:19:18",
-      "parkId": "disneyland",
       "normalizedRideName": "mickey's house and meet mickey mouse",
       "rowCount": 2,
       "rides": [
@@ -1205,69 +1194,6 @@
           "rideId": "327",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-07T22:19:18.747Z",
-      "snapshotParkDatetime": "2026-07-07 15:19:18",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-07T22:19:18.747Z",
-      "snapshotParkDatetime": "2026-07-07 15:19:18",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "30"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-07T22:19:18.747Z",
-      "snapshotParkDatetime": "2026-07-07 15:19:18",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
           "waitTimeMinutes": "0"
         }
       ]
@@ -1290,48 +1216,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-07T22:19:18.747Z",
-      "snapshotParkDatetime": "2026-07-07 15:19:18",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "15"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:40:21.895Z",
-      "snapshotParkDatetime": "2026-07-07 17:40:21",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "65"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -1359,69 +1243,6 @@
     {
       "snapshotUtc": "2026-07-08T00:40:21.895Z",
       "snapshotParkDatetime": "2026-07-07 17:40:21",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:40:21.895Z",
-      "snapshotParkDatetime": "2026-07-07 17:40:21",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "30"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:40:21.895Z",
-      "snapshotParkDatetime": "2026-07-07 17:40:21",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "45"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:40:21.895Z",
-      "snapshotParkDatetime": "2026-07-07 17:40:21",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -1437,48 +1258,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:40:21.895Z",
-      "snapshotParkDatetime": "2026-07-07 17:40:21",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:58:00.722Z",
-      "snapshotParkDatetime": "2026-07-07 17:58:00",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -1506,69 +1285,6 @@
     {
       "snapshotUtc": "2026-07-08T00:58:00.722Z",
       "snapshotParkDatetime": "2026-07-07 17:58:00",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:58:00.722Z",
-      "snapshotParkDatetime": "2026-07-07 17:58:00",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:58:00.722Z",
-      "snapshotParkDatetime": "2026-07-07 17:58:00",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "45"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:58:00.722Z",
-      "snapshotParkDatetime": "2026-07-07 17:58:00",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -1584,48 +1300,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T00:58:00.722Z",
-      "snapshotParkDatetime": "2026-07-07 17:58:00",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:07:08.582Z",
-      "snapshotParkDatetime": "2026-07-07 19:07:08",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "40"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -1653,69 +1327,6 @@
     {
       "snapshotUtc": "2026-07-08T02:07:08.582Z",
       "snapshotParkDatetime": "2026-07-07 19:07:08",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:07:08.582Z",
-      "snapshotParkDatetime": "2026-07-07 19:07:08",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "40"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:07:08.582Z",
-      "snapshotParkDatetime": "2026-07-07 19:07:08",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "60"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:07:08.582Z",
-      "snapshotParkDatetime": "2026-07-07 19:07:08",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -1731,48 +1342,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:07:08.582Z",
-      "snapshotParkDatetime": "2026-07-07 19:07:08",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:15:18.470Z",
-      "snapshotParkDatetime": "2026-07-07 19:15:18",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -1800,69 +1369,6 @@
     {
       "snapshotUtc": "2026-07-08T02:15:18.470Z",
       "snapshotParkDatetime": "2026-07-07 19:15:18",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:15:18.470Z",
-      "snapshotParkDatetime": "2026-07-07 19:15:18",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "40"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:15:18.470Z",
-      "snapshotParkDatetime": "2026-07-07 19:15:18",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "60"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:15:18.470Z",
-      "snapshotParkDatetime": "2026-07-07 19:15:18",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -1878,48 +1384,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:15:18.470Z",
-      "snapshotParkDatetime": "2026-07-07 19:15:18",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:30:39.776Z",
-      "snapshotParkDatetime": "2026-07-07 19:30:39",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "25"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -1947,69 +1411,6 @@
     {
       "snapshotUtc": "2026-07-08T02:30:39.776Z",
       "snapshotParkDatetime": "2026-07-07 19:30:39",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:30:39.776Z",
-      "snapshotParkDatetime": "2026-07-07 19:30:39",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "40"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:30:39.776Z",
-      "snapshotParkDatetime": "2026-07-07 19:30:39",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "60"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:30:39.776Z",
-      "snapshotParkDatetime": "2026-07-07 19:30:39",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -2025,48 +1426,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:30:39.776Z",
-      "snapshotParkDatetime": "2026-07-07 19:30:39",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:45:17.331Z",
-      "snapshotParkDatetime": "2026-07-07 19:45:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -2094,69 +1453,6 @@
     {
       "snapshotUtc": "2026-07-08T02:45:17.331Z",
       "snapshotParkDatetime": "2026-07-07 19:45:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:45:17.331Z",
-      "snapshotParkDatetime": "2026-07-07 19:45:17",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "40"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:45:17.331Z",
-      "snapshotParkDatetime": "2026-07-07 19:45:17",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:45:17.331Z",
-      "snapshotParkDatetime": "2026-07-07 19:45:17",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -2172,48 +1468,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T02:45:17.331Z",
-      "snapshotParkDatetime": "2026-07-07 19:45:17",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:00:41.284Z",
-      "snapshotParkDatetime": "2026-07-07 20:00:41",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -2241,69 +1495,6 @@
     {
       "snapshotUtc": "2026-07-08T03:00:41.284Z",
       "snapshotParkDatetime": "2026-07-07 20:00:41",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:00:41.284Z",
-      "snapshotParkDatetime": "2026-07-07 20:00:41",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:00:41.284Z",
-      "snapshotParkDatetime": "2026-07-07 20:00:41",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:00:41.284Z",
-      "snapshotParkDatetime": "2026-07-07 20:00:41",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -2319,48 +1510,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:00:41.284Z",
-      "snapshotParkDatetime": "2026-07-07 20:00:41",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:15:17.037Z",
-      "snapshotParkDatetime": "2026-07-07 20:15:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -2388,69 +1537,6 @@
     {
       "snapshotUtc": "2026-07-08T03:15:17.037Z",
       "snapshotParkDatetime": "2026-07-07 20:15:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:15:17.037Z",
-      "snapshotParkDatetime": "2026-07-07 20:15:17",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "30"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:15:17.037Z",
-      "snapshotParkDatetime": "2026-07-07 20:15:17",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "55"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:15:17.037Z",
-      "snapshotParkDatetime": "2026-07-07 20:15:17",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -2466,48 +1552,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:15:17.037Z",
-      "snapshotParkDatetime": "2026-07-07 20:15:17",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:30:40.533Z",
-      "snapshotParkDatetime": "2026-07-07 20:30:40",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -2535,69 +1579,6 @@
     {
       "snapshotUtc": "2026-07-08T03:30:40.533Z",
       "snapshotParkDatetime": "2026-07-07 20:30:40",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:30:40.533Z",
-      "snapshotParkDatetime": "2026-07-07 20:30:40",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "30"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:30:40.533Z",
-      "snapshotParkDatetime": "2026-07-07 20:30:40",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:30:40.533Z",
-      "snapshotParkDatetime": "2026-07-07 20:30:40",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -2613,48 +1594,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:30:40.533Z",
-      "snapshotParkDatetime": "2026-07-07 20:30:40",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:45:15.811Z",
-      "snapshotParkDatetime": "2026-07-07 20:45:15",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -2682,69 +1621,6 @@
     {
       "snapshotUtc": "2026-07-08T03:45:15.811Z",
       "snapshotParkDatetime": "2026-07-07 20:45:15",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:45:15.811Z",
-      "snapshotParkDatetime": "2026-07-07 20:45:15",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "55"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:45:15.811Z",
-      "snapshotParkDatetime": "2026-07-07 20:45:15",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "60"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:45:15.811Z",
-      "snapshotParkDatetime": "2026-07-07 20:45:15",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -2760,48 +1636,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T03:45:15.811Z",
-      "snapshotParkDatetime": "2026-07-07 20:45:15",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:00:44.970Z",
-      "snapshotParkDatetime": "2026-07-07 21:00:44",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -2829,69 +1663,6 @@
     {
       "snapshotUtc": "2026-07-08T04:00:44.970Z",
       "snapshotParkDatetime": "2026-07-07 21:00:44",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:00:44.970Z",
-      "snapshotParkDatetime": "2026-07-07 21:00:44",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "15"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:00:44.970Z",
-      "snapshotParkDatetime": "2026-07-07 21:00:44",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "60"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:00:44.970Z",
-      "snapshotParkDatetime": "2026-07-07 21:00:44",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -2907,48 +1678,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:00:44.970Z",
-      "snapshotParkDatetime": "2026-07-07 21:00:44",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:15:17.284Z",
-      "snapshotParkDatetime": "2026-07-07 21:15:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -2976,69 +1705,6 @@
     {
       "snapshotUtc": "2026-07-08T04:15:17.284Z",
       "snapshotParkDatetime": "2026-07-07 21:15:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:15:17.284Z",
-      "snapshotParkDatetime": "2026-07-07 21:15:17",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "15"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:15:17.284Z",
-      "snapshotParkDatetime": "2026-07-07 21:15:17",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:15:17.284Z",
-      "snapshotParkDatetime": "2026-07-07 21:15:17",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -3054,48 +1720,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:15:17.284Z",
-      "snapshotParkDatetime": "2026-07-07 21:15:17",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:30:36.355Z",
-      "snapshotParkDatetime": "2026-07-07 21:30:36",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -3123,69 +1747,6 @@
     {
       "snapshotUtc": "2026-07-08T04:30:36.355Z",
       "snapshotParkDatetime": "2026-07-07 21:30:36",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:30:36.355Z",
-      "snapshotParkDatetime": "2026-07-07 21:30:36",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:30:36.355Z",
-      "snapshotParkDatetime": "2026-07-07 21:30:36",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:30:36.355Z",
-      "snapshotParkDatetime": "2026-07-07 21:30:36",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -3201,48 +1762,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:30:36.355Z",
-      "snapshotParkDatetime": "2026-07-07 21:30:36",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "35"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:45:14.735Z",
-      "snapshotParkDatetime": "2026-07-07 21:45:14",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -3270,69 +1789,6 @@
     {
       "snapshotUtc": "2026-07-08T04:45:14.735Z",
       "snapshotParkDatetime": "2026-07-07 21:45:14",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:45:14.735Z",
-      "snapshotParkDatetime": "2026-07-07 21:45:14",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "30"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:45:14.735Z",
-      "snapshotParkDatetime": "2026-07-07 21:45:14",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:45:14.735Z",
-      "snapshotParkDatetime": "2026-07-07 21:45:14",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -3348,48 +1804,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:45:14.735Z",
-      "snapshotParkDatetime": "2026-07-07 21:45:14",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "30"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:51:55.405Z",
-      "snapshotParkDatetime": "2026-07-07 21:51:55",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -3417,69 +1831,6 @@
     {
       "snapshotUtc": "2026-07-08T04:51:55.405Z",
       "snapshotParkDatetime": "2026-07-07 21:51:55",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:51:55.405Z",
-      "snapshotParkDatetime": "2026-07-07 21:51:55",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:51:55.405Z",
-      "snapshotParkDatetime": "2026-07-07 21:51:55",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "40"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:51:55.405Z",
-      "snapshotParkDatetime": "2026-07-07 21:51:55",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -3495,48 +1846,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T04:51:55.405Z",
-      "snapshotParkDatetime": "2026-07-07 21:51:55",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "20"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:00:39.663Z",
-      "snapshotParkDatetime": "2026-07-07 22:00:39",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -3564,69 +1873,6 @@
     {
       "snapshotUtc": "2026-07-08T05:00:39.663Z",
       "snapshotParkDatetime": "2026-07-07 22:00:39",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:00:39.663Z",
-      "snapshotParkDatetime": "2026-07-07 22:00:39",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:00:39.663Z",
-      "snapshotParkDatetime": "2026-07-07 22:00:39",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "50"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:00:39.663Z",
-      "snapshotParkDatetime": "2026-07-07 22:00:39",
       "parkId": "dca",
       "normalizedRideName": "soarin' over california",
       "rowCount": 2,
@@ -3642,48 +1888,6 @@
           "rideName": "Soarin' Over California",
           "isOpen": "TRUE",
           "waitTimeMinutes": "15"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:00:39.663Z",
-      "snapshotParkDatetime": "2026-07-07 22:00:39",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "15"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:15:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:15:14",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
         }
       ]
     },
@@ -3704,111 +1908,6 @@
           "rideId": "327",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:15:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:15:14",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:15:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:15:14",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:15:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:15:14",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:15:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:15:14",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:30:35.675Z",
-      "snapshotParkDatetime": "2026-07-07 22:30:35",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
           "waitTimeMinutes": "0"
         }
       ]
@@ -3835,111 +1934,6 @@
       ]
     },
     {
-      "snapshotUtc": "2026-07-08T05:30:35.675Z",
-      "snapshotParkDatetime": "2026-07-07 22:30:35",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:30:35.675Z",
-      "snapshotParkDatetime": "2026-07-07 22:30:35",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:30:35.675Z",
-      "snapshotParkDatetime": "2026-07-07 22:30:35",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:30:35.675Z",
-      "snapshotParkDatetime": "2026-07-07 22:30:35",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:45:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:45:14",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
       "snapshotUtc": "2026-07-08T05:45:14.736Z",
       "snapshotParkDatetime": "2026-07-07 22:45:14",
       "parkId": "disneyland",
@@ -3956,111 +1950,6 @@
           "rideId": "327",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:45:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:45:14",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:45:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:45:14",
-      "parkId": "dca",
-      "normalizedRideName": "web slingers a spider-man adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "8843",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10907",
-          "rideName": "WEB SLINGERS: A Spider-Man Adventure Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:45:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:45:14",
-      "parkId": "dca",
-      "normalizedRideName": "radiator springs racers",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "295",
-          "rideName": "Radiator Springs Racers",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10904",
-          "rideName": "Radiator Springs Racers Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T05:45:14.736Z",
-      "snapshotParkDatetime": "2026-07-07 22:45:14",
-      "parkId": "dca",
-      "normalizedRideName": "incredicoaster",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "322",
-          "rideName": "Incredicoaster",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        },
-        {
-          "rideId": "10906",
-          "rideName": "Incredicoaster Single Rider",
-          "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T06:00:44.871Z",
-      "snapshotParkDatetime": "2026-07-07 23:00:44",
-      "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
           "waitTimeMinutes": "0"
         }
       ]
@@ -4087,23 +1976,1211 @@
       ]
     },
     {
+      "snapshotUtc": "2026-07-08T06:15:17.577Z",
+      "snapshotParkDatetime": "2026-07-07 23:15:17",
+      "parkId": "disneyland",
+      "normalizedRideName": "mickey's house and meet mickey mouse",
+      "rowCount": 2,
+      "rides": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0"
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0"
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T06:30:41.209Z",
+      "snapshotParkDatetime": "2026-07-07 23:30:41",
+      "parkId": "disneyland",
+      "normalizedRideName": "mickey's house and meet mickey mouse",
+      "rowCount": 2,
+      "rides": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0"
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0"
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T06:45:17.160Z",
+      "snapshotParkDatetime": "2026-07-07 23:45:17",
+      "parkId": "disneyland",
+      "normalizedRideName": "mickey's house and meet mickey mouse",
+      "rowCount": 2,
+      "rides": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0"
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0"
+        }
+      ]
+    }
+  ],
+  "canonicalConflictGroups": [
+    {
+      "snapshotUtc": "2026-07-07T22:19:18.747Z",
+      "snapshotParkDatetime": "2026-07-07 15:19:18",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "30",
+          "sourceAgeMinutes": 3.7
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 3.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-07T22:19:18.747Z",
+      "snapshotParkDatetime": "2026-07-07 15:19:18",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9683.4
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8618.5
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "45",
+          "sourceAgeMinutes": 3.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T00:40:21.895Z",
+      "snapshotParkDatetime": "2026-07-07 17:40:21",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "30",
+          "sourceAgeMinutes": 4.7
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T00:40:21.895Z",
+      "snapshotParkDatetime": "2026-07-07 17:40:21",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9824.4
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8759.5
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "45",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T00:58:00.722Z",
+      "snapshotParkDatetime": "2026-07-07 17:58:00",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "30",
+          "sourceAgeMinutes": 2.4
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 2.4
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T00:58:00.722Z",
+      "snapshotParkDatetime": "2026-07-07 17:58:00",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9842.1
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8777.2
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "45",
+          "sourceAgeMinutes": 2.4
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:07:08.582Z",
+      "snapshotParkDatetime": "2026-07-07 19:07:08",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "25",
+          "sourceAgeMinutes": 1.6
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 1.6
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:07:08.582Z",
+      "snapshotParkDatetime": "2026-07-07 19:07:08",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9911.2
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8846.3
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "40",
+          "sourceAgeMinutes": 1.5
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:15:18.470Z",
+      "snapshotParkDatetime": "2026-07-07 19:15:18",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "25",
+          "sourceAgeMinutes": 4.6
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.6
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:15:18.470Z",
+      "snapshotParkDatetime": "2026-07-07 19:15:18",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9919.4
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8854.5
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "40",
+          "sourceAgeMinutes": 4.6
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:30:39.776Z",
+      "snapshotParkDatetime": "2026-07-07 19:30:39",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "25",
+          "sourceAgeMinutes": 5.1
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.1
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:30:39.776Z",
+      "snapshotParkDatetime": "2026-07-07 19:30:39",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9934.7
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8869.8
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "30",
+          "sourceAgeMinutes": 5
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:45:17.331Z",
+      "snapshotParkDatetime": "2026-07-07 19:45:17",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T02:45:17.331Z",
+      "snapshotParkDatetime": "2026-07-07 19:45:17",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9949.4
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8884.5
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "30",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:00:41.284Z",
+      "snapshotParkDatetime": "2026-07-07 20:00:41",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:00:41.284Z",
+      "snapshotParkDatetime": "2026-07-07 20:00:41",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9964.8
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8899.9
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "30",
+          "sourceAgeMinutes": 5.2
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:15:17.037Z",
+      "snapshotParkDatetime": "2026-07-07 20:15:17",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:15:17.037Z",
+      "snapshotParkDatetime": "2026-07-07 20:15:17",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9979.4
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8914.5
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "20",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:30:40.533Z",
+      "snapshotParkDatetime": "2026-07-07 20:30:40",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:30:40.533Z",
+      "snapshotParkDatetime": "2026-07-07 20:30:40",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9994.8
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8929.9
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "20",
+          "sourceAgeMinutes": 5.1
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:45:15.811Z",
+      "snapshotParkDatetime": "2026-07-07 20:45:15",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T03:45:15.811Z",
+      "snapshotParkDatetime": "2026-07-07 20:45:15",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 10009.3
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8944.4
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "25",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:00:44.970Z",
+      "snapshotParkDatetime": "2026-07-07 21:00:44",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 0.3
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 0.3
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:00:44.970Z",
+      "snapshotParkDatetime": "2026-07-07 21:00:44",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 10024.8
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8959.9
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "25",
+          "sourceAgeMinutes": 5.2
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:15:17.284Z",
+      "snapshotParkDatetime": "2026-07-07 21:15:17",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:15:17.284Z",
+      "snapshotParkDatetime": "2026-07-07 21:15:17",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 10039.4
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8974.5
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "20",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:30:36.355Z",
+      "snapshotParkDatetime": "2026-07-07 21:30:36",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:30:36.355Z",
+      "snapshotParkDatetime": "2026-07-07 21:30:36",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 10054.7
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 8989.8
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 5
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:45:14.735Z",
+      "snapshotParkDatetime": "2026-07-07 21:45:14",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:45:14.735Z",
+      "snapshotParkDatetime": "2026-07-07 21:45:14",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 10069.3
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9004.4
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "20",
+          "sourceAgeMinutes": 4.6
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:51:55.405Z",
+      "snapshotParkDatetime": "2026-07-07 21:51:55",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 1.3
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 1.3
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T04:51:55.405Z",
+      "snapshotParkDatetime": "2026-07-07 21:51:55",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 10076
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9011.1
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "20",
+          "sourceAgeMinutes": 1.2
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:00:39.663Z",
+      "snapshotParkDatetime": "2026-07-07 22:00:39",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.2
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:00:39.663Z",
+      "snapshotParkDatetime": "2026-07-07 22:00:39",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 3,
+      "rows": [
+        {
+          "rideId": "16801",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 10084.7
+        },
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9019.8
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "20",
+          "sourceAgeMinutes": 5.1
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:15:14.736Z",
+      "snapshotParkDatetime": "2026-07-07 22:15:14",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:15:14.736Z",
+      "snapshotParkDatetime": "2026-07-07 22:15:14",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9034.4
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.6
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:30:35.675Z",
+      "snapshotParkDatetime": "2026-07-07 22:30:35",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:30:35.675Z",
+      "snapshotParkDatetime": "2026-07-07 22:30:35",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9049.8
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:45:14.736Z",
+      "snapshotParkDatetime": "2026-07-07 22:45:14",
+      "parkId": "disneyland",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        },
+        {
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.8
+        }
+      ]
+    },
+    {
+      "snapshotUtc": "2026-07-08T05:45:14.736Z",
+      "snapshotParkDatetime": "2026-07-07 22:45:14",
+      "parkId": "dca",
+      "canonicalAttractionId": "dca-soarin",
+      "canonicalAttractionName": "Soarin'",
+      "accessMode": "standby",
+      "rowCount": 2,
+      "rows": [
+        {
+          "rideId": "312",
+          "rideName": "Soarin' Over California",
+          "isOpen": "TRUE",
+          "waitTimeMinutes": "15",
+          "sourceAgeMinutes": 9064.4
+        },
+        {
+          "rideId": "17129",
+          "rideName": "Soarin’ Across America",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
+        }
+      ]
+    },
+    {
       "snapshotUtc": "2026-07-08T06:00:44.871Z",
       "snapshotParkDatetime": "2026-07-07 23:00:44",
       "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
       "rowCount": 2,
-      "rides": [
+      "rows": [
         {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
+          "rideId": "709",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 0.2
         },
         {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
+          "rideId": "327",
+          "rideName": "Mickey's House and Meet Mickey Mouse",
+          "isOpen": "FALSE",
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 0.2
         }
       ]
     },
@@ -4111,62 +3188,24 @@
       "snapshotUtc": "2026-07-08T06:15:17.577Z",
       "snapshotParkDatetime": "2026-07-07 23:15:17",
       "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
       "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T06:15:17.577Z",
-      "snapshotParkDatetime": "2026-07-07 23:15:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "mickey's house and meet mickey mouse",
-      "rowCount": 2,
-      "rides": [
+      "rows": [
         {
           "rideId": "709",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
         },
         {
           "rideId": "327",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T06:15:17.577Z",
-      "snapshotParkDatetime": "2026-07-07 23:15:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.7
         }
       ]
     },
@@ -4174,62 +3213,24 @@
       "snapshotUtc": "2026-07-08T06:30:41.209Z",
       "snapshotParkDatetime": "2026-07-07 23:30:41",
       "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
       "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T06:30:41.209Z",
-      "snapshotParkDatetime": "2026-07-07 23:30:41",
-      "parkId": "disneyland",
-      "normalizedRideName": "mickey's house and meet mickey mouse",
-      "rowCount": 2,
-      "rides": [
+      "rows": [
         {
           "rideId": "709",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.1
         },
         {
           "rideId": "327",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T06:30:41.209Z",
-      "snapshotParkDatetime": "2026-07-07 23:30:41",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 5.1
         }
       ]
     },
@@ -4237,62 +3238,24 @@
       "snapshotUtc": "2026-07-08T06:45:17.160Z",
       "snapshotParkDatetime": "2026-07-07 23:45:17",
       "parkId": "disneyland",
-      "normalizedRideName": "tiana's bayou adventure",
+      "canonicalAttractionId": "disneyland-mickeys-house-and-meet-mickey-mouse",
+      "canonicalAttractionName": "Mickey's House and Meet Mickey Mouse",
+      "accessMode": "standby",
       "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "14168",
-          "rideName": "Tiana's Bayou Adventure",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "5"
-        },
-        {
-          "rideId": "14326",
-          "rideName": "Tiana's Bayou Adventure Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T06:45:17.160Z",
-      "snapshotParkDatetime": "2026-07-07 23:45:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "mickey's house and meet mickey mouse",
-      "rowCount": 2,
-      "rides": [
+      "rows": [
         {
           "rideId": "709",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.4
         },
         {
           "rideId": "327",
           "rideName": "Mickey's House and Meet Mickey Mouse",
           "isOpen": "FALSE",
-          "waitTimeMinutes": "0"
-        }
-      ]
-    },
-    {
-      "snapshotUtc": "2026-07-08T06:45:17.160Z",
-      "snapshotParkDatetime": "2026-07-07 23:45:17",
-      "parkId": "disneyland",
-      "normalizedRideName": "millennium falcon smugglers run",
-      "rowCount": 2,
-      "rides": [
-        {
-          "rideId": "6339",
-          "rideName": "Millennium Falcon: Smugglers Run",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "10"
-        },
-        {
-          "rideId": "10903",
-          "rideName": "Millennium Falcon: Smugglers Run Single Rider",
-          "isOpen": "TRUE",
-          "waitTimeMinutes": "0"
+          "waitTimeMinutes": "0",
+          "sourceAgeMinutes": 4.4
         }
       ]
     }
@@ -4308,6 +3271,7 @@
   "recommendations": [
     "Exclude stale_source rows from wait-time training until the source timestamp becomes fresh again.",
     "Add duplicate ride names to the future canonical attraction mapping review list.",
+    "Review canonical conflict groups and choose the freshest eligible row for downstream optimizer inputs.",
     "Keep Single Rider availability, but do not use all-zero Single Rider waits as optimizer wait-time weights.",
     "Use observed_wait_time_minutes as the modeling target; raw wait_time_minutes remains available for audits."
   ]

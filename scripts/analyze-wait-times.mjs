@@ -6,7 +6,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, "..");
 const rawDir = path.join(rootDir, "data", "wait_times");
 const processedDir = path.join(rootDir, "data", "processed", "wait_times");
+const optimizerDir = path.join(rootDir, "data", "processed", "optimizer");
 const reportsDir = path.join(rootDir, "outputs", "quality_reports");
+const catalogAliasPath = path.join(rootDir, "data", "catalog", "attraction-aliases.csv");
 const csvBom = "\uFEFF";
 const parkTimezone = "America/Los_Angeles";
 const staleMinutes = Number(getArgValue("--stale-minutes") || 60);
@@ -48,6 +50,11 @@ const cleanedHeader = [
   ...rawHeader,
   "normalized_ride_name",
   "base_ride_name",
+  "canonical_attraction_id",
+  "canonical_attraction_name",
+  "canonical_category",
+  "canonical_match_source",
+  "access_mode",
   "is_single_rider",
   "is_likely_entertainment",
   "source_age_minutes",
@@ -56,6 +63,30 @@ const cleanedHeader = [
   "training_eligibility"
 ];
 
+const optimizerHeader = [
+  "snapshot_utc",
+  "snapshot_park_datetime",
+  "snapshot_park_date",
+  "park_id",
+  "canonical_attraction_id",
+  "canonical_attraction_name",
+  "canonical_category",
+  "access_mode",
+  "selected_ride_id",
+  "selected_ride_name",
+  "is_open",
+  "observed_wait_time_minutes",
+  "optimizer_wait_weight_minutes",
+  "source_age_minutes",
+  "source_last_updated_utc",
+  "source_last_updated_park_datetime",
+  "training_eligibility",
+  "quality_flags",
+  "resolver_reason",
+  "candidate_count"
+];
+
+const aliasCatalog = await loadAliasCatalog();
 const scheduleByPark = await loadParkSchedules();
 const csvFiles = await findCsvFiles();
 
@@ -66,6 +97,7 @@ if (!csvFiles.length) {
 
 if (!noWrite) {
   await mkdir(processedDir, { recursive: true });
+  await mkdir(optimizerDir, { recursive: true });
   await mkdir(reportsDir, { recursive: true });
 }
 
@@ -77,10 +109,12 @@ for (const csvFile of csvFiles) {
 
   if (!noWrite) {
     const cleanedPath = path.join(processedDir, `wait_times_cleaned_${report.date}.csv`);
+    const optimizerPath = path.join(optimizerDir, `optimizer_ready_wait_times_${report.date}.csv`);
     const jsonPath = path.join(reportsDir, `${report.date}.json`);
     const markdownPath = path.join(reportsDir, `${report.date}.md`);
 
     await writeCsv(cleanedPath, cleanedHeader, report.cleanedRows);
+    await writeCsv(optimizerPath, optimizerHeader, report.optimizerReadyRows);
     await writeFile(jsonPath, `${JSON.stringify(withoutCleanedRows(report), null, 2)}\n`, "utf8");
     await writeFile(markdownPath, renderMarkdown(report), "utf8");
   }
@@ -93,7 +127,8 @@ for (const csvFile of csvFiles) {
       `zero=${report.summary.zeroWaitRows}`,
       `stale=${report.summary.staleRows}`,
       `duplicates=${report.duplicateGroups.length}`,
-      `singleRiderUsable=${report.singleRiderSummary.optimizerUsableGroups}`
+      `singleRiderUsable=${report.singleRiderSummary.optimizerUsableGroups}`,
+      `optimizerReady=${report.optimizerReadySummary.rows}`
     ].join(" ")
   );
 }
@@ -111,9 +146,11 @@ async function analyzeCsvFile(csvFile) {
   const rideProfiles = buildRideProfiles(rows);
   const singleRiderProfiles = buildSingleRiderProfiles(rows);
   const duplicateGroups = findDuplicateGroups(rows);
+  const canonicalConflictGroups = findCanonicalConflictGroups(rows);
   const snapshotSummary = buildSnapshotSummary(rows);
   const collectionWindowSummary = buildCollectionWindowSummary(rows, date);
   const cleanedRows = rows.map((row) => cleanRow(row, rideProfiles, singleRiderProfiles));
+  const optimizerReadyRows = buildOptimizerReadyRows(cleanedRows);
   const summary = buildSummary(rows, cleanedRows);
 
   return {
@@ -129,11 +166,14 @@ async function analyzeCsvFile(csvFile) {
     snapshotSummary,
     collectionWindowSummary,
     singleRiderSummary: summarizeSingleRiders(singleRiderProfiles),
+    optimizerReadySummary: summarizeOptimizerReadyRows(optimizerReadyRows),
     rideQualitySummary: summarizeRideProfiles(rideProfiles),
     duplicateGroups,
+    canonicalConflictGroups,
     staleSources: summarizeStaleSources(rows),
-    recommendations: buildRecommendations(rows, duplicateGroups, singleRiderProfiles),
-    cleanedRows
+    recommendations: buildRecommendations(rows, duplicateGroups, canonicalConflictGroups, singleRiderProfiles),
+    cleanedRows,
+    optimizerReadyRows
   };
 }
 
@@ -141,11 +181,18 @@ function normalizeRow(row, index) {
   const waitTime = Number(row.wait_time_minutes);
   const isOpen = String(row.is_open || "").toUpperCase() === "TRUE";
   const sourceAgeMinutes = getSourceAgeMinutes(row.snapshot_utc, row.source_last_updated_utc);
-  const normalizedRideName = normalizeName(row.ride_name);
-  const baseRideName = removeSingleRiderSuffix(row.ride_name);
-  const normalizedBaseRideName = normalizeName(baseRideName);
   const isSingleRider = /\bsingle\s+rider\b/i.test(String(row.ride_name || ""));
+  const baseRideName = removeSingleRiderSuffix(row.ride_name);
+  const normalizedRideName = normalizeCatalogName(row.ride_name, { removeSingleRider: false });
+  const normalizedBaseRideName = normalizeCatalogName(baseRideName, { removeSingleRider: false });
   const isLikelyEntertainment = isLikelyEntertainmentName(row.ride_name);
+  const canonical = resolveCanonicalAttraction(row, {
+    normalizedRideName,
+    normalizedBaseRideName,
+    baseRideName,
+    isSingleRider,
+    isLikelyEntertainment
+  });
 
   return {
     ...row,
@@ -156,6 +203,11 @@ function normalizeRow(row, index) {
     normalizedRideName,
     baseRideName,
     normalizedBaseRideName,
+    canonicalAttractionId: canonical.id,
+    canonicalAttractionName: canonical.name,
+    canonicalCategory: canonical.category,
+    canonicalMatchSource: canonical.matchSource,
+    accessMode: isSingleRider ? "single_rider" : "standby",
     isSingleRider,
     isLikelyEntertainment,
     snapshotTime: parseDate(row.snapshot_utc),
@@ -197,6 +249,11 @@ function cleanRow(row, rideProfiles, singleRiderProfiles) {
     source_url: row.source_url,
     normalized_ride_name: row.normalizedRideName,
     base_ride_name: row.baseRideName,
+    canonical_attraction_id: row.canonicalAttractionId,
+    canonical_attraction_name: row.canonicalAttractionName,
+    canonical_category: row.canonicalCategory,
+    canonical_match_source: row.canonicalMatchSource,
+    access_mode: row.accessMode,
     is_single_rider: row.isSingleRider ? "TRUE" : "FALSE",
     is_likely_entertainment: row.isLikelyEntertainment ? "TRUE" : "FALSE",
     source_age_minutes: row.sourceAgeMinutes === null ? "" : row.sourceAgeMinutes.toFixed(1),
@@ -204,6 +261,102 @@ function cleanRow(row, rideProfiles, singleRiderProfiles) {
     quality_flags: flags.join("|"),
     training_eligibility: trainingEligibility
   };
+}
+
+function buildOptimizerReadyRows(cleanedRows) {
+  const grouped = groupBy(
+    cleanedRows,
+    (row) => `${row.snapshot_utc}|${row.park_id}|${row.canonical_attraction_id}|${row.access_mode}`
+  );
+
+  return Array.from(grouped.values())
+    .map((candidates) => {
+      const sorted = [...candidates].sort(compareOptimizerCandidates);
+      const selected = sorted[0];
+      const staleCandidates = candidates.filter((row) => hasFlag(row, "stale_source")).length;
+      const nonStaleCandidates = candidates.length - staleCandidates;
+      const resolverReason = getResolverReason(selected, candidates, nonStaleCandidates);
+
+      return {
+        snapshot_utc: selected.snapshot_utc,
+        snapshot_park_datetime: selected.snapshot_park_datetime,
+        snapshot_park_date: selected.snapshot_park_date,
+        park_id: selected.park_id,
+        canonical_attraction_id: selected.canonical_attraction_id,
+        canonical_attraction_name: selected.canonical_attraction_name,
+        canonical_category: selected.canonical_category,
+        access_mode: selected.access_mode,
+        selected_ride_id: selected.ride_id,
+        selected_ride_name: selected.ride_name,
+        is_open: selected.is_open,
+        observed_wait_time_minutes: selected.observed_wait_time_minutes,
+        optimizer_wait_weight_minutes: getOptimizerWaitWeight(selected),
+        source_age_minutes: selected.source_age_minutes,
+        source_last_updated_utc: selected.source_last_updated_utc,
+        source_last_updated_park_datetime: selected.source_last_updated_park_datetime,
+        training_eligibility: selected.training_eligibility,
+        quality_flags: selected.quality_flags,
+        resolver_reason: resolverReason,
+        candidate_count: candidates.length
+      };
+    })
+    .sort((a, b) =>
+      a.snapshot_utc.localeCompare(b.snapshot_utc) ||
+      a.park_id.localeCompare(b.park_id) ||
+      a.canonical_attraction_id.localeCompare(b.canonical_attraction_id) ||
+      a.access_mode.localeCompare(b.access_mode)
+    );
+}
+
+function compareOptimizerCandidates(a, b) {
+  return (
+    getCandidatePriority(b) - getCandidatePriority(a) ||
+    getSourceAgeSortValue(a) - getSourceAgeSortValue(b) ||
+    getDateSortValue(b.source_last_updated_utc) - getDateSortValue(a.source_last_updated_utc) ||
+    String(a.ride_id).localeCompare(String(b.ride_id))
+  );
+}
+
+function getCandidatePriority(row) {
+  const stalePenalty = hasFlag(row, "stale_source") ? -100 : 0;
+  const priorityByEligibility = {
+    standby_wait_model: 50,
+    single_rider_optimizer_reference: 45,
+    status_model_only: 40,
+    single_rider_availability_only: 35,
+    schedule_constraint_only: 20,
+    exclude_missing_wait: 10,
+    exclude_stale_source: 0
+  };
+
+  return (priorityByEligibility[row.training_eligibility] ?? 0) + stalePenalty;
+}
+
+function getOptimizerWaitWeight(row) {
+  if (row.training_eligibility === "standby_wait_model") return row.observed_wait_time_minutes;
+  if (row.training_eligibility === "single_rider_optimizer_reference") return row.observed_wait_time_minutes;
+  return "";
+}
+
+function getResolverReason(selected, candidates, nonStaleCandidates) {
+  if (candidates.length === 1) return "single_candidate";
+  if (nonStaleCandidates > 0 && hasFlag(selected, "stale_source")) return "fallback_to_stale_only";
+  if (nonStaleCandidates > 0) return "selected_best_non_stale_candidate";
+  return "selected_best_available_candidate";
+}
+
+function hasFlag(row, flag) {
+  return String(row.quality_flags || "").split("|").includes(flag);
+}
+
+function getSourceAgeSortValue(row) {
+  const age = Number(row.source_age_minutes);
+  return Number.isFinite(age) ? age : Number.POSITIVE_INFINITY;
+}
+
+function getDateSortValue(value) {
+  const date = parseDate(value);
+  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
 }
 
 function getTrainingEligibility(row, flags, singleRiderProfile) {
@@ -297,11 +450,38 @@ function findDuplicateGroups(rows) {
     }));
 }
 
+function findCanonicalConflictGroups(rows) {
+  const grouped = groupBy(
+    rows,
+    (row) => `${row.snapshot_utc}|${row.park_id}|${row.canonicalAttractionId}|${row.accessMode}`
+  );
+
+  return Array.from(grouped.values())
+    .filter((group) => group.length > 1)
+    .map((group) => ({
+      snapshotUtc: group[0].snapshot_utc,
+      snapshotParkDatetime: group[0].snapshot_park_datetime,
+      parkId: group[0].park_id,
+      canonicalAttractionId: group[0].canonicalAttractionId,
+      canonicalAttractionName: group[0].canonicalAttractionName,
+      accessMode: group[0].accessMode,
+      rowCount: group.length,
+      rows: group.map((row) => ({
+        rideId: row.ride_id,
+        rideName: row.ride_name,
+        isOpen: row.is_open,
+        waitTimeMinutes: row.wait_time_minutes,
+        sourceAgeMinutes: row.sourceAgeMinutes === null ? null : round(row.sourceAgeMinutes, 1)
+      }))
+    }));
+}
+
 function buildSummary(rows, cleanedRows) {
   return {
     totalRows: rows.length,
     snapshotCount: new Set(rows.map((row) => row.snapshot_utc)).size,
     rideCount: new Set(rows.map((row) => row.rideKey)).size,
+    canonicalAttractionCount: new Set(rows.map((row) => row.canonicalAttractionId)).size,
     closedRows: rows.filter((row) => !row.isOpen).length,
     zeroWaitRows: rows.filter((row) => row.waitTime === 0).length,
     openZeroRows: rows.filter((row) => row.isOpen && row.waitTime === 0).length,
@@ -412,6 +592,18 @@ function summarizeSingleRiders(singleRiderProfiles) {
   };
 }
 
+function summarizeOptimizerReadyRows(rows) {
+  return {
+    rows: rows.length,
+    conflictResolvedRows: rows.filter((row) => Number(row.candidate_count) > 1).length,
+    standbyWaitRows: rows.filter((row) => row.training_eligibility === "standby_wait_model").length,
+    statusOnlyRows: rows.filter((row) => row.training_eligibility === "status_model_only").length,
+    singleRiderAvailabilityOnlyRows: rows.filter((row) => row.training_eligibility === "single_rider_availability_only").length,
+    singleRiderWaitReferenceRows: rows.filter((row) => row.training_eligibility === "single_rider_optimizer_reference").length,
+    staleSelectedRows: rows.filter((row) => String(row.quality_flags || "").split("|").includes("stale_source")).length
+  };
+}
+
 function summarizeRideProfiles(rideProfiles) {
   const profiles = Array.from(rideProfiles.values());
   return {
@@ -443,7 +635,7 @@ function summarizeStaleSources(rows) {
     .sort((a, b) => b.maxSourceAgeMinutes - a.maxSourceAgeMinutes);
 }
 
-function buildRecommendations(rows, duplicateGroups, singleRiderProfiles) {
+function buildRecommendations(rows, duplicateGroups, canonicalConflictGroups, singleRiderProfiles) {
   const recommendations = [];
   const staleCount = rows.filter((row) => row.sourceAgeMinutes !== null && row.sourceAgeMinutes > staleMinutes).length;
   const singleRiderAvailabilityOnly = Array.from(singleRiderProfiles.values()).filter(
@@ -455,6 +647,9 @@ function buildRecommendations(rows, duplicateGroups, singleRiderProfiles) {
   }
   if (duplicateGroups.length) {
     recommendations.push("Add duplicate ride names to the future canonical attraction mapping review list.");
+  }
+  if (canonicalConflictGroups.length) {
+    recommendations.push("Review canonical conflict groups and choose the freshest eligible row for downstream optimizer inputs.");
   }
   if (singleRiderAvailabilityOnly) {
     recommendations.push("Keep Single Rider availability, but do not use all-zero Single Rider waits as optimizer wait-time weights.");
@@ -476,11 +671,15 @@ function renderMarkdown(report) {
   lines.push(`- Rows: ${report.summary.totalRows}`);
   lines.push(`- Snapshots: ${report.summary.snapshotCount}`);
   lines.push(`- Rides: ${report.summary.rideCount}`);
+  lines.push(`- Canonical attractions: ${report.summary.canonicalAttractionCount}`);
   lines.push(`- Closed rows: ${report.summary.closedRows}`);
   lines.push(`- Zero wait rows: ${report.summary.zeroWaitRows}`);
   lines.push(`- Open zero rows: ${report.summary.openZeroRows}`);
   lines.push(`- Stale rows: ${report.summary.staleRows}`);
   lines.push(`- Standby wait model rows: ${report.summary.standbyWaitModelRows}`);
+  lines.push(`- Optimizer-ready rows: ${report.optimizerReadySummary.rows}`);
+  lines.push(`- Optimizer conflicts resolved: ${report.optimizerReadySummary.conflictResolvedRows}`);
+  lines.push(`- Optimizer stale selected rows: ${report.optimizerReadySummary.staleSelectedRows}`);
   lines.push("");
   lines.push("## By Park");
   lines.push("");
@@ -509,6 +708,7 @@ function renderMarkdown(report) {
   lines.push("## Data Issues");
   lines.push("");
   lines.push(`- Duplicate snapshot/name groups: ${report.duplicateGroups.length}`);
+  lines.push(`- Canonical conflict groups: ${report.canonicalConflictGroups.length}`);
   lines.push(`- Stale source groups: ${report.staleSources.length}`);
   lines.push(`- Possible full-day closed rides: ${report.rideQualitySummary.possibleFullDayClosed.length}`);
   lines.push(`- Temporary downtime candidates: ${report.rideQualitySummary.temporaryDowntime.length}`);
@@ -529,7 +729,7 @@ function renderMarkdown(report) {
 }
 
 function withoutCleanedRows(report) {
-  const { cleanedRows, ...rest } = report;
+  const { cleanedRows, optimizerReadyRows, ...rest } = report;
   return rest;
 }
 
@@ -562,6 +762,38 @@ async function readCsv(filePath) {
 async function writeCsv(filePath, header, rows) {
   const csv = [header.join(","), ...rows.map((row) => header.map((key) => csvEscape(row[key])).join(","))].join("\n");
   await writeFile(filePath, `${csvBom}${csv}\n`, "utf8");
+}
+
+async function loadAliasCatalog() {
+  try {
+    const rows = await readCsv(catalogAliasPath);
+    const byParkAndAlias = new Map();
+
+    for (const row of rows) {
+      const parkId = row.park_id || "";
+      const aliasName = row.alias_name || "";
+      if (!parkId || !aliasName || !row.canonical_attraction_id) continue;
+
+      byParkAndAlias.set(`${parkId}|${normalizeCatalogName(aliasName, { removeSingleRider: false })}`, {
+        parkId,
+        aliasName,
+        canonicalAttractionId: row.canonical_attraction_id,
+        canonicalName: row.canonical_name || aliasName,
+        category: row.category || "attraction",
+        notes: row.notes || ""
+      });
+    }
+
+    return {
+      rows,
+      byParkAndAlias
+    };
+  } catch {
+    return {
+      rows: [],
+      byParkAndAlias: new Map()
+    };
+  }
 }
 
 async function loadParkSchedules() {
@@ -609,6 +841,33 @@ function getSingleRiderKey(row) {
   return `${row.park_id}|${row.normalizedBaseRideName}`;
 }
 
+function resolveCanonicalAttraction(row, context) {
+  const exactKey = `${row.park_id}|${context.normalizedRideName}`;
+  const baseKey = `${row.park_id}|${context.normalizedBaseRideName}`;
+  const exactAlias = aliasCatalog.byParkAndAlias.get(exactKey);
+  const baseAlias = aliasCatalog.byParkAndAlias.get(baseKey);
+  const matchedAlias = exactAlias || baseAlias;
+
+  if (matchedAlias) {
+    return {
+      id: matchedAlias.canonicalAttractionId,
+      name: matchedAlias.canonicalName,
+      category: matchedAlias.category,
+      matchSource: exactAlias ? "alias_exact" : "alias_base"
+    };
+  }
+
+  const normalizedName = context.normalizedBaseRideName || context.normalizedRideName || String(row.ride_id || "unknown");
+  const fallbackName = context.baseRideName || row.ride_name || normalizedName;
+
+  return {
+    id: `${row.park_id}-${slugify(normalizedName || row.ride_id)}`,
+    name: fallbackName,
+    category: context.isLikelyEntertainment ? "entertainment" : "attraction",
+    matchSource: "auto_normalized"
+  };
+}
+
 function getSourceAgeMinutes(snapshotUtc, sourceLastUpdatedUtc) {
   const snapshot = parseDate(snapshotUtc);
   const source = parseDate(sourceLastUpdatedUtc);
@@ -639,6 +898,36 @@ function normalizeName(name) {
     .replace(/[^a-z0-9'\- ]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function normalizeCatalogName(name, options = {}) {
+  const removeSingleRider = Boolean(options.removeSingleRider);
+  let text = String(name || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[™®©]/g, "")
+    .replace(/[’‘`]/g, "'")
+    .replace(/[“”"]/g, "")
+    .replace(/[–—]/g, "-")
+    .replace(/\s*&\s*/g, " and ");
+
+  if (removeSingleRider) {
+    text = text.replace(/\bsingle\s+rider\b/g, "");
+  }
+
+  return text
+    .replace(/[^a-z0-9'\- ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function slugify(value) {
+  return String(value || "unknown")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80) || "unknown";
 }
 
 function removeSingleRiderSuffix(name) {
