@@ -1,29 +1,29 @@
 # Wait-Time Quality Report: 2026-07-08
 
-Generated at: 2026-07-09T04:01:21.249Z
+Generated at: 2026-07-09T04:20:52.555Z
 Source file: data/wait_times/wait_times_2026-07-08.csv
 
 ## Summary
 
-- Rows: 4851
-- Snapshots: 56
+- Rows: 4937
+- Snapshots: 57
 - Rides: 87
 - Canonical attractions: 80
-- Closed rows: 1264
-- Zero wait rows: 2229
-- Open zero rows: 965
+- Closed rows: 1306
+- Zero wait rows: 2281
+- Open zero rows: 975
 - Stale rows: 35
-- Standby wait model rows: 3263
-- Optimizer-ready rows: 4760
-- Optimizer conflicts resolved: 91
+- Standby wait model rows: 3302
+- Optimizer-ready rows: 4845
+- Optimizer conflicts resolved: 92
 - Optimizer stale selected rows: 0
 
 ## By Park
 
 | Park | Rows | Snapshots | Closed | Zero | Open Zero | Stale |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| disneyland | 3136 | 56 | 858 | 1484 | 626 | 0 |
-| dca | 1715 | 56 | 406 | 745 | 339 | 35 |
+| disneyland | 3192 | 57 | 887 | 1518 | 631 | 0 |
+| dca | 1745 | 57 | 419 | 763 | 344 | 35 |
 
 ## Single Rider
 
@@ -33,19 +33,19 @@ Source file: data/wait_times/wait_times_2026-07-08.csv
 
 | Park | Base ride | Rows | Open | Positive waits | Zero waits | Optimizer use |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
-| dca | Incredicoaster | 56 | 27 | 0 | 56 | availability_only |
-| dca | Radiator Springs Racers | 56 | 51 | 0 | 56 | availability_only |
-| dca | WEB SLINGERS: A Spider-Man Adventure | 56 | 51 | 0 | 56 | availability_only |
-| disneyland | Millennium Falcon: Smugglers Run | 56 | 52 | 0 | 56 | availability_only |
-| disneyland | Tiana's Bayou Adventure | 56 | 52 | 0 | 56 | availability_only |
+| dca | Incredicoaster | 57 | 27 | 0 | 57 | availability_only |
+| dca | Radiator Springs Racers | 57 | 52 | 0 | 57 | availability_only |
+| dca | WEB SLINGERS: A Spider-Man Adventure | 57 | 52 | 0 | 57 | availability_only |
+| disneyland | Millennium Falcon: Smugglers Run | 57 | 53 | 0 | 57 | availability_only |
+| disneyland | Tiana's Bayou Adventure | 57 | 53 | 0 | 57 | availability_only |
 
 ## Data Issues
 
-- Duplicate snapshot/name groups: 56
-- Canonical conflict groups: 91
+- Duplicate snapshot/name groups: 57
+- Canonical conflict groups: 92
 - Stale source groups: 1
 - Possible full-day closed rides: 10
-- Temporary downtime candidates: 48
+- Temporary downtime candidates: 49
 - Missing expected park snapshots: 0
 - Unexpected park snapshots: 0
 

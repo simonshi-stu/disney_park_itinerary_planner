@@ -1,5 +1,7 @@
 # Disney Park Itinerary Planner
 
+[Version 0.5 Data Quality README](docs/v0.5-readme.md)
+
 [中文版本](#chinese-version) | [English Version](#english-version)
 
 <a id="chinese-version"></a>
