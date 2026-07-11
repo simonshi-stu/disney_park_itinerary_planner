@@ -1,5 +1,9 @@
 # Disney Park Itinerary Planner
 
+[Architecture and governance](docs/architecture/overview.md) | [Project rules](AGENTS.md) | [AI context map](docs/ai/context-map.md) | [Migration roadmap](docs/architecture/migration-roadmap.md)
+
+> Governance phase: the existing static site and Node.js data collectors remain behaviorally unchanged while module boundaries, contracts, tests, and migration rules are established. California Disneyland Resort supplies the current two-park validation data; Shanghai Disney Resort and Hong Kong Disneyland are the first intended product markets.
+
 [Version 0.5 Data Quality README](docs/v0.5-readme.md)
 
 [中文版本](#chinese-version) | [English Version](#english-version)

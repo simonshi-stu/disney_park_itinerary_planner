@@ -1,0 +1,33 @@
+name: Governance checks
+
+on:
+  pull_request:
+    paths-ignore:
+      - "data/**"
+      - "outputs/**"
+      - "src/cache/**"
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "data/**"
+      - "outputs/**"
+      - "src/cache/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: governance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Validate governance, tests, and current JavaScript syntax
+        run: npm run check

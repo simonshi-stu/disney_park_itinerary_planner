@@ -1,0 +1,14 @@
+{
+  "name": "disney-park-itinerary-planner",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:governance": "node scripts/check-governance.mjs",
+    "test:governance": "node --test tests/governance/project-structure.test.mjs",
+    "check:syntax": "node --check src/app.js && node --check src/data.js && node --check scripts/collect-wait-times.mjs && node --check scripts/analyze-wait-times.mjs && node --check scripts/update-cache.mjs",
+    "check": "npm run check:governance && npm run test:governance && npm run check:syntax"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
