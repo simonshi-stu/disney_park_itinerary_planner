@@ -6,9 +6,9 @@ Build a park-agnostic itinerary planning product that combines live conditions, 
 
 ## Product and Validation Scope
 
-- California Disneyland Park and Disney California Adventure are the current self-collected data and end-to-end validation environment.
-- Shanghai Disney Resort and Hong Kong Disneyland are the first intended product markets.
-- Orlando Disney parks, Universal parks, and other operators are future extensions, not current implementation commitments.
+- California Disneyland Park and Disney California Adventure are the current product scope, development target, self-collected data environment, and end-to-end validation environment.
+- The current product is developed for these two California parks before expansion to any other resort or operator.
+- Shanghai Disney Resort, Hong Kong Disneyland, Orlando Disney parks, Universal parks, and other operators are future possibilities, not current product or implementation commitments.
 - The domain supports multiple operators and parks. The itinerary use case remains one park and one day until a later ADR changes that scope.
 
 ## Current Reality

@@ -4,9 +4,9 @@ These rules apply to the entire repository. A closer `AGENTS.md` may add stricte
 
 ## Product Direction
 
-- Use the two Disneyland Resort parks in California as the current data collection and end-to-end validation environment.
-- The first intended product markets are Shanghai Disney Resort and Hong Kong Disneyland.
-- Keep domain identifiers and contracts capable of representing multiple parks and operators, including future Disney and Universal parks, without implementing unsupported parks prematurely.
+- Use Disneyland Park and Disney California Adventure at Disneyland Resort in California as the current product scope, development target, data collection environment, and end-to-end validation environment.
+- Shanghai Disney Resort, Hong Kong Disneyland, Orlando Disney parks, Universal parks, and other operators are future expansion possibilities, not current product requirements.
+- Keep domain identifiers and contracts capable of representing multiple parks and operators without adding implementation complexity for future parks prematurely.
 - Current scope is one park and one day per itinerary. Multi-park data support does not imply multi-park itinerary support.
 
 ## Current Transition Constraint

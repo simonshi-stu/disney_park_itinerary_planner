@@ -45,8 +45,12 @@ for (const requiredRule of [
 }
 
 const architecture = await readFile(path.join(root, "docs/architecture/overview.md"), "utf8");
-for (const requiredTerm of ["Shanghai Disney Resort", "Hong Kong Disneyland", "modular monorepo", "Current Reality"]) {
+for (const requiredTerm of ["current product scope", "Disney California Adventure", "future possibilities", "modular monorepo", "Current Reality"]) {
   if (!architecture.includes(requiredTerm)) failures.push(`Architecture overview is missing: ${requiredTerm}`);
+}
+
+if (/first intended product markets|intended initial product markets/i.test(architecture)) {
+  failures.push("Architecture overview incorrectly treats future parks as initial product markets.");
 }
 
 if (failures.length) {

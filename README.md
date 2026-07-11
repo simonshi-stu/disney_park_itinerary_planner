@@ -8,9 +8,9 @@ An intelligent theme-park itinerary planner that combines park catalogs, live co
 
 ## 项目方向
 
-- **当前验证环境：**自主采集并分析 Disneyland Resort 的 Disneyland Park 与 Disney California Adventure 双园区数据，用于跑通采集、清洗、预测、规划和产品展示的完整链路。
-- **首要产品市场：**上海迪士尼度假区和香港迪士尼乐园。
-- **未来扩展方向：**奥兰多迪士尼、环球影城及其他主题乐园运营商。
+- **当前产品与开发范围：**以加州 Disneyland Resort 的 Disneyland Park 与 Disney California Adventure 为当前产品对象，自主采集双园区数据，并围绕这两个园区完成采集、清洗、预测、规划和产品展示的完整链路。
+- **当前 MVP：**先把加州迪士尼双园区的数据基础和单园单日规划产品真正开发完成，不为尚未接入的园区增加当前需求。
+- **未来扩展方向：**完成加州产品验证后，再评估上海迪士尼、香港迪士尼、奥兰多迪士尼、环球影城及其他主题乐园。
 - **当前行程边界：**数据模型支持多运营商和多园区，但一次行程仍限定为一个园区、一个自然服务日。
 - **设计原则：**只提前泛化稳定的身份、时区、数据契约和模块边界，不提前实现未经验证的跨园、多日或复杂票务功能。
 
@@ -206,7 +206,7 @@ npm run check
 
 ## English Summary
 
-This repository is building a park-agnostic intelligent itinerary planner. California Disneyland Resort currently provides the two-park data collection and validation environment; Shanghai Disney Resort and Hong Kong Disneyland are the first intended product markets. Future operator and park expansion is supported by explicit IDs, timezones, source mappings, and versioned contracts, while the current itinerary use case remains one park and one service day.
+This repository is building an intelligent itinerary planner for Disneyland Park and Disney California Adventure at Disneyland Resort in California. These two parks are the current product scope, development target, data collection environment, and end-to-end validation environment. Shanghai, Hong Kong, Orlando, Universal, and other parks are future expansion possibilities only. The domain retains explicit park IDs, timezones, source mappings, and versioned contracts, while the current itinerary use case remains one park and one service day.
 
 The active implementation is still a static multi-page website with Node.js collection and data-quality scripts. The target is a modular monorepo with catalog, ingestion, observations, forecasting, and planning ownership boundaries, delivered through an owned API and PWA. The current collector remains unchanged until characterization tests and storage migration are ready.
 

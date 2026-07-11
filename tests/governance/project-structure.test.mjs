@@ -30,7 +30,9 @@ test("governance distinguishes current implementation from target architecture",
   assert.match(overview, /## Current Reality/);
   assert.match(overview, /## Target Shape/);
   assert.match(overview, /California Disneyland Park and Disney California Adventure/);
-  assert.match(overview, /Shanghai Disney Resort and Hong Kong Disneyland/);
+  assert.match(overview, /current product scope/);
+  assert.match(overview, /future possibilities/);
+  assert.doesNotMatch(overview, /first intended product markets|intended initial product markets/i);
 });
 
 test("collector migration decision preserves the bootstrap collector", async () => {
