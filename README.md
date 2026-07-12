@@ -16,7 +16,7 @@ An intelligent theme-park itinerary planner that combines park catalogs, live co
 
 ## 当前阶段
 
-项目处于“治理基础与数据积累”阶段。现有静态网站和 Node.js 数据采集器继续运行；在完成表征测试、正式数据契约和替代存储之前，不对采集器进行行为重构。
+项目处于“迁移前行为锁定与数据积累”阶段。治理基础已经建立，现有静态网站和 Node.js 数据采集器继续运行；采集窗口、CSV 规范化、canonical mapping、closed/zero、Single Rider 和 optimizer-ready selection 已有表征测试基线。在正式数据契约和替代存储就绪之前，不对采集器进行行为重构。
 
 | 能力 | 当前实现 | 目标方向 |
 | --- | --- | --- |
@@ -44,6 +44,7 @@ An intelligent theme-park itinerary planner that combines park catalogs, live co
 - 园区营业窗口感知的数据采集。
 - CSV 规范化、canonical attraction mapping、数据质量检查。
 - optimizer-ready 观测投影与机器/人工可读质量报告。
+- 迁移前 bootstrap 行为表征测试，使用小型 fixtures 锁定采集、清洗和 optimizer 投影语义。
 - 项目规则、模块边界、ADR、AI 最小上下文和治理 CI。
 
 ## 目标架构
@@ -96,8 +97,8 @@ External park sources
 
 ## 开发路线
 
-1. **治理基础：**Project Rules、模块边界、ADR、测试与 CI 骨架。
-2. **表征测试：**固定采集窗口、CSV 解析、canonical mapping、closed/zero、stale、Single Rider 和 optimizer selection 的当前行为。
+1. **治理基础（已建立）：**Project Rules、模块边界、ADR、测试与 CI 骨架。
+2. **表征测试（已建立首批基线）：**已固定采集窗口、CSV 解析、canonical mapping、closed/zero、Single Rider 和 optimizer selection 的当前行为；stale 等边界将随迁移风险继续补充。
 3. **模块提取：**在保持输出和运行命令不变的前提下，拆分现有千行入口。
 4. **存储迁移：**引入 raw object storage 与 PostgreSQL/时序存储，回填历史数据并完成双写验证。
 5. **产品 API 与 PWA：**通过自有 API 替代浏览器直连第三方来源。
@@ -161,13 +162,21 @@ node scripts/analyze-wait-times.mjs
 node scripts/analyze-wait-times.mjs --no-write
 ```
 
-### 治理检查
+### 测试与治理检查
+
+仅运行迁移前行为表征测试：
+
+```powershell
+npm run test:characterization
+```
+
+运行全部当前检查：
 
 ```powershell
 npm run check
 ```
 
-该命令当前检查治理文件、模块文档、Node 内置测试和现有 JavaScript 语法。随着代码迁移，将继续加入类型、schema compatibility、import boundary、migration 和 dependency-cycle 检查。
+该命令当前检查治理文件、模块文档、治理测试、[bootstrap 行为表征测试](tests/characterization/README.md)和现有 JavaScript 语法。表征测试在临时目录中执行真实 CLI 入口，不访问实时 API，也不修改仓库里的生产数据。随着代码迁移，将继续加入类型、schema compatibility、import boundary、migration 和 dependency-cycle 检查。
 
 ## 仓库结构
 
