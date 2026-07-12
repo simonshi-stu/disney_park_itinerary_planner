@@ -25,6 +25,23 @@ test("all target domain modules document ownership and current status", async ()
   }
 });
 
+test("agents have complete Chinese architecture and module reading paths", async () => {
+  const agentRules = await readFile(path.join(root, "AGENTS.md"), "utf8");
+  assert.match(agentRules, /docs\/ai\/context-map\.zh-CN\.md/);
+  assert.match(agentRules, /README\.zh-CN\.md/);
+
+  const chineseContext = await readFile(path.join(root, "docs", "ai", "context-map.zh-CN.md"), "utf8");
+  for (const route of ["catalog", "ingestion", "observations", "forecasting", "planning", "apps/web", "apps/api", "infra"]) {
+    assert.match(chineseContext, new RegExp(route));
+  }
+
+  for (const name of ["catalog", "ingestion", "observations", "forecasting", "planning"]) {
+    const content = await readFile(path.join(root, "modules", name, "README.zh-CN.md"), "utf8");
+    assert.match(content, /## 目的/);
+    assert.match(content, /## (当前状态|当前状态与缺口)/);
+  }
+});
+
 test("governance distinguishes current implementation from target architecture", async () => {
   const overview = await readFile(path.join(root, "docs/architecture/overview.md"), "utf8");
   assert.match(overview, /## Current Reality/);

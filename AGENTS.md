@@ -17,7 +17,7 @@ These rules apply to the entire repository. A closer `AGENTS.md` may add stricte
 
 ## Required Change Workflow
 
-1. Read this file, `docs/ai/context-map.md`, and the nearest module README before editing.
+1. Read this file, `docs/ai/context-map.zh-CN.md`, and the nearest module `README.zh-CN.md` before editing. Agents should use the Chinese documentation path by default; English files are compatibility translations for human readers.
 2. State the intended module and public contract affected by the change.
 3. Keep a change inside one owning module whenever possible.
 4. If multiple modules are affected, change the shared contract first and update consumers separately.

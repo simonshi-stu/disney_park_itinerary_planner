@@ -24,6 +24,25 @@ const requiredFiles = [
   "infra/README.md"
 ];
 
+const requiredChineseFiles = [
+  "docs/ai/context-map.zh-CN.md",
+  "docs/architecture/overview.zh-CN.md",
+  "docs/architecture/context-map.zh-CN.md",
+  "docs/architecture/dependency-rules.zh-CN.md",
+  "docs/architecture/data-flow.zh-CN.md",
+  "docs/architecture/migration-roadmap.zh-CN.md",
+  ...["catalog", "ingestion", "observations", "forecasting", "planning"].map(
+    (name) => `modules/${name}/README.zh-CN.md`
+  ),
+  "apps/web/README.zh-CN.md",
+  "apps/api/README.zh-CN.md",
+  "workers/collector/README.zh-CN.md",
+  "packages/contracts/README.zh-CN.md",
+  "packages/domain/README.zh-CN.md",
+  "packages/testkit/README.zh-CN.md",
+  "infra/README.zh-CN.md"
+];
+
 const failures = [];
 
 for (const relativePath of requiredFiles) {
@@ -31,6 +50,14 @@ for (const relativePath of requiredFiles) {
     await access(path.join(root, relativePath));
   } catch {
     failures.push(`Missing required governance file: ${relativePath}`);
+  }
+}
+
+for (const relativePath of requiredChineseFiles) {
+  try {
+    await access(path.join(root, relativePath));
+  } catch {
+    failures.push(`Missing required Chinese governance file: ${relativePath}`);
   }
 }
 
@@ -57,5 +84,7 @@ if (failures.length) {
   console.error(failures.join("\n"));
   process.exitCode = 1;
 } else {
-  console.log(`Governance check passed (${requiredFiles.length} required files).`);
+  console.log(
+    `Governance check passed (${requiredFiles.length} English-compatible and ${requiredChineseFiles.length} Chinese files).`
+  );
 }

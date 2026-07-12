@@ -6,7 +6,7 @@ An intelligent theme-park itinerary planner that combines park catalogs, live co
 
 [中文版](#中文版) · [English](#english-version)
 
-[架构总览](docs/architecture/overview.md) · [Project Rules](AGENTS.md) · [迁移路线](docs/architecture/migration-roadmap.md) · [ADR](docs/adr/README.md) · [AI Context Map](docs/ai/context-map.md) · [V0.5 数据质量说明](docs/v0.5-readme.md)
+[架构总览](docs/architecture/overview.zh-CN.md) · [Project Rules](AGENTS.md) · [迁移路线](docs/architecture/migration-roadmap.zh-CN.md) · [ADR](docs/adr/README.md) · [AI 中文上下文](docs/ai/context-map.zh-CN.md) · [V0.5 数据质量说明](docs/v0.5-readme.md)
 
 ## 中文版
 
@@ -76,28 +76,28 @@ External park sources
 
 | 模块 | 独占职责 | 说明 |
 | --- | --- | --- |
-| [catalog](modules/catalog/README.md) | 园区、项目、演出、别名、access mode、canonical ID | 来源 ID 不作为跨模块主键 |
-| [ingestion](modules/ingestion/README.md) | 第三方适配、重试、限流、raw payload、source health | 第三方 API 只能从这里访问 |
-| [observations](modules/observations/README.md) | 清洗、状态语义、质量 flags、去重、时序观测 | closed 不等于真实零分钟排队 |
-| [forecasting](modules/forecasting/README.md) | 特征、基线、训练、推理、回测、模型版本 | 只消费版本化 observation contracts |
-| [planning](modules/planning/README.md) | 偏好、时间窗、步行图、路线评分、重规划与 fallback | 不直接调用任何外部数据源 |
+| [catalog](modules/catalog/README.zh-CN.md) | 园区、项目、演出、别名、access mode、canonical ID | 来源 ID 不作为跨模块主键 |
+| [ingestion](modules/ingestion/README.zh-CN.md) | 第三方适配、重试、限流、raw payload、source health | 第三方 API 只能从这里访问 |
+| [observations](modules/observations/README.zh-CN.md) | 清洗、状态语义、质量 flags、去重、时序观测 | closed 不等于真实零分钟排队 |
+| [forecasting](modules/forecasting/README.zh-CN.md) | 特征、基线、训练、推理、回测、模型版本 | 只消费版本化 observation contracts |
+| [planning](modules/planning/README.zh-CN.md) | 偏好、时间窗、步行图、路线评分、重规划与 fallback | 不直接调用任何外部数据源 |
 
 应用与公共能力：
 
-- [`apps/web`](apps/web/README.md)：用户输入与结果展示，不拥有预测和规划规则。
-- [`apps/api`](apps/api/README.md)：传输验证、用例编排和依赖注入。
-- [`workers/collector`](workers/collector/README.md)：采集任务入口；当前实现仍保留在 `scripts/`。
-- [`packages/contracts`](packages/contracts/README.md)：跨模块的版本化 schema 与 API contracts。
-- [`packages/domain`](packages/domain/README.md)：少量稳定的共享领域值对象。
-- [`packages/testkit`](packages/testkit/README.md)：小型 fixtures、clock 和 replay helpers。
-- [`infra`](infra/README.md)：数据库、raw storage、缓存、部署和监控。
+- [`apps/web`](apps/web/README.zh-CN.md)：用户输入与结果展示，不拥有预测和规划规则。
+- [`apps/api`](apps/api/README.zh-CN.md)：传输验证、用例编排和依赖注入。
+- [`workers/collector`](workers/collector/README.zh-CN.md)：采集任务入口；当前实现仍保留在 `scripts/`。
+- [`packages/contracts`](packages/contracts/README.zh-CN.md)：跨模块的版本化 schema 与 API contracts。
+- [`packages/domain`](packages/domain/README.zh-CN.md)：少量稳定的共享领域值对象。
+- [`packages/testkit`](packages/testkit/README.zh-CN.md)：小型 fixtures、clock 和 replay helpers。
+- [`infra`](infra/README.zh-CN.md)：数据库、raw storage、缓存、部署和监控。
 
 更完整的依赖规则和数据流请阅读：
 
-- [Architecture Overview](docs/architecture/overview.md)
-- [Domain Context Map](docs/architecture/context-map.md)
-- [Dependency Rules](docs/architecture/dependency-rules.md)
-- [Data Flow and Lineage](docs/architecture/data-flow.md)
+- [架构总览](docs/architecture/overview.zh-CN.md)
+- [领域上下文地图](docs/architecture/context-map.zh-CN.md)
+- [依赖与边界规则](docs/architecture/dependency-rules.zh-CN.md)
+- [数据流与血缘](docs/architecture/data-flow.zh-CN.md)
 
 ## 开发路线
 
@@ -108,7 +108,7 @@ External park sources
 5. **产品 API 与 PWA：**通过自有 API 替代浏览器直连第三方来源。
 6. **预测与规划：**先建立可复现基线，再加入机器学习、OR-Tools 和滚动重规划。
 
-详细退出条件见 [Migration Roadmap](docs/architecture/migration-roadmap.md)。
+详细退出条件见 [迁移路线](docs/architecture/migration-roadmap.zh-CN.md)。
 
 ## 数据规则摘要
 
@@ -211,9 +211,9 @@ npm run check
 
 ## 文档阅读入口
 
-- 新开发任务：先读 [AGENTS.md](AGENTS.md) 和 [AI Context Map](docs/ai/context-map.md)。
-- 理解整体系统：读 [Architecture Overview](docs/architecture/overview.md)。
-- 修改某个领域：读对应 `modules/<name>/README.md` 与公共 contracts。
+- 新开发任务：先读 [AGENTS.md](AGENTS.md) 和 [AI 中文上下文](docs/ai/context-map.zh-CN.md)。
+- 理解整体系统：读 [中文架构总览](docs/architecture/overview.zh-CN.md)。
+- 修改某个领域：读对应 `modules/<name>/README.zh-CN.md` 与公共 contracts。
 - 修改架构决策：新增或 supersede 一个 [ADR](docs/adr/README.md)，不要覆盖历史决定。
 - 查看当前数据质量实现：[V0.5 Data Quality README](docs/v0.5-readme.md)。
 
