@@ -26,6 +26,42 @@ test("collector uses the park-hours buffer as its collection window", async (t) 
   assert.match(outside.stdout, /Skipped Disney California Adventure: outside park hours collection window/);
 });
 
+test("collector includes the closing instant plus 60 minutes and excludes the next second", async (t) => {
+  const sandbox = await makeSandbox(t);
+  const preload = collectorPreloadUrl();
+
+  const inside = await runNode(sandbox, ["--import", preload, "scripts/collect-wait-times.mjs"], {
+    CHARACTERIZATION_NOW: "2026-07-02T07:00:00.000Z"
+  });
+  assert.equal((inside.stdout.match(/outside park hours collection window/g) || []).length, 0);
+
+  const outside = await runNode(sandbox, ["--import", preload, "scripts/collect-wait-times.mjs"], {
+    CHARACTERIZATION_NOW: "2026-07-02T07:00:01.000Z"
+  });
+  assert.equal((outside.stdout.match(/outside park hours collection window/g) || []).length, 2);
+});
+
+test("collector falls back to cached schedules when the schedule API fails", async (t) => {
+  const sandbox = await makeSandbox(t);
+  const result = await runNode(sandbox, ["--import", collectorPreloadUrl(), "scripts/collect-wait-times.mjs"], {
+    CHARACTERIZATION_NOW: "2026-07-01T17:00:00.000Z",
+    CHARACTERIZATION_SCHEDULE_MODE: "fail"
+  });
+  assert.equal((result.stderr.match(/Using cached schedule/g) || []).length, 2);
+  assert.doesNotMatch(result.stdout, /outside park hours collection window/);
+});
+
+test("collector fails visibly when the queue API returns an error", async (t) => {
+  const sandbox = await makeSandbox(t);
+  await assert.rejects(
+    runNode(sandbox, ["--import", collectorPreloadUrl(), "scripts/collect-wait-times.mjs"], {
+      CHARACTERIZATION_NOW: "2026-07-01T17:00:00.000Z",
+      CHARACTERIZATION_QUEUE_MODE: "fail"
+    }),
+    /queue-times\.com\/parks\/16\/queue_times\.json returned 502/
+  );
+});
+
 test("collector normalization preserves quoted CSV fields and fills legacy timezone columns", async (t) => {
   const sandbox = await makeSandbox(t);
   const target = path.join(sandbox, "data", "wait_times", "wait_times_2026-07-02.csv");
@@ -82,6 +118,37 @@ test("optimizer projection selects the fresh eligible canonical candidate", asyn
   assert.equal(standby.resolver_reason, "selected_best_non_stale_candidate");
 });
 
+test("analysis flags stale observations and excludes them from training", async (t) => {
+  const { cleaned, optimizer } = await analyzeFixture(t);
+  const stale = cleaned.find((row) => row.ride_id === "standby-stale");
+  assert.match(stale.quality_flags, /stale_source/);
+  assert.equal(stale.source_age_minutes, "120.0");
+  assert.equal(stale.training_eligibility, "exclude_stale_source");
+  assert.equal(optimizer.some((row) => row.selected_ride_id === "standby-stale"), false);
+});
+
+test("analysis currently coerces a missing open wait value to zero", async (t) => {
+  const { cleaned, optimizer } = await analyzeFixture(t);
+  const missing = cleaned.find((row) => row.ride_id === "missing-wait");
+  assert.equal(missing.observed_wait_time_minutes, "0");
+  assert.match(missing.quality_flags, /open_zero/);
+  assert.equal(missing.training_eligibility, "standby_wait_model");
+  assert.equal(optimizer.find((row) => row.selected_ride_id === "missing-wait").optimizer_wait_weight_minutes, "0");
+});
+
+test("quality report records duplicate names and canonical conflicts separately", async (t) => {
+  const { report } = await analyzeFixture(t);
+  const duplicate = report.duplicateGroups.find((group) => group.normalizedRideName === "mickey's house and meet mickey mouse");
+  assert.equal(duplicate.rowCount, 2);
+  assert.deepEqual(duplicate.rides.map((ride) => ride.rideId), ["mickey-a", "mickey-b"]);
+
+  const soarinConflict = report.canonicalConflictGroups.find(
+    (group) => group.canonicalAttractionId === "dca-soarin" && group.accessMode === "standby"
+  );
+  assert.equal(soarinConflict.rowCount, 2);
+  assert.deepEqual(soarinConflict.rows.map((row) => row.rideId), ["standby-stale", "standby-fresh"]);
+});
+
 async function analyzeFixture(t) {
   const sandbox = await makeSandbox(t);
   await copyFile(
@@ -91,7 +158,8 @@ async function analyzeFixture(t) {
   await runNode(sandbox, ["scripts/analyze-wait-times.mjs", "--date=2026-07-01"]);
   return {
     cleaned: await readObjects(path.join(sandbox, "data", "processed", "wait_times", "wait_times_cleaned_2026-07-01.csv")),
-    optimizer: await readObjects(path.join(sandbox, "data", "processed", "optimizer", "optimizer_ready_wait_times_2026-07-01.csv"))
+    optimizer: await readObjects(path.join(sandbox, "data", "processed", "optimizer", "optimizer_ready_wait_times_2026-07-01.csv")),
+    report: JSON.parse(await readFile(path.join(sandbox, "outputs", "quality_reports", "2026-07-01.json"), "utf8"))
   };
 }
 
@@ -105,9 +173,16 @@ async function makeSandbox(t) {
   await copyFile(path.join(root, "scripts", "analyze-wait-times.mjs"), path.join(sandbox, "scripts", "analyze-wait-times.mjs"));
   await copyFile(path.join(root, "data", "catalog", "attraction-aliases.csv"), path.join(sandbox, "data", "catalog", "attraction-aliases.csv"));
   for (const park of ["disneyland", "dca"]) {
-    await writeFile(path.join(sandbox, "src", "cache", "themeparks", `${park}.schedule.json`), '{"schedule":[]}\n');
+    await writeFile(
+      path.join(sandbox, "src", "cache", "themeparks", `${park}.schedule.json`),
+      '{"schedule":[{"date":"2026-07-01","openingTime":"2026-07-01T16:00:00.000Z","closingTime":"2026-07-02T06:00:00.000Z"}]}\n'
+    );
   }
   return sandbox;
+}
+
+function collectorPreloadUrl() {
+  return pathToFileURL(path.join(root, "tests", "characterization", "mock-collector-runtime.mjs")).href;
 }
 
 async function runNode(cwd, args, extraEnv = {}) {

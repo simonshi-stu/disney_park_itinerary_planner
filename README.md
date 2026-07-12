@@ -4,7 +4,11 @@
 
 An intelligent theme-park itinerary planner that combines park catalogs, live conditions, historical waits, show windows, walking costs, and visitor preferences into a feasible one-park, one-day plan.
 
+[中文版](#中文版) · [English](#english-version)
+
 [架构总览](docs/architecture/overview.md) · [Project Rules](AGENTS.md) · [迁移路线](docs/architecture/migration-roadmap.md) · [ADR](docs/adr/README.md) · [AI Context Map](docs/ai/context-map.md) · [V0.5 数据质量说明](docs/v0.5-readme.md)
+
+## 中文版
 
 ## 项目方向
 
@@ -16,7 +20,7 @@ An intelligent theme-park itinerary planner that combines park catalogs, live co
 
 ## 当前阶段
 
-项目处于“迁移前行为锁定与数据积累”阶段。治理基础已经建立，现有静态网站和 Node.js 数据采集器继续运行；采集窗口、CSV 规范化、canonical mapping、closed/zero、Single Rider 和 optimizer-ready selection 已有表征测试基线。在正式数据契约和替代存储就绪之前，不对采集器进行行为重构。
+项目处于“迁移前行为锁定与数据积累”阶段。治理基础和首轮表征测试已经建立，现有静态网站和 Node.js 数据采集器继续运行；测试已覆盖采集窗口两端、CSV 规范化、API/cache fallback、collector failure、canonical mapping、closed/zero、stale、缺失等待值的当前行为、Single Rider、重复/冲突报告和 optimizer-ready selection。在正式数据契约和替代存储就绪之前，不对采集器进行行为重构。
 
 | 能力 | 当前实现 | 目标方向 |
 | --- | --- | --- |
@@ -98,7 +102,7 @@ External park sources
 ## 开发路线
 
 1. **治理基础（已建立）：**Project Rules、模块边界、ADR、测试与 CI 骨架。
-2. **表征测试（已建立首批基线）：**已固定采集窗口、CSV 解析、canonical mapping、closed/zero、Single Rider 和 optimizer selection 的当前行为；stale 等边界将随迁移风险继续补充。
+2. **表征测试（已完成迁移前基线）：**已固定采集窗口、CSV 解析、API/cache fallback、collector failure、canonical mapping、closed/zero、stale、缺失等待值、Single Rider、重复/冲突报告和 optimizer selection 的当前行为。
 3. **模块提取：**在保持输出和运行命令不变的前提下，拆分现有千行入口。
 4. **存储迁移：**引入 raw object storage 与 PostgreSQL/时序存储，回填历史数据并完成双写验证。
 5. **产品 API 与 PWA：**通过自有 API 替代浏览器直连第三方来源。
@@ -213,10 +217,126 @@ npm run check
 - 修改架构决策：新增或 supersede 一个 [ADR](docs/adr/README.md)，不要覆盖历史决定。
 - 查看当前数据质量实现：[V0.5 Data Quality README](docs/v0.5-readme.md)。
 
-## English Summary
+## English Version
 
-This repository is building an intelligent itinerary planner for Disneyland Park and Disney California Adventure at Disneyland Resort in California. These two parks are the current product scope, development target, data collection environment, and end-to-end validation environment. Shanghai, Hong Kong, Orlando, Universal, and other parks are future expansion possibilities only. The domain retains explicit park IDs, timezones, source mappings, and versioned contracts, while the current itinerary use case remains one park and one service day.
+### Product direction
 
-The active implementation is still a static multi-page website with Node.js collection and data-quality scripts. The target is a modular monorepo with catalog, ingestion, observations, forecasting, and planning ownership boundaries, delivered through an owned API and PWA. The current collector remains unchanged until characterization tests and storage migration are ready.
+This repository builds an intelligent itinerary planner for Disneyland Park and Disney California Adventure at Disneyland Resort in California. These parks are the current product scope, development target, self-collected data environment, and end-to-end validation environment.
 
-Start with [the architecture overview](docs/architecture/overview.md), [project rules](AGENTS.md), and [the migration roadmap](docs/architecture/migration-roadmap.md).
+- **Current MVP:** complete the California data foundation and one-park, one-day itinerary product before expanding elsewhere.
+- **Future possibilities:** Shanghai, Hong Kong, Orlando, Universal, and other parks are not current implementation requirements.
+- **Itinerary boundary:** domain identifiers can represent multiple parks and operators, but one itinerary covers one park and one service day.
+- **Design principle:** generalize stable identities, timezones, contracts, and module boundaries without prematurely implementing multi-park, multi-day, or complex ticketing features.
+
+### Current stage
+
+The project is in the migration-preparation and behavior-locking stage. Governance and the initial characterization baseline are complete, while the existing static site and Node.js data pipeline remain operational. The suite covers both collection-window boundaries, CSV normalization, API/cache fallback, collector failure, canonical mapping, closed/zero semantics, stale data, the current missing-wait behavior, Single Rider, duplicate/conflict reporting, and optimizer-ready selection.
+
+| Capability | Current implementation | Target direction |
+| --- | --- | --- |
+| Product UI | Static multi-page HTML/CSS/JavaScript | TypeScript + Next.js PWA |
+| Data access | Browser reads third-party APIs with local JSON fallback | Owned API and versioned contracts |
+| Collection | Node.js scripts + GitHub Actions | Collector worker + ingestion adapters |
+| Storage | Transitional CSV/JSON data committed to Git | PostgreSQL/time-series storage + raw object storage |
+| Data quality | Node.js normalization, canonical mapping, and reports | Independent observations module with replayable lineage |
+| Forecasting | Not implemented | Reproducible baseline + versioned short-term forecasts |
+| Planning | Not implemented | Rule baseline + time-window optimization + dynamic replanning |
+
+Git-based operational collection is temporary. It remains unchanged until replacement storage, backfill, dual-write comparison, and cutover validation are ready. Long term, Git will retain only small test fixtures and intentional reference data.
+
+### Implemented today
+
+- Separate Disneyland Park and Disney California Adventure views.
+- Attraction, entertainment, operating-hours, and live-status displays.
+- Queue-Times and ThemeParks.wiki integrations with local cache fallback.
+- Five-minute browser refresh, manual refresh, Leaflet/OpenStreetMap mapping, and built-in coordinate fallback.
+- Structured retention of Single Rider data and its relationship to the base attraction.
+- Park-hours-aware collection, CSV normalization, canonical attraction mapping, quality checks, and optimizer-ready projections.
+- Architecture rules, module ownership, ADRs, an AI context map, governance CI, and migration-focused characterization tests.
+
+### Architecture
+
+The target is a modular monolith in a monorepo, not a collection of premature microservices.
+
+```text
+External park sources
+        |
+        v
+    ingestion -----> catalog
+        |
+        v
+   observations ----> forecasting
+        |                  |
+        +--------+---------+
+                 v
+              planning
+                 |
+                 v
+                API <---- web
+```
+
+| Module | Ownership |
+| --- | --- |
+| [catalog](modules/catalog/README.md) | Parks, attractions, aliases, access modes, and canonical identities |
+| [ingestion](modules/ingestion/README.md) | Third-party adapters, retries, raw payloads, attribution, and source health |
+| [observations](modules/observations/README.md) | Normalization, wait/status semantics, quality flags, deduplication, and lineage |
+| [forecasting](modules/forecasting/README.md) | Features, baselines, training, inference, evaluation, and model versions |
+| [planning](modules/planning/README.md) | Preferences, time windows, walking graph use, route scoring, and replanning |
+
+Applications and shared packages have separate boundaries: [web](apps/web/README.md), [API](apps/api/README.md), [collector worker](workers/collector/README.md), [contracts](packages/contracts/README.md), [domain primitives](packages/domain/README.md), [testkit](packages/testkit/README.md), and [infrastructure](infra/README.md).
+
+### Migration sequence
+
+1. **Governance foundation — complete:** rules, boundaries, ADRs, tests, and CI skeleton.
+2. **Characterization baseline — complete:** current collection, parsing, identity, quality, failure, and optimizer behavior.
+3. **Extract current modules:** split adapters and pure rules while keeping CLI commands and outputs stable.
+4. **Migrate storage:** introduce immutable raw storage and PostgreSQL/time-series persistence with backfill and dual-run comparison.
+5. **Introduce product API and PWA:** replace direct browser access to third-party sources with owned APIs.
+6. **Add forecasting and planning:** establish reproducible baselines before ML, OR-Tools, and rolling replanning.
+
+See the [migration roadmap](docs/architecture/migration-roadmap.md) for exit criteria.
+
+### Core data rules
+
+- `canonical_attraction_id` is the stable cross-source identity.
+- Source IDs are adapter evidence, not cross-module primary keys.
+- Persist event timestamps in UTC and retain each park's IANA timezone.
+- A closed attraction does not produce a real zero-minute standby observation.
+- Standby, Single Rider, virtual queue, and future access modes remain structurally distinct.
+- Raw observations are immutable; normalized and derived records retain lineage and producing versions.
+- Forecast and route outputs include generation time and model or algorithm version.
+
+### Run locally
+
+Open `index.html`, or serve the static site:
+
+```powershell
+python -m http.server 5173
+```
+
+Run collection and analysis:
+
+```powershell
+node scripts/collect-wait-times.mjs
+node scripts/collect-wait-times.mjs --normalize-only
+node scripts/update-cache.mjs
+node scripts/analyze-wait-times.mjs
+node scripts/analyze-wait-times.mjs --no-write
+```
+
+Run the characterization suite or all checks:
+
+```powershell
+npm run test:characterization
+npm run check
+```
+
+The characterization tests execute copies of the real CLI entrypoints in temporary directories. They do not call live APIs or modify production data in the repository. See the [test README](tests/characterization/README.md) for the protected behaviors and known legacy semantics.
+
+### Documentation entrypoints
+
+- New development task: read [Project Rules](AGENTS.md) and the [AI Context Map](docs/ai/context-map.md).
+- System architecture: read the [Architecture Overview](docs/architecture/overview.md).
+- Domain change: read the owning `modules/<name>/README.md` and affected public contracts.
+- Durable decision: add or supersede an [ADR](docs/adr/README.md); do not silently rewrite history.
+- Current data-quality implementation: read the [V0.5 Data Quality README](docs/v0.5-readme.md).

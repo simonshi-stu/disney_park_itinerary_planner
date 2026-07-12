@@ -2,7 +2,7 @@
 
 ## Phase 0 - Governance Foundation
 
-Status: current phase.
+Status: complete.
 
 - Establish project and subtree rules.
 - Document current reality, target boundaries, data ownership, and decisions.
@@ -12,6 +12,8 @@ Status: current phase.
 Exit: governance CI passes and the diff contains no runtime behavior change.
 
 ## Phase 1 - Characterization
+
+Status: migration baseline complete; extend only for newly discovered extraction risks.
 
 - Add tests around current collection windows, CSV parsing, canonical mapping, closed/zero waits, stale data, Single Rider, and optimizer-row selection.
 - Create small representative fixtures.
