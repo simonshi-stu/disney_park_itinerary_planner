@@ -1,0 +1,2 @@
+﻿snapshot_utc,park_id,park_name,land,ride_id,ride_name,is_open,wait_time_minutes,source_last_updated_utc,source_url
+2026-07-02T17:00:00.000Z,disneyland,Disneyland,"Mickey's Toontown, East",quoted,"Mickey's House, and Meet Mickey Mouse",TRUE,10,2026-07-02T16:59:00.000Z,fixture://queue-times
