@@ -10,6 +10,11 @@
 - **Closed / zero：**关闭项目原始值即使为零，也不产生真实的零分钟等待观测；开放项目的零分钟仍保留为有效观测。
 - **Single Rider：**验证 Single Rider 是独立的 `access_mode`。出现过可信正等待值的队列可作为 optimizer reference，不与 standby 数据混合。
 - **Optimizer-ready selection：**同一 canonical attraction 存在多个候选时，验证当前脚本优先选择新鲜、符合使用条件的记录，并输出候选数量和选择原因。
+- **闭园边界：**锁定闭园后 60 分钟仍属于采集窗口，而下一秒已经离开窗口。
+- **API/cache fallback：**schedule API 失败时读取每个园区的本地 schedule cache；queue API 返回错误时采集命令明确失败，而不是生成空的成功快照。
+- **Stale source：**超过阈值的来源记录保留审计字段，但标记为 `stale_source` 并从等待时间训练及 optimizer 选择中排除。
+- **重复与 canonical conflict：**分别报告同一快照中的同名重复来源行，以及映射到同一 canonical attraction 的多个候选。
+- **缺失等待值的当前行为：**当前脚本会把开放项目的空字符串经 `Number("")` 转换为零，并当作 `open_zero`。测试刻意记录这个遗留行为；它不是目标语义，后续修改必须作为明确的 observations 行为变更处理。
 
 ## 为什么采用这种实现
 
