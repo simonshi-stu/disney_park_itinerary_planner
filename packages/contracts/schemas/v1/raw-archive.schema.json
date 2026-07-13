@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/raw-archive.schema.json",
+  "title": "Immutable raw archive v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "raw_archive_id", "sha256", "object_uri", "byte_size", "source_name", "schema_version"],
+  "properties": {
+    "contract_version": { "const": "raw-archive.v1" },
+    "raw_archive_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "object_uri": { "type": "string", "pattern": "^(s3|gs|az)://" },
+    "byte_size": { "type": "integer", "minimum": 1 },
+    "source_name": { "type": "string", "minLength": 1 },
+    "schema_version": { "type": "string", "minLength": 1 }
+  }
+}

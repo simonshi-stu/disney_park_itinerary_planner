@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/raw-wait-observation.schema.json",
+  "title": "Raw wait observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "raw_observation_id", "raw_archive_id", "source_row_number", "snapshot_utc", "snapshot_timezone", "park_id", "ride_id", "ride_name", "is_open", "source_last_updated_utc", "source_url"],
+  "properties": {
+    "contract_version": { "const": "raw-wait-observation.v1" },
+    "raw_observation_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "raw_archive_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source_row_number": { "type": "integer", "minimum": 1 },
+    "snapshot_utc": { "type": "string", "format": "date-time" },
+    "snapshot_park_datetime": { "type": "string" },
+    "snapshot_park_date": { "type": "string", "format": "date" },
+    "snapshot_timezone": { "type": "string", "const": "America/Los_Angeles" },
+    "park_id": { "type": "string", "minLength": 1 },
+    "park_name": { "type": "string" },
+    "land": { "type": "string" },
+    "ride_id": { "type": "string", "minLength": 1 },
+    "ride_name": { "type": "string", "minLength": 1 },
+    "is_open": { "type": "boolean" },
+    "wait_time_minutes": { "type": ["integer", "null"], "minimum": 0 },
+    "source_last_updated_utc": { "type": "string", "format": "date-time" },
+    "source_last_updated_park_datetime": { "type": "string" },
+    "source_url": { "type": "string", "minLength": 1 }
+  }
+}

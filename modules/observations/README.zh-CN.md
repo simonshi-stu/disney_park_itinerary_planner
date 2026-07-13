@@ -16,4 +16,4 @@ Vendor HTTP、canonical ID 策略、forecast model 或 route score。
 依赖 ingestion envelope、catalog identity、schedule 和 persistence port。Closed 不等于真实零分钟等待；stale 保留审计但按版本化策略排除；access mode 保持独立；normalized record 保留 raw lineage 和 transformation version。
 
 ## 当前状态与缺口
-Bootstrap 主要位于 `scripts/analyze-wait-times.mjs`，迁移前由 characterization tests 保护。当前脚本会把开放项目的空等待字符串转换为零，这是已记录的遗留行为，不是目标 contract。尚无独立 schema package、数据库或 policy version。
+Bootstrap 主要位于 `scripts/analyze-wait-times.mjs`，迁移前由 characterization tests 保护。当前脚本会把开放项目的空等待字符串转换为零，这是已记录的遗留行为，不是目标 contract。`normalized-wait-observation.v1`、PostgreSQL persistence 和默认 standby analysis view 已建立；正式 normalization use case、policy version 升级和缺失日期重放尚未完成。

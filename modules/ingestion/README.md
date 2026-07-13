@@ -28,8 +28,8 @@ Catalog identity-resolution port, raw object storage port, clock, and source-spe
 
 ## Current Status
 
-Bootstrap implementation is in `scripts/collect-wait-times.mjs`, `scripts/update-cache.mjs`, and `.github/workflows/collect-wait-times.yml`. It must remain behaviorally stable during governance.
+Bootstrap implementation is in `scripts/collect-wait-times.mjs`, `scripts/update-cache.mjs`, and `.github/workflows/collect-wait-times.yml`. It remains behaviorally stable. V1 raw contracts, S3-compatible archival, and PostgreSQL raw persistence now support historical backfill.
 
 ## Known Gaps
 
-The collector writes CSV/JSON to Git and does not yet provide permanent raw object archival or source-health persistence.
+Live source-envelope ingestion, source-health persistence, hosted storage, and cutover remain incomplete.

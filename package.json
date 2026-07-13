@@ -6,8 +6,13 @@
     "check:governance": "node scripts/check-governance.mjs",
     "test:governance": "node --test tests/governance/project-structure.test.mjs",
     "test:characterization": "node --test tests/characterization/bootstrap-behavior.test.mjs",
-    "check:syntax": "node --check src/app.js && node --check src/data.js && node --check scripts/collect-wait-times.mjs && node --check scripts/analyze-wait-times.mjs && node --check scripts/update-cache.mjs",
-    "check": "npm run check:governance && npm run test:governance && npm run test:characterization && npm run check:syntax"
+    "test:storage": "node --test tests/storage/observation-storage.test.mjs",
+    "check:syntax": "node --check src/app.js && node --check src/data.js && node --check scripts/collect-wait-times.mjs && node --check scripts/analyze-wait-times.mjs && node --check scripts/update-cache.mjs && node --check scripts/backfill-wait-times-to-postgres.mjs && node --check infra/backfill/wait-time-records.mjs",
+    "check": "npm run check:governance && npm run test:governance && npm run test:characterization && npm run test:storage && npm run check:syntax"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.883.0",
+    "pg": "^8.16.3"
   },
   "engines": {
     "node": ">=24"

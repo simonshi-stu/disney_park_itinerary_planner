@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/normalized-wait-observation.schema.json",
+  "title": "Normalized wait observation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract_version", "normalized_observation_id", "raw_observation_id", "canonical_attraction_id", "access_mode", "is_open", "quality_flags", "training_eligibility", "transformation_version", "generated_at"],
+  "properties": {
+    "contract_version": { "const": "normalized-wait-observation.v1" },
+    "normalized_observation_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "raw_observation_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "canonical_attraction_id": { "type": "string", "minLength": 1 },
+    "canonical_attraction_name": { "type": "string", "minLength": 1 },
+    "canonical_category": { "type": "string", "enum": ["attraction", "entertainment"] },
+    "canonical_match_source": { "type": "string", "minLength": 1 },
+    "access_mode": { "type": "string", "enum": ["standby", "single_rider", "virtual_queue", "other"] },
+    "is_open": { "type": "boolean" },
+    "observed_wait_time_minutes": { "type": ["integer", "number", "null"], "minimum": 0 },
+    "quality_flags": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "training_eligibility": { "type": "string", "minLength": 1 },
+    "transformation_version": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [{
+    "if": { "properties": { "is_open": { "const": false } }, "required": ["is_open"] },
+    "then": { "properties": { "observed_wait_time_minutes": { "type": "null" } } }
+  }]
+}
