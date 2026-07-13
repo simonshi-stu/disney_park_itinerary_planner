@@ -29,8 +29,8 @@ Ingestion envelopes, catalog identities, schedules, and persistence ports.
 
 ## Current Status
 
-Bootstrap behavior lives primarily in `scripts/analyze-wait-times.mjs` and generated data-quality outputs. Characterization tests are required before extraction.
+Bootstrap behavior remains in `scripts/analyze-wait-times.mjs` under characterization tests. The V1 normalized contract, PostgreSQL persistence, and default standby analysis view now support historical backfill.
 
 ## Known Gaps
 
-No independent schema package, database, or policy-version mechanism exists.
+The formal normalization use case, a policy-version upgrade, and replay of raw-only dates remain incomplete.

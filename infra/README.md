@@ -13,4 +13,6 @@ Own deployment definitions, database migrations, raw object storage configuratio
 
 ## Current Status
 
-The active collection mechanism is GitHub Actions plus repository data files. No infrastructure migration occurs in the governance phase.
+`compose.yaml`, `migrations/0001_observation_storage.sql`, and the historical backfill command now establish PostgreSQL catalog/ingestion/observations schemas and S3-compatible immutable raw storage. The active hosted collector still writes repository files until hosted credentials, missing-date replay, dual-run comparison, and rollback validation are complete.
+
+Run `node scripts/backfill-wait-times-to-postgres.mjs --check` for a database-free inventory and invariant check. Start the local stack with `docker compose -f infra/compose.yaml up -d` after supplying the required local-only credentials. The full command requires `DATABASE_URL` plus S3-compatible storage environment variables; it uploads raw archives before inserting idempotent database records.

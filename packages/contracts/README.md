@@ -21,4 +21,12 @@ Provide versioned, machine-checkable schemas used across modules and application
 
 ## Current Status
 
-Documentation skeleton only. Schemas will be introduced alongside characterization and module extraction.
+`schemas/v1/` contains the first persisted-data boundaries: immutable raw archives, raw wait observations, and normalized wait observations. They support historical backfill and the PostgreSQL adapter without changing the bootstrap CSV format.
+
+## V1 Wait-Time Constraints
+
+- A source-provided zero while closed remains raw evidence only.
+- A closed normalized record has a null `observed_wait_time_minutes`; zero is valid only for an open observation.
+- `access_mode` distinguishes standby, Single Rider, virtual queue, and other modes.
+- Every normalized record references its raw record and records transformation version and generation time.
+- Current park data uses `America/Los_Angeles` while event timestamps remain UTC.

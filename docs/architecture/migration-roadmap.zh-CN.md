@@ -22,6 +22,8 @@
 - 对比文件与数据库输出。
 - 验证切换后停止向应用分支提交 live/derived data。
 
+状态：进行中。V1 raw/normalized contracts、additive PostgreSQL migration、S3-compatible raw archive 和幂等历史回填器已建立。当前盘点确认 2026-07-09 至 2026-07-12 只有 raw、没有对应 cleaned artifact；这些日期必须重放 normalization。Hosted credential、dual-run comparison、cutover 和 rollback 尚未完成，所以 Git 写入暂不关闭。
+
 ## Phase 4：产品 API 与 Web
 
 - 为 catalog/observations 引入 FastAPI use cases。

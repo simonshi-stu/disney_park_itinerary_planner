@@ -37,6 +37,8 @@ Exit: thousand-line entrypoints become composition layers and tests remain green
 - Compare file and database outputs.
 - Stop committing live and derived data to the application branch.
 
+Status: in progress. V1 raw/normalized contracts, an additive PostgreSQL migration, S3-compatible raw archival, and an idempotent historical backfill are implemented. The current inventory shows raw-only dates from 2026-07-09 through 2026-07-12 that still require normalization replay. Hosted credentials, dual-run comparison, cutover, and rollback remain incomplete, so Git writes stay enabled.
+
 Exit: the operational source of truth is outside Git and replay remains possible.
 
 ## Phase 4 - Product API and Web
