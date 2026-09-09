@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
+import { normalizeWaitObservation } from "../../modules/observations/index.mjs";
 
 export const transformationVersion = "bootstrap-analyzer.v0.5";
+export const replayTransformationVersion = "target-normalizer.v1";
 export const rawSchemaVersion = "raw-wait-observation.v1";
 
 export async function buildBackfillPlan(root, options = {}) {
@@ -25,6 +27,9 @@ export async function buildBackfillPlan(root, options = {}) {
   const normalizedRecords = [];
   const normalizedDates = [];
   const missingNormalizedDates = [];
+  const replayedNormalizedDates = [];
+  const aliases = parseCsv(await readFile(aliasPath, "utf8"));
+  const aliasLookup = buildAliasLookup(aliases);
 
   for (const rawName of rawNames) {
     const date = rawName.slice("wait_times_".length, -".csv".length);
@@ -41,7 +46,11 @@ export async function buildBackfillPlan(root, options = {}) {
 
     const cleanedName = `wait_times_cleaned_${date}.csv`;
     if (!cleanedNames.has(cleanedName)) {
+      // Raw-only date: replay with the target normalizer so the date stops blocking forecast readiness.
       missingNormalizedDates.push(date);
+      normalizedRecords.push(...buildReplayNormalizedRecords(dateRawRecords, aliasLookup, options.generatedAt));
+      normalizedDates.push(date);
+      replayedNormalizedDates.push(date);
       continue;
     }
     const cleanedRows = parseCsv(await readFile(path.join(cleanedDir, cleanedName), "utf8"));
@@ -55,8 +64,7 @@ export async function buildBackfillPlan(root, options = {}) {
     normalizedDates.push(date);
   }
 
-  const aliases = parseCsv(await readFile(aliasPath, "utf8"));
-  const report = buildReport({ archives, rawRecords, normalizedRecords, normalizedDates, missingNormalizedDates, aliases });
+  const report = buildReport({ archives, rawRecords, normalizedRecords, normalizedDates, missingNormalizedDates, replayedNormalizedDates, aliases });
   return { archives, rawRecords, normalizedRecords, aliases, report };
 }
 
@@ -144,15 +152,132 @@ function toNormalizedRecord(row, raw, generatedAt) {
   };
 }
 
-function buildReport({ archives, rawRecords, normalizedRecords, normalizedDates, missingNormalizedDates, aliases }) {
+function buildReplayNormalizedRecords(dateRawRecords, aliasLookup, generatedAt) {
+  return dateRawRecords.map((raw) => {
+    // Target semantics: closed rows keep no observed wait; open missing wait stays null.
+    const normalized = normalizeWaitObservation({
+      snapshotUtc: raw.snapshotUtc,
+      sourceLastUpdatedUtc: raw.sourceLastUpdatedUtc,
+      isOpen: raw.isOpen,
+      waitTimeMinutes: raw.waitTimeMinutes,
+      rideName: raw.rideName
+    });
+    if (!normalized.isOpen && normalized.observedWaitTimeMinutes !== null) {
+      throw new Error(`Replay produced a closed wait for raw ${raw.rawObservationId}`);
+    }
+    const canonical = resolveCanonicalForReplay(raw, aliasLookup);
+    return {
+      normalizedObservationId: hash(`${raw.rawObservationId}:${replayTransformationVersion}`),
+      rawObservationId: raw.rawObservationId,
+      canonicalAttractionId: canonical.canonicalAttractionId,
+      canonicalAttractionName: canonical.canonicalAttractionName,
+      canonicalCategory: canonical.canonicalCategory,
+      canonicalMatchSource: canonical.canonicalMatchSource,
+      accessMode: normalized.accessMode,
+      isOpen: normalized.isOpen,
+      observedWaitTimeMinutes: normalized.observedWaitTimeMinutes,
+      sourceAgeMinutes: normalized.sourceAgeMinutes,
+      qualityFlags: normalized.qualityFlags,
+      trainingEligibility: normalized.trainingEligibility,
+      transformationVersion: replayTransformationVersion,
+      generatedAt: generatedAt || new Date().toISOString()
+    };
+  });
+}
+
+// Canonical identity resolution for replayed rows. This mirrors the bootstrap
+// analyzer's documented mapping semantics (alias CSV lookup followed by an
+// auto-normalized slug) so replayed canonical IDs stay comparable to the ones
+// in legacy cleaned files. The catalog module's mapping use case replaces this
+// adapter logic in a later phase.
+function buildAliasLookup(aliases) {
+  const lookup = new Map();
+  for (const row of aliases) {
+    const parkId = String(row.park_id || "");
+    const aliasName = String(row.alias_name || "");
+    const canonicalId = String(row.canonical_attraction_id || "");
+    if (!parkId || !aliasName || !canonicalId) continue;
+    lookup.set(`${parkId}\u001f${normalizeCatalogNameValue(aliasName)}`, {
+      canonicalAttractionId: canonicalId,
+      canonicalName: String(row.canonical_name || aliasName),
+      category: String(row.category || "attraction")
+    });
+  }
+  return lookup;
+}
+
+function resolveCanonicalForReplay(raw, aliasLookup) {
+  const parkId = String(raw.parkId);
+  const rideName = String(raw.rideName);
+  const baseRideName = stripSingleRiderSuffixValue(rideName);
+  const normalizedRideName = normalizeCatalogNameValue(rideName);
+  const normalizedBaseRideName = normalizeCatalogNameValue(baseRideName);
+  const exactAlias = aliasLookup.get(`${parkId}\u001f${normalizedRideName}`);
+  const baseAlias = aliasLookup.get(`${parkId}\u001f${normalizedBaseRideName}`);
+  const matchedAlias = exactAlias || baseAlias;
+  if (matchedAlias) {
+    return {
+      canonicalAttractionId: matchedAlias.canonicalAttractionId,
+      canonicalAttractionName: matchedAlias.canonicalName,
+      canonicalCategory: matchedAlias.category,
+      canonicalMatchSource: exactAlias ? "alias_exact" : "alias_base"
+    };
+  }
+  const normalizedName = normalizedBaseRideName || normalizedRideName || String(raw.rideId || "unknown");
+  return {
+    canonicalAttractionId: `${parkId}-${slugifyCanonical(normalizedName)}`,
+    canonicalAttractionName: baseRideName || rideName,
+    canonicalCategory: isLikelyEntertainmentNameValue(rideName) ? "entertainment" : "attraction",
+    canonicalMatchSource: "auto_normalized"
+  };
+}
+
+function normalizeCatalogNameValue(name) {
+  return String(name || "")
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[™®©]/g, "")
+    .replace(/[’‘`]/g, "'")
+    .replace(/[“”"]/g, "")
+    .replace(/[–—]/g, "-")
+    .replace(/\s*&\s*/g, " and ")
+    .replace(/[^a-z0-9'\- ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripSingleRiderSuffixValue(name) {
+  return String(name || "").replace(/\s*single\s+rider\s*/i, "").trim();
+}
+
+function slugifyCanonical(value) {
+  return (
+    String(value || "unknown")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 80) || "unknown"
+  );
+}
+
+function isLikelyEntertainmentNameValue(name) {
+  return /\b(world of color|fireworks|parade|nighttime spectacular|magic happens|fantasmic)\b/i.test(String(name || ""));
+}
+
+function buildReport({ archives, rawRecords, normalizedRecords, normalizedDates, missingNormalizedDates, replayedNormalizedDates, aliases }) {
   const closedWithObservedWait = normalizedRecords.filter((row) => !row.isOpen && row.observedWaitTimeMinutes !== null).length;
   const invalidTimezones = rawRecords.filter((row) => row.snapshotTimezone !== "America/Los_Angeles").length;
   if (closedWithObservedWait || invalidTimezones) throw new Error("Backfill violates normalized wait or timezone invariants");
+  const replayedDates = replayedNormalizedDates || [];
   return {
     rawArchiveCount: archives.length,
     rawObservationCount: rawRecords.length,
     normalizedObservationCount: normalizedRecords.length,
     normalizedDates,
+    cleanedNormalizedDates: normalizedDates.filter((date) => !replayedDates.includes(date)),
+    replayedNormalizedDates: replayedDates,
+    replayedNormalizedCount: normalizedRecords.filter((row) => row.transformationVersion === replayTransformationVersion).length,
     missingNormalizedDates,
     aliasCount: aliases.length,
     singleRiderCount: normalizedRecords.filter((row) => row.accessMode === "single_rider").length,

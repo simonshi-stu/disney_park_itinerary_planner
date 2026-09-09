@@ -130,13 +130,16 @@ async function verifyDatabase(pool, plan) {
     "SELECT count(*)::integer AS count FROM ingestion.raw_wait_observations WHERE raw_archive_id::text = ANY($1::text[])",
     [archiveIds]
   );
+  // Count every transformation version present in the plan: legacy cleaned rows
+  // and target-normalizer replayed rows can share the same archives.
+  const transformationVersions = [...new Set(plan.normalizedRecords.map((row) => row.transformationVersion))];
   const normalizedResult = await pool.query(
     `SELECT count(*)::integer AS count
        FROM observations.normalized_wait_observations AS normalized
        JOIN ingestion.raw_wait_observations AS raw USING (raw_observation_id)
       WHERE raw.raw_archive_id::text = ANY($1::text[])
-        AND normalized.transformation_version = $2`,
-    [archiveIds, plan.normalizedRecords[0]?.transformationVersion || "bootstrap-analyzer.v0.5"]
+        AND normalized.transformation_version = ANY($2::text[])`,
+    [archiveIds, transformationVersions.length ? transformationVersions : ["bootstrap-analyzer.v0.5"]]
   );
   const actual = { rawObservationCount: rawResult.rows[0].count, normalizedObservationCount: normalizedResult.rows[0].count };
   if (actual.rawObservationCount !== plan.report.rawObservationCount || actual.normalizedObservationCount !== plan.report.normalizedObservationCount) {

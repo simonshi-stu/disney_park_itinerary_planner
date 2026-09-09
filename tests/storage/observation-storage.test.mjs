@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { buildBackfillPlan, transformationVersion } from "../../infra/backfill/wait-time-records.mjs";
+import { buildBackfillPlan, transformationVersion, replayTransformationVersion } from "../../infra/backfill/wait-time-records.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -132,6 +132,42 @@ test("backfill uses the shared migration runner and never hardcodes 0001", async
   assert.doesNotMatch(backfillSource, /0001_observation_storage\.sql/);
 });
 
+test("target-normalizer replay covers raw-only dates with target semantics and stays idempotent", async () => {
+  const fixtureRoot = await mkdtemp(path.join(os.tmpdir(), "replay-storage-"));
+  try {
+    await mkdir(path.join(fixtureRoot, "data/wait_times"), { recursive: true });
+    await mkdir(path.join(fixtureRoot, "data/processed/wait_times"), { recursive: true });
+    await mkdir(path.join(fixtureRoot, "data/catalog"), { recursive: true });
+    await writeFile(path.join(fixtureRoot, "data/wait_times/wait_times_2026-07-09.csv"), replayRawFixture, "utf8");
+    await writeFile(path.join(fixtureRoot, "data/catalog/attraction-aliases.csv"), aliasFixture, "utf8");
+
+    const plan = await buildBackfillPlan(fixtureRoot, { generatedAt: "2026-07-10T00:00:00.000Z" });
+    assert.deepEqual(plan.report.missingNormalizedDates, ["2026-07-09"]);
+    assert.deepEqual(plan.report.replayedNormalizedDates, ["2026-07-09"]);
+    assert.equal(plan.report.replayedNormalizedCount, plan.normalizedRecords.length);
+    assert.ok(plan.normalizedRecords.every((row) => row.transformationVersion === replayTransformationVersion));
+    assert.ok(plan.normalizedRecords.every((row) => plan.rawRecords.some((raw) => raw.rawObservationId === row.rawObservationId)));
+
+    const closed = plan.normalizedRecords.find((row) => !row.isOpen);
+    assert.equal(closed.observedWaitTimeMinutes, null);
+    const openMissing = plan.normalizedRecords.find((row) => row.qualityFlags.includes("missing_wait"));
+    assert.equal(openMissing.observedWaitTimeMinutes, null);
+    const openZero = plan.normalizedRecords.find((row) => row.qualityFlags.includes("open_zero"));
+    assert.equal(openZero.observedWaitTimeMinutes, 0);
+    const singleRider = plan.normalizedRecords.find((row) => row.accessMode === "single_rider");
+    assert.equal(singleRider.canonicalAttractionId, "dca-soarin");
+    assert.equal(singleRider.canonicalMatchSource, "alias_base");
+
+    const second = await buildBackfillPlan(fixtureRoot, { generatedAt: "2026-07-10T00:00:00.000Z" });
+    assert.deepEqual(
+      second.normalizedRecords.map((row) => row.normalizedObservationId),
+      plan.normalizedRecords.map((row) => row.normalizedObservationId)
+    );
+  } finally {
+    await rm(fixtureRoot, { recursive: true, force: true });
+  }
+});
+
 const rawFixture = `snapshot_utc,snapshot_park_datetime,snapshot_park_date,snapshot_timezone,park_id,park_name,land,ride_id,ride_name,is_open,wait_time_minutes,source_last_updated_utc,source_last_updated_park_datetime,source_url
 2026-07-01T17:00:00.000Z,2026-07-01 10:00:00,2026-07-01,America/Los_Angeles,dca,Disney California Adventure,Grizzly Peak,ride-1,Soarin' Across America,TRUE,25,2026-07-01T16:58:00.000Z,2026-07-01 09:58:00,fixture://queue-times
 2026-07-01T17:00:00.000Z,2026-07-01 10:00:00,2026-07-01,America/Los_Angeles,dca,Disney California Adventure,Grizzly Peak,ride-sr,Soarin' Across America Single Rider,TRUE,0,2026-07-01T16:58:00.000Z,2026-07-01 09:58:00,fixture://queue-times
@@ -147,4 +183,11 @@ const cleanedFixture = `snapshot_utc,snapshot_park_datetime,snapshot_park_date,s
 
 const aliasFixture = `park_id,alias_name,canonical_attraction_id,canonical_name,category,notes
 dca,Soarin' Across America,dca-soarin,Soarin',attraction,Renamed versions share one canonical ID
+`;
+
+const replayRawFixture = `snapshot_utc,snapshot_park_datetime,snapshot_park_date,snapshot_timezone,park_id,park_name,land,ride_id,ride_name,is_open,wait_time_minutes,source_last_updated_utc,source_last_updated_park_datetime,source_url
+2026-07-09T17:00:00.000Z,2026-07-09 10:00:00,2026-07-09,America/Los_Angeles,dca,Disney California Adventure,Grizzly Peak,ride-1,Soarin' Across America,TRUE,25,2026-07-09T16:58:00.000Z,2026-07-09 09:58:00,fixture://queue-times
+2026-07-09T17:00:00.000Z,2026-07-09 10:00:00,2026-07-09,America/Los_Angeles,dca,Disney California Adventure,Grizzly Peak,ride-sr,Soarin' Across America Single Rider,TRUE,0,2026-07-09T16:58:00.000Z,2026-07-09 09:58:00,fixture://queue-times
+2026-07-09T17:00:00.000Z,2026-07-09 10:00:00,2026-07-09,America/Los_Angeles,disneyland,Disneyland,Tomorrowland,open-missing,Space Mountain,TRUE,,2026-07-09T16:58:00.000Z,2026-07-09 09:58:00,fixture://queue-times
+2026-07-09T17:00:00.000Z,2026-07-09 10:00:00,2026-07-09,America/Los_Angeles,disneyland,Disneyland,Fantasyland,closed-ride,Matterhorn Bobsleds,FALSE,0,2026-07-09T16:58:00.000Z,2026-07-09 09:58:00,fixture://queue-times
 `;

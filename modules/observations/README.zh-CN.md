@@ -24,4 +24,4 @@ Vendor HTTP、canonical ID 策略、forecast model 或 route score。
 ## 当前状态与缺口
 Bootstrap 主要位于 `scripts/analyze-wait-times.mjs`，迁移前由 characterization tests 保护。当前脚本会把开放项目的空等待字符串转换为零，这是已记录的遗留行为，不是目标 contract。`normalized-wait-observation.v1`、PostgreSQL persistence、默认 standby analysis view、目标清洗函数和历史审计已建立；正式 normalization use case 尚未接入 bootstrap/数据库写入。
 
-审计默认把连续 7 个完整营业日几乎全程关闭的来源项目标记为 `sustained_unavailability_review` 并从预测候选排除，但不能仅凭等待观测断言它是 refurbishment 或永久退役；最终生命周期状态必须由 catalog 的有效期元数据确认。缺失日期重放仍未完成。
+审计默认把连续 7 个完整营业日几乎全程关闭的来源项目标记为 `sustained_unavailability_review` 并从预测候选排除，但不能仅凭等待观测断言它是 refurbishment 或永久退役；最终生命周期状态必须由 catalog 的有效期元数据确认。缺少 cleaned 文件的历史日期已由回填器用本模块的 `normalizeWaitObservation` 重放（`infra/backfill`，transformation `target-normalizer.v1`）；parity 报告与实时 normalization use case 尚未接入。
