@@ -26,7 +26,7 @@
     "02b2a-restore-runbook-v4-final": { "status": "completed", "evidence": ["docs/data/storage-backup-restore.zh-CN.md"] },
     "02b2b-migration-runbook-link": { "status": "completed", "evidence": ["docs/data/migration-runbook.zh-CN.md"] },
     "02b2c-infra-restore-docs": { "status": "completed", "evidence": ["infra/README.zh-CN.md"], "notes": "Implementation and local PostgreSQL 17 restore verification are complete. Hosted credentials, cloud resource creation and the first hosted restore remain explicit human gates." },
-    "03a-history-replay-normalizer": { "status": "pending" },
+    "03a-history-replay-normalizer": { "status": "pending", "notes": "Replay implementation landed: target-normalizer.v1 covers all 27 raw-only dates (155310 replayed rows on real repo data, 0 closed-wait and 0 timezone violations; fixture assertions pass). Full npm run check and live backfill must run outside the sandbox (node --test spawn EPERM) before marking completed." },
     "03b-replay-parity-report": { "status": "pending" },
     "03c-replay-runbook-update": { "status": "pending" },
     "04a-source-envelope-use-case": { "status": "pending" },

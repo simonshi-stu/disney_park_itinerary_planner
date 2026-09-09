@@ -26,8 +26,8 @@
 
 ## 未完成（下一步）
 
-1. **提交未提交的 Phase 1/2 工作**（当前全部在 `main` 未提交，存在丢失风险）：按 charter 步骤 1 的 5 个逻辑分组提交（工具/编排 → contracts → observations → infra → 进度报告）。
-2. **Phase 03a 目标 normalizer 历史重放**：补齐 2026-07-09 至 2026-07-12 缺失 normalized 日期（当前唯一阻塞预测准入的数据前置条件）。
+1. ~~提交未提交的 Phase 1/2 工作~~ **已完成（2026-09-09，5 个逻辑分组提交）**。
+2. **Phase 03a 目标 normalizer 历史重放**：实现已落地（`target-normalizer.v1`，真实仓库数据 27 个 raw-only 日期共 155,310 行重放记录、closed-wait 0 违规）；**剩余**：在 CI/本机跑 `npm run check` 通过后标记 completed，并在有凭证环境执行 live backfill（`node scripts/backfill-wait-times-to-postgres.mjs`）。
 3. **Phase 03b/03c**：parity 报告与重放手册。
 4. **Phase 04–08**：采集双写与 source health → FastAPI → Next.js PWA → 预测/规划 baseline → 部署。
 
