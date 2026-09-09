@@ -6,9 +6,10 @@
 
 1. 根目录 `AGENTS.md`。
 2. 本文件。
-3. 最近的适用 `AGENTS.md`。
-4. 所属模块的 `README.zh-CN.md`。
-5. 任务直接影响的公共 contract 和测试。
+3. `docs/ai/agent-change-test-charter.zh-CN.md`（修改边界与测试准则）。
+4. 最近的适用 `AGENTS.md`。
+5. 所属模块的 `README.zh-CN.md`。
+6. 任务直接影响的公共 contract 和测试。
 
 不要默认读取全部历史 CSV/JSON、生成报告、cache 或无关模块。
 
@@ -23,7 +24,7 @@
 | 路线优化或重规划 | `modules/planning/README.zh-CN.md`、catalog/forecast/planning contracts、回放测试 |
 | 用户界面 | `apps/web/README.zh-CN.md`、API contracts、受影响页面/组件测试 |
 | API endpoint | `apps/api/README.zh-CN.md`、所属模块公共接口、API contracts |
-| 数据库或部署 | `infra/README.zh-CN.md`、中文数据流和相关 ADR |
+| 数据库或部署 | `infra/README.zh-CN.md`、`docs/data/migration-runbook.zh-CN.md`、`docs/architecture/agent-workflow.zh-CN.md`、`docs/agent-task-handbook.zh-CN.md`、中文数据流和相关 ADR |
 
 ## 当前实现位置
 
@@ -44,4 +45,5 @@
 - 架构边界更新 `docs/architecture/` 或新增 ADR。
 - 模块不变量/公共接口更新所属模块 README。
 - API/数据形状更新 contract schema。
+- 数据语义、生命周期和预测准入：`docs/data/data-dictionary.zh-CN.md`、`docs/data/data-governance.zh-CN.md`、`docs/data/forecast-readiness.zh-CN.md`。
 - 临时进度只更新一个指定状态来源，不能复制到所有 README。

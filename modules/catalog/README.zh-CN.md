@@ -18,4 +18,10 @@
 只依赖共享领域 primitive 和 persistence port；vendor adapter 消费 catalog，catalog 不调用 vendor。Canonical ID 在改名、季节 overlay、vendor-ID 变化后保持稳定；园区显式记录运营商、度假区和 IANA timezone；access mode 是结构化字段。
 
 ## 当前状态与缺口
-当前映射仍在 `data/catalog/attraction-aliases.csv`、`src/data.js` 和分析脚本。尚无版本化 catalog schema、mapping-review workflow 或 persistence layer。
+当前映射仍在 `data/catalog/attraction-aliases.csv`、`src/data.js` 和分析脚本。`catalog-attraction-lifecycle.v1` 已定义排队能力、支持的 access modes、生命周期、官方证据、有效期及训练/规划 disposition；mapping-review workflow、catalog use case 和 persistence layer 尚未实现。
+
+## 生命周期不变量
+- `wait_capability` 使用 `posted_standby`、`schedule_only`、`no_queue` 或 `unknown`，不复用 observation 的 `access_mode`。
+- `refurbishment` 保留历史但不可训练和推荐；`retired` 保留历史但永久不可训练和推荐；`unknown` 必须审核。
+- operating、refurbishment、seasonal 和 retired 必须有官方 Disney 页面或官方 App 证据。
+- 状态变化通过 `valid_from`/`valid_to` 新增记录，不覆盖历史。

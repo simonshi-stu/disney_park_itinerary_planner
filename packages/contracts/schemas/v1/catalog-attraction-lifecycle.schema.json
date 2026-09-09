@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/catalog-attraction-lifecycle.schema.json",
+  "title": "Catalog attraction lifecycle v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "canonical_attraction_id",
+    "park_id",
+    "park_timezone",
+    "wait_capability",
+    "supported_access_modes",
+    "operational_state",
+    "training_disposition",
+    "planning_disposition",
+    "evidence",
+    "valid_from",
+    "valid_to",
+    "catalog_version",
+    "generated_at"
+  ],
+  "properties": {
+    "contract_version": { "const": "catalog-attraction-lifecycle.v1" },
+    "canonical_attraction_id": { "type": "string", "minLength": 1 },
+    "park_id": { "type": "string", "minLength": 1 },
+    "park_timezone": { "const": "America/Los_Angeles" },
+    "wait_capability": {
+      "type": "string",
+      "enum": ["posted_standby", "schedule_only", "no_queue", "unknown"]
+    },
+    "supported_access_modes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["standby", "single_rider", "virtual_queue", "other"]
+      },
+      "uniqueItems": true
+    },
+    "operational_state": {
+      "type": "string",
+      "enum": ["operating", "refurbishment", "seasonal", "retired", "unknown"]
+    },
+    "training_disposition": {
+      "type": "string",
+      "enum": ["eligible", "ineligible_no_wait", "ineligible_lifecycle", "review_required"]
+    },
+    "planning_disposition": {
+      "type": "string",
+      "enum": ["eligible", "schedule_constraint", "ineligible_lifecycle", "review_required"]
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_type", "source_url", "verified_at", "reviewed_by"],
+        "properties": {
+          "source_type": {
+            "type": "string",
+            "enum": ["official_disney_page", "official_disney_app", "manual_review"]
+          },
+          "source_url": { "type": ["string", "null"], "format": "uri" },
+          "verified_at": { "type": "string", "format": "date-time" },
+          "reviewed_by": { "type": "string", "minLength": 1 },
+          "notes": { "type": "string" }
+        },
+        "allOf": [{
+          "if": {
+            "properties": { "source_type": { "const": "official_disney_page" } },
+            "required": ["source_type"]
+          },
+          "then": { "properties": { "source_url": { "type": "string", "format": "uri", "minLength": 1 } } }
+        }]
+      }
+    },
+    "valid_from": { "type": "string", "format": "date" },
+    "valid_to": { "type": ["string", "null"], "format": "date" },
+    "catalog_version": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "operational_state": { "enum": ["refurbishment", "retired"] } },
+        "required": ["operational_state"]
+      },
+      "then": {
+        "properties": {
+          "training_disposition": { "const": "ineligible_lifecycle" },
+          "planning_disposition": { "const": "ineligible_lifecycle" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "operational_state": { "const": "unknown" } },
+        "required": ["operational_state"]
+      },
+      "then": {
+        "properties": {
+          "training_disposition": { "const": "review_required" },
+          "planning_disposition": { "const": "review_required" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "operational_state": { "enum": ["operating", "refurbishment", "seasonal", "retired"] } },
+        "required": ["operational_state"]
+      },
+      "then": {
+        "properties": {
+          "evidence": {
+            "contains": {
+              "type": "object",
+              "properties": {
+                "source_type": { "enum": ["official_disney_page", "official_disney_app"] }
+              },
+              "required": ["source_type"]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

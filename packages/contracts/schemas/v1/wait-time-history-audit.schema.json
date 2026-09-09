@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/wait-time-history-audit.schema.json",
+  "title": "Wait-time history audit v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "policy_version",
+    "generated_at",
+    "scope",
+    "summary",
+    "forecast_readiness",
+    "daily_coverage",
+    "attraction_availability"
+  ],
+  "properties": {
+    "contract_version": { "const": "wait-time-history-audit.v1" },
+    "policy_version": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_date", "end_date", "timezone", "park_ids"],
+      "properties": {
+        "start_date": { "type": ["string", "null"], "format": "date" },
+        "end_date": { "type": ["string", "null"], "format": "date" },
+        "timezone": { "const": "America/Los_Angeles" },
+        "park_ids": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_observation_count",
+        "valid_observation_count",
+        "invalid_observation_count",
+        "snapshot_count",
+        "open_observation_count",
+        "closed_observation_count",
+        "missing_wait_while_open_count",
+        "explicit_open_zero_count",
+        "stale_observation_count",
+        "operating_day_count",
+        "complete_operating_day_count",
+        "attraction_count",
+        "eligible_candidate_count",
+        "sustained_unavailability_review_count"
+      ],
+      "properties": {
+        "raw_observation_count": { "type": "integer", "minimum": 0 },
+        "valid_observation_count": { "type": "integer", "minimum": 0 },
+        "invalid_observation_count": { "type": "integer", "minimum": 0 },
+        "snapshot_count": { "type": "integer", "minimum": 0 },
+        "open_observation_count": { "type": "integer", "minimum": 0 },
+        "closed_observation_count": { "type": "integer", "minimum": 0 },
+        "missing_wait_while_open_count": { "type": "integer", "minimum": 0 },
+        "explicit_open_zero_count": { "type": "integer", "minimum": 0 },
+        "stale_observation_count": { "type": "integer", "minimum": 0 },
+        "operating_day_count": { "type": "integer", "minimum": 0 },
+        "complete_operating_day_count": { "type": "integer", "minimum": 0 },
+        "attraction_count": { "type": "integer", "minimum": 0 },
+        "eligible_candidate_count": { "type": "integer", "minimum": 0 },
+        "sustained_unavailability_review_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "forecast_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reasons"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["not_ready", "baseline_only", "ready_for_modeling"]
+        },
+        "reasons": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "daily_coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "park_id",
+          "scheduled_open_utc",
+          "scheduled_close_utc",
+          "expected_snapshot_count",
+          "observed_snapshot_count",
+          "coverage_ratio",
+          "large_gap_count",
+          "largest_gap_minutes",
+          "is_complete"
+        ],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "park_id": { "type": "string", "minLength": 1 },
+          "scheduled_open_utc": { "type": "string", "format": "date-time" },
+          "scheduled_close_utc": { "type": "string", "format": "date-time" },
+          "expected_snapshot_count": { "type": "integer", "minimum": 1 },
+          "observed_snapshot_count": { "type": "integer", "minimum": 0 },
+          "coverage_ratio": { "type": "number", "minimum": 0 },
+          "large_gap_count": { "type": "integer", "minimum": 0 },
+          "largest_gap_minutes": { "type": "number", "minimum": 0 },
+          "is_complete": { "type": "boolean" }
+        }
+      }
+    },
+    "attraction_availability": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "park_id",
+          "source_ride_id",
+          "ride_name",
+          "access_mode",
+          "observed_days",
+          "open_days",
+          "temporary_downtime_days",
+          "full_day_unavailable_days",
+          "max_consecutive_full_day_unavailable_days",
+          "open_observation_count",
+          "closed_observation_count",
+          "missing_wait_while_open_count",
+          "explicit_open_zero_count",
+          "availability_disposition",
+          "prediction_recommendation",
+          "reasons"
+        ],
+        "properties": {
+          "park_id": { "type": "string", "minLength": 1 },
+          "source_ride_id": { "type": "string", "minLength": 1 },
+          "ride_name": { "type": "string", "minLength": 1 },
+          "access_mode": {
+            "type": "string",
+            "enum": ["standby", "single_rider", "virtual_queue", "other"]
+          },
+          "observed_days": { "type": "integer", "minimum": 0 },
+          "open_days": { "type": "integer", "minimum": 0 },
+          "temporary_downtime_days": { "type": "integer", "minimum": 0 },
+          "full_day_unavailable_days": { "type": "integer", "minimum": 0 },
+          "max_consecutive_full_day_unavailable_days": { "type": "integer", "minimum": 0 },
+          "open_observation_count": { "type": "integer", "minimum": 0 },
+          "closed_observation_count": { "type": "integer", "minimum": 0 },
+          "missing_wait_while_open_count": { "type": "integer", "minimum": 0 },
+          "explicit_open_zero_count": { "type": "integer", "minimum": 0 },
+          "availability_disposition": {
+            "type": "string",
+            "enum": [
+              "operational_observed",
+              "temporary_downtime_observed",
+              "sustained_unavailability_review",
+              "insufficient_evidence",
+              "non_standby"
+            ]
+          },
+          "prediction_recommendation": {
+            "type": "string",
+            "enum": [
+              "eligible_candidate",
+              "exclude_non_standby",
+              "exclude_sustained_unavailability",
+              "exclude_insufficient_open_evidence"
+            ]
+          },
+          "reasons": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}
