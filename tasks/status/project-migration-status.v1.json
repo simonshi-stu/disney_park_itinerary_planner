@@ -1,0 +1,49 @@
+{
+  "status_version": "1",
+  "updated_at": "2026-09-09T04:57:12.864Z",
+  "phases": {
+    "01-data-contracts": {
+      "status": "completed",
+      "evidence": [
+        "packages/contracts/schemas/v1/catalog-attraction-lifecycle.schema.json",
+        "tests/catalog/catalog-attraction-lifecycle.test.mjs",
+        "npm.cmd run check"
+      ],
+      "notes": "DeepSeek produced the initial schema direction; deterministic validation rejected incomplete multi-file patches. Codex corrected the catalog/access-mode boundary, completed the contract, tests and documentation, and verified the full check suite."
+    },
+    "02a1-migration-runner": { "status": "completed", "evidence": ["infra/migrations/run-migrations.mjs", "tests/storage/migration-runner.test.mjs"] },
+    "02a2a-storage-schema": { "status": "completed", "evidence": ["infra/migrations/0002_catalog_lifecycle_and_indexes.sql", "PostgreSQL 17 live migration applied successfully"] },
+    "02a2b-storage-schema-test-v2": { "status": "completed", "evidence": ["tests/storage/observation-storage.test.mjs"] },
+    "02a2b1-pg17-parameter-regression": { "status": "completed", "evidence": ["PostgreSQL 17 live syntax failure reproduced and fixed", "npm.cmd run check"] },
+    "02a3a-backfill-integration": { "status": "completed", "evidence": ["scripts/backfill-wait-times-to-postgres.mjs", "live backfill: 29 archives, 162968 raw, 6918 normalized"] },
+    "02a3b1-storage-scripts-v2": { "status": "completed", "evidence": ["package.json"] },
+    "02a3b2-storage-docs": { "status": "completed", "evidence": ["infra/README.zh-CN.md"] },
+    "02b1a-restore-verifier-core-v6-finalize": { "status": "completed", "evidence": ["infra/restore/verify-restored-storage.mjs", "live restore verification status ok"] },
+    "02b1b1-restore-verifier-test-core": { "status": "completed", "evidence": ["tests/storage/restore-verifier.test.mjs"] },
+    "02b1b2a-restore-verifier-rollback-test": { "status": "completed", "evidence": ["tests/storage/restore-verifier.test.mjs"] },
+    "02b1b2b-restore-verifier-query-safety-test": { "status": "completed", "evidence": ["tests/storage/restore-verifier.test.mjs"] },
+    "02b1c-restore-verifier-scripts": { "status": "completed", "evidence": ["package.json", "npm.cmd run check"] },
+    "02b2a-restore-runbook-v4-final": { "status": "completed", "evidence": ["docs/data/storage-backup-restore.zh-CN.md"] },
+    "02b2b-migration-runbook-link": { "status": "completed", "evidence": ["docs/data/migration-runbook.zh-CN.md"] },
+    "02b2c-infra-restore-docs": { "status": "completed", "evidence": ["infra/README.zh-CN.md"], "notes": "Implementation and local PostgreSQL 17 restore verification are complete. Hosted credentials, cloud resource creation and the first hosted restore remain explicit human gates." },
+    "03a-history-replay-normalizer": { "status": "pending" },
+    "03b-replay-parity-report": { "status": "pending" },
+    "03c-replay-runbook-update": { "status": "pending" },
+    "04a-source-envelope-use-case": { "status": "pending" },
+    "04b-collector-dual-write": { "status": "pending" },
+    "04c-source-health-and-dual-write-window": { "status": "pending" },
+    "05a-api-contracts": { "status": "pending" },
+    "05b-api-use-cases": { "status": "pending" },
+    "05c-api-fallback-behavior": { "status": "pending" },
+    "06a-web-contract-types": { "status": "pending" },
+    "06b-web-nextjs-migration": { "status": "pending" },
+    "07a-forecast-contracts": { "status": "pending" },
+    "07b-forecast-baseline": { "status": "pending" },
+    "07c-forecast-horizons-fallback": { "status": "pending" },
+    "07d-planning-contracts": { "status": "pending" },
+    "07e-planning-rule-baseline": { "status": "pending" },
+    "08a-oidc-staging": { "status": "pending" },
+    "08b-canary-rollback": { "status": "pending" },
+    "08c-production-cutover-gate": { "status": "pending" }
+  }
+}

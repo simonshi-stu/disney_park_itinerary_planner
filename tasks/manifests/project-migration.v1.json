@@ -1,0 +1,857 @@
+{
+  "manifest_version": "1",
+  "project": "disney-park-itinerary-planner",
+  "status_file": "tasks/status/project-migration-status.v1.json",
+  "purpose": "将 Disneyland Resort posted wait bootstrap 数据迁移到可治理的 PostgreSQL、API、预测和行程规划架构",
+  "context_roots": [
+    "AGENTS.md",
+    "docs/ai/context-map.zh-CN.md",
+    "docs/ai/agent-change-test-charter.zh-CN.md",
+    "packages/contracts/README.zh-CN.md"
+  ],
+  "context_policy": {
+    "max_file_chars": 24000,
+    "max_total_chars": 180000,
+    "include_extensions": [".md", ".mjs", ".js", ".json", ".sql", ".yml", ".yaml", ".ts", ".tsx"],
+    "exclude_paths": [".git", ".agent-runs", "node_modules", "data", "outputs", "src/cache", "dist", "build", "coverage", ".next"],
+    "exclude_files": [".env", ".env.local", "latest_snapshot.json", "package-lock.json", "pnpm-lock.yaml", "yarn.lock"]
+  },
+  "scope": {
+    "parks": ["disneyland-park", "disney-california-adventure"],
+    "itinerary": "one-park-one-day",
+    "wait_target": "posted-standby-wait",
+    "collection_interval_minutes": 15,
+    "forecast_horizons_minutes": [30, 60, 120],
+    "hot_retention_years": 3
+  },
+  "controller": {
+    "role": "gpt",
+    "implementation_policy": "audit_only_no_business_code",
+    "review_input": "worker_diff_validation_and_direct_contracts_only",
+    "review_output": "error_type_evidence_required_logic_and_resolution_status",
+    "review_modes": ["manual_codex", "openai_api"],
+    "default_review_mode": "manual_codex",
+    "max_revisions_per_phase": 3
+  },
+  "worker": {
+    "provider": "deepseek",
+    "implementation_owner": true,
+    "api_key_env": "DEEPSEEK_API_KEY",
+    "model_env": "DEEPSEEK_MODEL",
+    "base_url_env": "DEEPSEEK_BASE_URL",
+    "must_return_unified_diff": true,
+    "must_not_apply_patch": true
+  },
+  "global_acceptance": [
+    "raw data remains immutable",
+    "closed wait is null rather than observed zero",
+    "refurbishment and retired observations remain stored but are not training or planning eligible",
+    "web never accesses PostgreSQL or vendor APIs directly",
+    "npm.cmd run check passes",
+    "no credentials or private data are committed"
+  ],
+  "human_gates": [
+    "create paid cloud resources or change budget",
+    "write production secrets or OIDC trust policy",
+    "first production database initialization and data cutover",
+    "stop GitHub CSV collection",
+    "delete or shorten raw retention"
+  ],
+  "phases": [
+    {
+      "id": "01-data-contracts",
+      "title": "数据语义与 catalog 生命周期",
+      "objective": "把 posted wait、wait_capability、operational_state 和训练/规划准入写入版本化 contract。",
+      "dependencies": [],
+      "allowed_paths": [
+        "package.json",
+        "packages/contracts",
+        "modules/catalog",
+        "tests/catalog",
+        "docs/data"
+      ],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "modules/catalog/README.zh-CN.md",
+        "modules/observations/README.zh-CN.md",
+        "docs/data/data-dictionary.zh-CN.md",
+        "docs/adr/0007-posted-wait-and-operational-lifecycle.md"
+      ],
+      "acceptance": [
+        "access_mode and wait_capability remain separate concepts",
+        "operational_state includes operating, refurbishment, seasonal, retired, unknown",
+        "catalog evidence fields are versioned",
+        "refurbishment, retired and unknown cannot be forecast or planning eligible",
+        "the additive catalog contract has a Node test and is included in npm.cmd run check"
+      ],
+      "decisions": [
+        "Do not modify normalized-wait-observation.v1 in this phase; changing its required fields would be breaking.",
+        "access_mode remains the observation vocabulary standby, single_rider, virtual_queue, other.",
+        "wait_capability is catalog metadata with exactly posted_standby, schedule_only, no_queue, unknown.",
+        "operational_state belongs to catalog metadata with exactly operating, refurbishment, seasonal, retired, unknown.",
+        "training_disposition has exactly eligible, ineligible_no_wait, ineligible_lifecycle, review_required.",
+        "planning_disposition has exactly eligible, schedule_constraint, ineligible_lifecycle, review_required.",
+        "refurbishment and retired require ineligible_lifecycle for both dispositions; unknown requires review_required for both.",
+        "Evidence must include source_type, source_url, verified_at and reviewed_by. source_type has official_disney_page, official_disney_app, manual_review.",
+        "The lifecycle record must include valid_from and nullable valid_to so reopening creates a new effective record instead of rewriting history.",
+        "Use node:test and node:assert only; do not add a third-party JSON Schema validator in this phase.",
+        "Add test:catalog to package.json and include it in the check script. Keep every change additive."
+      ],
+      "required_outputs": [
+        "packages/contracts/schemas/v1/catalog-attraction-lifecycle.schema.json",
+        "tests/catalog/catalog-attraction-lifecycle.test.mjs",
+        "package.json",
+        "packages/contracts/README.zh-CN.md",
+        "modules/catalog/README.zh-CN.md"
+      ],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02a1-migration-runner",
+      "title": "PostgreSQL migration runner 核心",
+      "objective": "建立带版本、checksum 和并发锁的 additive migration runner 核心及无数据库单元测试。",
+      "dependencies": ["01-data-contracts"],
+      "allowed_paths": ["infra/migrations", "tests/storage"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "infra/README.zh-CN.md", "infra/migrations/0001_observation_storage.sql", "docs/data/migration-runbook.zh-CN.md"],
+      "acceptance": [
+        "migration discovery is lexical, additive and repeatable",
+        "applied migration filename and SHA-256 are recorded and a changed applied migration is rejected",
+        "concurrent runners are serialized with a PostgreSQL advisory lock",
+        "runner behavior has deterministic tests that do not require a live database"
+      ],
+      "decisions": [
+        "Do not edit infra/migrations/0001_observation_storage.sql; this task adds only the runner and its test.",
+        "Bootstrap infrastructure.schema_migrations before numbered migrations are discovered.",
+        "Use one PostgreSQL session for advisory lock, ledger checks and execution. Fail closed when an applied file checksum changes.",
+        "Import fileURLToPath explicitly. Track the primary error and lock acquisition so unlock failure never masks an earlier failure and unlock is not attempted if lock acquisition failed.",
+        "The ledger includes filename, SHA-256 and applied_at. Migration files manage their own transaction, matching 0001.",
+        "Expose core logic for a fake pool/client test; keep the CLI thin. Test lexical order, repeat skips, checksum mismatch, lock cleanup and module loading."
+      ],
+      "required_outputs": ["infra/migrations/run-migrations.mjs", "tests/storage/migration-runner.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02a2a-storage-schema",
+      "title": "Catalog 生命周期 schema 与 observation 索引",
+      "objective": "只生成一个新的 additive migration，持久化 Phase 1 生命周期 contract，并增加基于真实列的 observation 查询索引。",
+      "dependencies": ["02a1-migration-runner"],
+      "allowed_paths": ["infra/migrations/0002_catalog_lifecycle_and_indexes.sql"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "infra/migrations/0001_observation_storage.sql", "packages/contracts/schemas/v1/catalog-attraction-lifecycle.schema.json", "docs/adr/0006-postgresql-and-object-storage-backfill.md"],
+      "acceptance": [
+        "0001 remains unchanged and only 0002 is added",
+        "lifecycle and evidence history are relational, effective-dated and linked to canonical_attraction_id",
+        "vocabularies and lifecycle dispositions match the Phase 1 contract",
+        "raw remains immutable and lifecycle history cannot be updated or deleted",
+        "indexes reference only columns present in 0001 and no table replacement or premature partitioning occurs"
+      ],
+      "decisions": [
+        "PostgreSQL CHECK constraints cannot contain subqueries; store evidence in a child table and put no EXISTS or SELECT inside a CHECK.",
+        "Do not use EXCLUDE or require btree_gist. Use a stable lifecycle_record_id primary key, unique canonical_attraction_id plus valid_from, and valid_to greater than valid_from when present.",
+        "Store contract_version and all Phase 1 fields. supported_access_modes is a constrained text array. Evidence rows contain source_type, nullable source_url, verified_at, reviewed_by and notes.",
+        "Enforce refurbishment and retired as ineligible_lifecycle for both dispositions, and unknown as review_required for both.",
+        "Reject UPDATE or DELETE on lifecycle and evidence history; corrections append a new effective record.",
+        "The normalized table has no park_id or snapshot_park_date. Add park/date/time indexes to ingestion.raw_wait_observations and only use real normalized columns.",
+        "Defer monthly partition conversion to a later online migration; targeted indexes are adequate for the initial 2-3 year hot window."
+      ],
+      "required_outputs": ["infra/migrations/0002_catalog_lifecycle_and_indexes.sql"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02a2b-storage-schema-test-v2",
+      "title": "Catalog 生命周期 schema contract test",
+      "objective": "在现有 storage test 中追加已存在 0002 migration 的精简、确定性 SQL contract 断言，不修改 migration。",
+      "dependencies": ["02a2a-storage-schema"],
+      "allowed_paths": ["tests/storage/observation-storage.test.mjs"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "infra/migrations/0001_observation_storage.sql", "infra/migrations/0002_catalog_lifecycle_and_indexes.sql", "packages/contracts/schemas/v1/catalog-attraction-lifecycle.schema.json"],
+      "acceptance": [
+        "test verifies 0002 lifecycle vocabularies and disposition rules against the Phase 1 contract",
+        "test detects any SELECT or EXISTS directly inside CHECK expressions",
+        "test verifies deferred evidence enforcement, append-only triggers, valid dates and indexes on real 0001 columns",
+        "test is concise, uses node:test only and requires no live database"
+      ],
+      "decisions": [
+        "Do not modify 0001 or 0002 and do not create a placeholder/new test file in this task.",
+        "Read the SQL and JSON schema as text/JSON. Avoid brittle full-file snapshots.",
+        "Assert there is no normalized index on park_id or snapshot_park_date because those columns do not exist in the normalized table.",
+        "Assert the lifecycle and evidence UPDATE/DELETE rejection triggers and the DEFERRABLE INITIALLY DEFERRED evidence constraint trigger are present."
+      ],
+      "required_outputs": ["tests/storage/observation-storage.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02a2b1-pg17-parameter-regression",
+      "title": "PostgreSQL 17 helper 参数回归断言",
+      "objective": "只在现有 0002 storage test 的 helper 断言旁追加两条断言，防止再次使用 PostgreSQL 17 会拒绝的 values text[] 参数名。",
+      "dependencies": ["02a2b-storage-schema-test-v2"],
+      "allowed_paths": ["tests/storage/observation-storage.test.mjs"],
+      "required_reads": ["AGENTS.md", "tests/storage/observation-storage.test.mjs", "infra/migrations/0002_catalog_lifecycle_and_indexes.sql"],
+      "acceptance": [
+        "existing 0002 test contains an assert.match for text_array_has_unique_values(input_values text[])",
+        "the same test contains an assert.doesNotMatch rejecting text_array_has_unique_values(values text[])",
+        "exactly two assertions are added and no existing test or fixture is duplicated or changed",
+        "the unified diff is minimal and passes git apply --check"
+      ],
+      "decisions": [
+        "Insert the assertions immediately after the existing supported_access_modes helper assertion.",
+        "Do not add a new test case and do not copy any existing test body.",
+        "Do not modify SQL or fixtures in this task."
+      ],
+      "required_outputs": ["tests/storage/observation-storage.test.mjs"],
+      "commands": ["npm.cmd run test:storage"],
+      "human_gate": false
+    },
+    {
+      "id": "02a3a-backfill-integration",
+      "title": "Migration runner 回填接入",
+      "objective": "让现有 PostgreSQL 回填脚本使用共享 migration runner，并在现有 storage test 中添加回归断言。",
+      "dependencies": ["02a2b1-pg17-parameter-regression"],
+      "allowed_paths": ["scripts/backfill-wait-times-to-postgres.mjs", "tests/storage/observation-storage.test.mjs"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "infra/README.zh-CN.md", "scripts/backfill-wait-times-to-postgres.mjs", "infra/migrations/run-migrations.mjs", "docs/data/migration-runbook.zh-CN.md"],
+      "acceptance": [
+        "backfill calls the shared runner and no longer reads only 0001",
+        "existing --check behavior still avoids database and object storage connections",
+        "a deterministic existing-file test detects any return to hardcoded 0001 migration reads",
+        "protected bootstrap collector, analyzer and cache updater are untouched"
+      ],
+      "decisions": [
+        "Keep backfill CLI behavior unchanged except migration application.",
+        "Import runMigrations from infra/migrations/run-migrations.mjs and call it with the existing pool before the persistence transaction.",
+        "Remove only the direct readFile/0001 application code if readFile is no longer used.",
+        "Append a concise assertion to tests/storage/observation-storage.test.mjs; do not create a new test file."
+      ],
+      "required_outputs": ["scripts/backfill-wait-times-to-postgres.mjs", "tests/storage/observation-storage.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02a3b1-storage-scripts-v2",
+      "title": "Storage npm scripts",
+      "objective": "只修改 package.json，把 runner 和 storage tests 接入 npm check。",
+      "dependencies": ["02a3a-backfill-integration"],
+      "allowed_paths": ["package.json"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "package.json", "infra/migrations/run-migrations.mjs"],
+      "acceptance": [
+        "scripts.db:migrate invokes the shared runner and no root-level db:migrate property exists",
+        "test:storage includes observation-storage and migration-runner tests and remains in npm.cmd run check",
+        "check:syntax includes the runner without removing existing files"
+      ],
+      "decisions": [
+        "Do not remove or rename existing npm scripts.",
+        "Add exactly db:migrate, append migration-runner.test.mjs to test:storage, and append run-migrations.mjs to check:syntax.",
+        "Do not add description or other package metadata and do not make no-op changes."
+      ],
+      "required_outputs": ["package.json"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02a3b2-storage-docs",
+      "title": "Storage 基础设施中文文档",
+      "objective": "只更新 infrastructure 中文 README，记录本地运行、checksum 与 partition 决策。",
+      "dependencies": ["02a3b1-storage-scripts-v2"],
+      "allowed_paths": ["infra/README.zh-CN.md"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "infra/README.zh-CN.md", "infra/migrations/run-migrations.mjs", "docs/data/migration-runbook.zh-CN.md"],
+      "acceptance": [
+        "README explains db:migrate, DATABASE_URL, ledger and advisory locking",
+        "README explains checksum mismatch fail-closed behavior",
+        "README labels three-year row count as an estimate and documents deferred partitioning",
+        "current implementation and future target are separate and no credential value appears"
+      ],
+      "decisions": [
+        "Document DATABASE_URL as required without a value.",
+        "Document roughly 10 million rows over a three-year hot window as an order-of-magnitude estimate, not measured fact.",
+        "Partitioning is deferred until measured table/index size and query latency justify an additive online monthly-partition migration; do not claim partitioning exists.",
+        "Do not rewrite unrelated infrastructure sections."
+      ],
+      "required_outputs": ["infra/README.zh-CN.md"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02b1a-restore-verifier-core-v6-finalize",
+      "title": "只读 restore verifier 核心",
+      "objective": "最终修复现有 verifier：真正先建立 availableRelations，再安全检查 ledger，并删除遗留 hash 代码。",
+      "dependencies": ["02a3b2-storage-docs"],
+      "allowed_paths": ["infra/restore/verify-restored-storage.mjs"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "infra/restore/verify-restored-storage.mjs", "infra/migrations/0001_observation_storage.sql", "infra/migrations/0002_catalog_lifecycle_and_indexes.sql", "infra/migrations/run-migrations.mjs", "docs/adr/0006-postgresql-and-object-storage-backfill.md"],
+      "acceptance": [
+        "the new file is a non-placeholder implementation exporting normalizeDatabaseTarget, assertSafeRestoreTarget and verifyRestoredStorage plus a direct-execution CLI",
+        "verification is read-only and rejects a restore target pointing to the same host, port and database as DATABASE_URL",
+        "it checks migration ledger, required relations, raw immutability triggers, lineage orphans and closed-wait semantics",
+        "it emits machine-readable run_id, checked_at, status, checks and failures",
+        "core accepts an injected client and CLI requires RESTORE_DATABASE_URL"
+        ,"implementation imports discoverMigrations and contains no hardcoded MIGRATION_FILES list"
+        ,"required relations are checked before dependent queries and an empty raw restore fails"
+        ,"CLI always ends its pool even when pool.connect fails"
+        ,"all to_regclass checks run first and every dependent query is gated by an availableRelations set"
+        ,"no relation name is interpolated into SQL and raw_counts passes only for positive archive and observation counts"
+        ,"source order places the complete required-relations loop before the ledger SELECT"
+        ,"missing infrastructure.schema_migrations adds failed migration_ledger with skipped_due_to_missing_relations and executes no ledger SELECT"
+        ,"createHash and sha256Hex are absent because discoverMigrations owns checksums"
+      ],
+      "decisions": [
+        "Operator creates/restores an isolated database; verifier never creates, restores, updates or deletes anything.",
+        "Normalize PostgreSQL URLs by lower-case hostname, default port 5432 and decoded database path; ignore username, password and query when comparing targets.",
+        "If DATABASE_URL is set and identifies the same target as RESTORE_DATABASE_URL, fail before opening a connection.",
+        "Run verification inside BEGIN TRANSACTION READ ONLY and COMMIT; ROLLBACK on query failure.",
+        "Inspect pg_trigger/catalog definitions rather than mutating raw rows.",
+        "Check required relations with to_regclass, ledger filename/checksum validity, both raw immutability trigger names, normalized-to-raw orphan count, closed normalized rows with non-null observed wait, and raw archive/observation counts.",
+        "Expose normalizeDatabaseTarget, assertSafeRestoreTarget and verifyRestoredStorage for node:test; keep pg/environment handling in a thin direct-execution CLI."
+      ],
+      "required_outputs": ["infra/restore/verify-restored-storage.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": "cloud_credentials_and_first_hosted_restore"
+    },
+    {
+      "id": "02b1b1-restore-verifier-test-core",
+      "title": "Restore verifier 核心单元测试",
+      "objective": "把现有 placeholder 替换为精简 fake client、URL guard、healthy report 和 missing-relations report 测试。",
+      "dependencies": ["02b1a-restore-verifier-core-v6-finalize"],
+      "allowed_paths": ["tests/storage/restore-verifier.test.mjs"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "tests/storage/restore-verifier.test.mjs", "infra/restore/verify-restored-storage.mjs", "infra/migrations/0001_observation_storage.sql", "infra/migrations/0002_catalog_lifecycle_and_indexes.sql"],
+      "acceptance": [
+        "new test file is executable node:test code and is not empty or placeholder",
+        "tests cover same-target rejection across different credentials/query strings",
+        "tests cover a passing report and a missing-relations failed report",
+        "fake client supports every SQL query needed by those two report cases",
+        "tests use node:test and require no live database"
+      ],
+      "decisions": [
+        "Use a deterministic fake client that returns rows by recognizable SQL fragments.",
+        "Assert report contains run_id, checked_at, status, checks and failures. Keep this first file under roughly 180 lines.",
+        "Do not loosen verifier behavior or modify production code in this test phase."
+      ],
+      "required_outputs": ["tests/storage/restore-verifier.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02b1b2a-restore-verifier-rollback-test",
+      "title": "Restore verifier rollback 测试",
+      "objective": "只向现有 restore verifier test 追加一个 unexpected query failure rollback 测试。",
+      "dependencies": ["02b1b1-restore-verifier-test-core"],
+      "allowed_paths": ["tests/storage/restore-verifier.test.mjs"],
+      "required_reads": ["AGENTS.md", "tests/storage/restore-verifier.test.mjs", "infra/restore/verify-restored-storage.mjs"],
+      "acceptance": [
+        "test injects an unexpected query failure and asserts ROLLBACK occurs with no COMMIT",
+        "existing core tests remain unchanged and no live database is required"
+      ],
+      "decisions": [
+        "Reuse makeFakeClient, wrap its query method to record SQL and throw on the lineage orphan query.",
+        "Add no import and append only one concise node:test case.",
+        "Client release belongs to the CLI pool layer and is not part of this test."
+      ],
+      "required_outputs": ["tests/storage/restore-verifier.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02b1b2b-restore-verifier-query-safety-test",
+      "title": "Restore verifier query safety 测试",
+      "objective": "只追加一个测试，证明 healthy verifier 不发出任何写 SQL。",
+      "dependencies": ["02b1b2a-restore-verifier-rollback-test"],
+      "allowed_paths": ["tests/storage/restore-verifier.test.mjs"],
+      "required_reads": ["AGENTS.md", "tests/storage/restore-verifier.test.mjs", "infra/restore/verify-restored-storage.mjs"],
+      "acceptance": [
+        "test records a healthy verification's SQL and requires BEGIN TRANSACTION READ ONLY plus COMMIT",
+        "test asserts no INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, TRUNCATE or pg_restore token appears",
+        "test adds no import, reuses helpers and does not change existing tests"
+      ],
+      "decisions": ["Append exactly one concise node:test case and do not add or repeat imports."],
+      "required_outputs": ["tests/storage/restore-verifier.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02b1c-restore-verifier-scripts",
+      "title": "Restore verifier npm scripts",
+      "objective": "只把 restore verifier 测试、syntax 和运行入口接入 package.json。",
+      "dependencies": ["02b1b2b-restore-verifier-query-safety-test"],
+      "allowed_paths": ["package.json"],
+      "required_reads": ["AGENTS.md", "package.json", "infra/restore/verify-restored-storage.mjs", "tests/storage/restore-verifier.test.mjs"],
+      "acceptance": [
+        "scripts.db:verify-restore runs the verifier",
+        "test:storage includes restore-verifier.test.mjs",
+        "check:syntax includes verify-restored-storage.mjs",
+        "no existing script or package metadata is removed"
+      ],
+      "decisions": [
+        "All commands belong inside the scripts object.",
+        "Make only the three required script-string changes."
+      ],
+      "required_outputs": ["package.json"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "02b2a-restore-runbook-v4-final",
+      "title": "备份恢复独立运行手册",
+      "objective": "最终清理现有 runbook：删除重复 4.1 标题/无用变量，让 aws endpoint 条件化并检查 CLI 退出码。",
+      "dependencies": ["02b1c-restore-verifier-scripts"],
+      "allowed_paths": ["docs/data/storage-backup-restore.zh-CN.md"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "docs/data/storage-backup-restore.zh-CN.md", "docs/data/migration-runbook.zh-CN.md", "infra/restore/verify-restored-storage.mjs", "docs/adr/0006-postgresql-and-object-storage-backfill.md"],
+      "acceptance": [
+        "runbook separates backup, isolated staging restore, read-only verification and cleanup",
+        "commands use environment variable names/placeholders and never credentials/private endpoints",
+        "S3-compatible sampling compares downloaded SHA-256 with ingestion.raw_archives.sha256",
+        "production restore, resource creation, secret entry and destructive cleanup are explicit human gates"
+        ,"no executable CREATE DATABASE or DROP DATABASE SQL exists"
+        ,"hosted staging creation uses provider console and local rehearsal references infra/compose.yaml"
+        ,"patch modifies the existing file and must not use new file mode or replace the whole document"
+        ,"archive sampling uses raw_archive_id, object_uri, sha256, byte_size, source_name, archived_at and contains no archive_key/archive_date"
+        ,"document contains no bash/export/sha256sum/rm -rf commands"
+        ,"section 4 contains exactly one 4.1 heading"
+        ,"aws endpoint-url is appended only when OBJECT_STORAGE_ENDPOINT is non-empty and LASTEXITCODE is checked"
+      ],
+      "decisions": [
+        "Use pg_dump custom format and pg_restore into a newly created isolated staging database; never restore over production.",
+        "Use npm.cmd run db:verify-restore after restore.",
+        "Raw sampling is read-only: select manifest rows, download chosen objects with provider CLI, calculate SHA-256 locally and compare; never update manifest.",
+        "Document cleanup commands as examples requiring explicit target confirmation, not automatic agent actions.",
+        "Keep provider choice optional; current provider recommendations are delivered separately with official citations."
+      ],
+      "required_outputs": ["docs/data/storage-backup-restore.zh-CN.md"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": "cloud_credentials_and_first_hosted_restore"
+    },
+    {
+      "id": "02b2b-migration-runbook-link",
+      "title": "迁移手册 restore checkpoint",
+      "objective": "只更新 migration runbook，链接独立备份恢复手册并明确 Phase 2 checkpoint。",
+      "dependencies": ["02b2a-restore-runbook-v4-final"],
+      "allowed_paths": ["docs/data/migration-runbook.zh-CN.md"],
+      "required_reads": ["AGENTS.md", "docs/data/migration-runbook.zh-CN.md", "docs/data/storage-backup-restore.zh-CN.md"],
+      "acceptance": [
+        "runbook links the restore drill document",
+        "schema checkpoint requires db:migrate and isolated restore verification",
+        "hosted credentials and first restore remain human gates",
+        "no current missing-normalized-date blocker is removed"
+      ],
+      "decisions": ["Keep existing migration stages and blockers; add references/checkpoints rather than rewriting history."],
+      "required_outputs": ["docs/data/migration-runbook.zh-CN.md"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": "cloud_credentials_and_first_hosted_restore"
+    },
+    {
+      "id": "02b2c-infra-restore-docs",
+      "title": "Infrastructure restore 入口",
+      "objective": "只更新 infra README，添加 restore verifier 和独立手册入口。",
+      "dependencies": ["02b2b-migration-runbook-link"],
+      "allowed_paths": ["infra/README.zh-CN.md"],
+      "required_reads": ["AGENTS.md", "infra/README.zh-CN.md", "docs/data/storage-backup-restore.zh-CN.md", "infra/restore/verify-restored-storage.mjs"],
+      "acceptance": [
+        "README documents npm.cmd run db:verify-restore and RESTORE_DATABASE_URL",
+        "README links the detailed backup/restore runbook",
+        "README states verifier is read-only and cloud creation/first restore are manual",
+        "no credential value appears"
+      ],
+      "decisions": ["Keep details in the dedicated runbook and add only a concise operator entrypoint to infra README."],
+      "required_outputs": ["infra/README.zh-CN.md"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": "cloud_credentials_and_first_hosted_restore"
+    },
+    {
+      "id": "03a-history-replay-normalizer",
+      "title": "目标 normalizer 历史重放",
+      "objective": "为只有 raw、缺少 cleaned 的历史日期（2026-07-09 至 2026-07-12）用目标 normalizeWaitObservation 重放 normalized 记录，保留 raw lineage 并补齐缺口。",
+      "dependencies": ["02b2c-infra-restore-docs"],
+      "allowed_paths": ["infra/backfill", "modules/observations", "scripts/backfill-wait-times-to-postgres.mjs", "tests/storage"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "modules/observations/README.zh-CN.md",
+        "docs/data/data-dictionary.zh-CN.md",
+        "docs/data/migration-runbook.zh-CN.md",
+        "infra/backfill/wait-time-records.mjs",
+        "packages/contracts/schemas/v1/normalized-wait-observation.schema.json"
+      ],
+      "acceptance": [
+        "replay is idempotent and produces no duplicate normalized rows",
+        "every normalized row keeps raw lineage",
+        "open missing wait becomes null instead of the legacy zero",
+        "closed rows keep no observed wait",
+        "missing normalized dates are explicit in the report",
+        "protected bootstrap collector, analyzer and cache updater remain untouched"
+      ],
+      "decisions": [
+        "Do not reproduce the legacy Number(\"\") -> 0 behavior; open missing wait normalizes to null.",
+        "modules/observations normalizeWaitObservation is the single normalizer for replayed rows.",
+        "Replayed rows use a new transformation_version; legacy cleaned rows keep their existing version.",
+        "access_mode comes from the structured field; do not extend name-suffix inference."
+      ],
+      "required_outputs": ["infra/backfill/wait-time-records.mjs", "tests/storage/observation-storage.test.mjs"],
+      "commands": ["npm.cmd run check", "node scripts/backfill-wait-times-to-postgres.mjs --check"],
+      "human_gate": false
+    },
+    {
+      "id": "03b-replay-parity-report",
+      "title": "历史重放 parity 报告",
+      "objective": "比较文件与数据库的 raw/normalized 数量、hash、营业窗口覆盖、closed/0 语义与 canonical identity；任一日期语义不匹配则阻止该日期进入训练集。",
+      "dependencies": ["03a-history-replay-normalizer"],
+      "allowed_paths": ["scripts", "tests/storage", "docs/data"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "docs/data/migration-runbook.zh-CN.md",
+        "infra/backfill/wait-time-records.mjs"
+      ],
+      "acceptance": [
+        "report is machine-readable with run_id, counts, failures and next steps",
+        "count, hash, closed/zero and lineage mismatches are explicit",
+        "a date with semantic mismatch is excluded and listed",
+        "report tests require no live database"
+      ],
+      "decisions": [
+        "Parity compares per-date raw/normalized counts, closed-vs-zero semantics and lineage, not byte-identical cleaned files.",
+        "The parity script is a new read-only CLI; it does not modify production data."
+      ],
+      "required_outputs": ["scripts/report-replay-parity.mjs", "tests/storage/observation-storage.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "03c-replay-runbook-update",
+      "title": "重放运行手册",
+      "objective": "只更新 migration runbook：记录重放命令、幂等性、parity 门槛与 2026-07-09..07-12 缺口关闭条件。",
+      "dependencies": ["03b-replay-parity-report"],
+      "allowed_paths": ["docs/data/migration-runbook.zh-CN.md"],
+      "required_reads": ["AGENTS.md", "docs/data/migration-runbook.zh-CN.md", "docs/data/storage-backup-restore.zh-CN.md"],
+      "acceptance": [
+        "runbook documents replay commands and idempotency",
+        "parity gate and missing-date closure conditions are explicit",
+        "no credential or private endpoint appears"
+      ],
+      "decisions": ["Keep existing migration stages and blockers; add the replay/parity stage rather than rewriting history."],
+      "required_outputs": ["docs/data/migration-runbook.zh-CN.md"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "04a-source-envelope-use-case",
+      "title": "Source-envelope 实时摄取 use case",
+      "objective": "在 modules/ingestion 建立 source-envelope 摄取 use case：来源、requested/observed/ingested 时间、payload hash、adapter/schema 版本与归因。",
+      "dependencies": ["03c-replay-runbook-update"],
+      "allowed_paths": ["modules/ingestion", "packages/contracts", "tests/ingestion"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "modules/ingestion/README.zh-CN.md",
+        "docs/data/data-governance.zh-CN.md",
+        "packages/contracts/schemas/v1/raw-archive.schema.json",
+        "packages/contracts/schemas/v1/raw-wait-observation.schema.json"
+      ],
+      "acceptance": [
+        "third-party API access stays inside ingestion adapters",
+        "every envelope records source, requested/observed/ingested time, hash, version and attribution",
+        "outage or stale is an explicit state, not an empty success",
+        "adapter is injectable and tests require no live API"
+      ],
+      "decisions": [
+        "Ingestion depends on a catalog identity-resolution port; it never resolves canonical IDs itself.",
+        "Raw envelopes are immutable; ingestion does not update or delete raw records."
+      ],
+      "required_outputs": ["modules/ingestion/index.mjs", "tests/ingestion/source-envelope.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "04b-collector-dual-write",
+      "title": "采集器双写",
+      "objective": "在保留 Git fallback 的前提下，bootstrap 采集结果同时写入 hosted raw storage 与 PostgreSQL，用 feature flag 控制。",
+      "dependencies": ["04a-source-envelope-use-case"],
+      "allowed_paths": ["workers/collector", "modules/ingestion", "infra", ".github/workflows"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "workers/collector/README.zh-CN.md",
+        "modules/ingestion/README.zh-CN.md",
+        "docs/data/data-governance.zh-CN.md"
+      ],
+      "acceptance": [
+        "bootstrap collector behavior remains characterized and unchanged",
+        "dual write is behind an explicit feature flag",
+        "Git fallback remains readable when hosted write fails",
+        "characterization tests still pass"
+      ],
+      "decisions": [
+        "Do not modify scripts/collect-wait-times.mjs semantics; add the dual-write path beside it.",
+        "Hosted write failure must not break the Git commit path."
+      ],
+      "required_outputs": ["workers/collector/dual-write.mjs", "tests/ingestion/dual-write.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": "cloud_credentials_and_first_hosted_restore"
+    },
+    {
+      "id": "04c-source-health-and-dual-write-window",
+      "title": "Source health 与双写验证窗口",
+      "objective": "把 source health 写入 PostgreSQL，运行一个完整双写对比窗口并产出机器可读对比报告。",
+      "dependencies": ["04b-collector-dual-write"],
+      "allowed_paths": ["modules/ingestion", "infra", "tests/ingestion", "docs/data"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "modules/ingestion/README.zh-CN.md",
+        "docs/data/data-governance.zh-CN.md"
+      ],
+      "acceptance": [
+        "source failures are visible in persisted source health",
+        "dual-write comparison covers a complete validation window",
+        "comparison report is machine-readable"
+      ],
+      "decisions": ["Source health is derived metadata, not raw evidence; it may be updated."],
+      "required_outputs": ["modules/ingestion/source-health.mjs", "tests/ingestion/source-health.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "05a-api-contracts",
+      "title": "API 版本化 contracts",
+      "objective": "为 parks、attractions、status、observations、forecast 与 health 定义版本化 OpenAPI/JSON Schema。",
+      "dependencies": ["04c-source-health-and-dual-write-window"],
+      "allowed_paths": ["packages/contracts"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "packages/contracts/README.zh-CN.md",
+        "docs/architecture/dependency-rules.zh-CN.md"
+      ],
+      "acceptance": [
+        "request and response shapes are machine-checkable and versioned",
+        "web may depend on these contracts without database imports",
+        "consumers tolerate documented additive fields"
+      ],
+      "decisions": ["Schema is the single source of truth; prose examples are explanatory only."],
+      "required_outputs": ["packages/contracts/schemas/v1/api-openapi.json"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "05b-api-use-cases",
+      "title": "FastAPI 用例编排",
+      "objective": "实现 apps/api 的 use case 编排与依赖注入：catalog lookup、latest observations、health/freshness。",
+      "dependencies": ["05a-api-contracts"],
+      "allowed_paths": ["apps/api", "tests/api"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "apps/api/README.zh-CN.md",
+        "packages/contracts/README.zh-CN.md"
+      ],
+      "acceptance": [
+        "API coordinates use cases instead of owning domain rules",
+        "health and freshness are observable",
+        "endpoints validate against the 05a contracts",
+        "tests require no live database"
+      ],
+      "decisions": ["API entrypoints do dependency injection only; no business rules move into apps/api."],
+      "required_outputs": ["apps/api/main.py", "tests/api/use-case-wiring.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "05c-api-fallback-behavior",
+      "title": "API 降级与 fallback 测试",
+      "objective": "数据源失败时 API 返回显式 stale/降级响应，并测试该降级行为。",
+      "dependencies": ["05b-api-use-cases"],
+      "allowed_paths": ["apps/api", "tests/api"],
+      "required_reads": ["AGENTS.md", "docs/ai/agent-change-test-charter.zh-CN.md", "apps/api/README.zh-CN.md", "docs/architecture/dependency-rules.zh-CN.md"],
+      "acceptance": [
+        "failure responses are explicit and carry freshness metadata",
+        "fallback never fabricates data",
+        "degradation is tested"
+      ],
+      "decisions": ["Fallback is read-only; no fake rows are written back."],
+      "required_outputs": ["apps/api/main.py", "tests/api/fallback.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "06a-web-contract-types",
+      "title": "Web 契约类型生成",
+      "objective": "从 contracts 生成 web 类型，web 只依赖 API contract，不依赖数据库。",
+      "dependencies": ["05c-api-fallback-behavior"],
+      "allowed_paths": ["apps/web", "packages/contracts"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "docs/ai/agent-change-test-charter.zh-CN.md", "apps/web/README.zh-CN.md", "packages/contracts/README.zh-CN.md"],
+      "acceptance": [
+        "web consumes versioned contracts",
+        "no database import or module internal import in web",
+        "generated types are not hand-edited"
+      ],
+      "decisions": ["Generated types are build artifacts of contracts; hand edits are rejected."],
+      "required_outputs": ["apps/web/lib/api-types.ts"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "06b-web-nextjs-migration",
+      "title": "Next.js 渐进迁移",
+      "objective": "静态站点渐进迁移到 Next.js；状态/园区页面改走 API，保留静态 fallback。",
+      "dependencies": ["06a-web-contract-types"],
+      "allowed_paths": ["apps/web", "tests"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "docs/ai/agent-change-test-charter.zh-CN.md", "apps/web/README.zh-CN.md", "packages/contracts/README.zh-CN.md"],
+      "acceptance": [
+        "web no longer calls vendor APIs directly",
+        "loading and stale states are visible",
+        "static fallback remains available",
+        "affected UI behavior has tests"
+      ],
+      "decisions": ["Static pages stay available as fallback during migration."],
+      "required_outputs": ["apps/web/app/status/page.tsx"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "07a-forecast-contracts",
+      "title": "Forecast 版本化 contracts",
+      "objective": "定义 forecast request/result、model/evaluation metadata 与 forecast interval 的版本化 schema。",
+      "dependencies": ["06b-web-nextjs-migration"],
+      "allowed_paths": ["packages/contracts", "modules/forecasting"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "docs/ai/agent-change-test-charter.zh-CN.md", "modules/forecasting/README.zh-CN.md", "docs/data/forecast-readiness.zh-CN.md", "packages/contracts/README.zh-CN.md"],
+      "acceptance": [
+        "every forecast includes generation time, model version and input snapshot",
+        "30/60/120 horizons and interval shapes are representable",
+        "contract is versioned and additive"
+      ],
+      "decisions": ["Forecast consumes versioned observation contracts only; never raw vendor JSON or UI state."],
+      "required_outputs": ["packages/contracts/schemas/v1/forecast-result.schema.json"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "07b-forecast-baseline",
+      "title": "可复现预测 baseline",
+      "objective": "实现确定性 posted-wait baseline（历史中位数/最近观测等）与 rolling-origin 评估。",
+      "dependencies": ["07a-forecast-contracts"],
+      "allowed_paths": ["modules/forecasting", "tests/forecasting"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "docs/ai/agent-change-test-charter.zh-CN.md", "modules/forecasting/README.zh-CN.md", "docs/data/forecast-readiness.zh-CN.md"],
+      "acceptance": [
+        "evaluation uses rolling-origin or time-based split; no random shuffling",
+        "reports MAE, WAPE, sample coverage and interval coverage",
+        "baseline is reproducible from versioned inputs"
+      ],
+      "decisions": [
+        "Baseline consumes only standby, open, eligible observations.",
+        "refurbishment, retired and unknown attractions are excluded."
+      ],
+      "required_outputs": ["modules/forecasting/baseline.mjs", "tests/forecasting/baseline.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "07c-forecast-horizons-fallback",
+      "title": "预测 horizon 与降级",
+      "objective": "输出 30/60 分钟预测及 120 分钟低置信参考；超阈值退化到最近观测基线并标记 fallback。",
+      "dependencies": ["07b-forecast-baseline"],
+      "allowed_paths": ["modules/forecasting", "tests/forecasting"],
+      "required_reads": ["AGENTS.md", "docs/ai/agent-change-test-charter.zh-CN.md", "modules/forecasting/README.zh-CN.md", "docs/data/forecast-readiness.zh-CN.md"],
+      "acceptance": [
+        "120-minute output is explicitly marked lower confidence",
+        "unavailable forecast degrades to a recent-observation or historical baseline with an explanation",
+        "fallback status is machine-readable"
+      ],
+      "decisions": ["Do not fabricate precision when the model exceeds acceptable error."],
+      "required_outputs": ["modules/forecasting/baseline.mjs", "tests/forecasting/fallback.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "07d-planning-contracts",
+      "title": "Planning 版本化 contracts",
+      "objective": "定义 planning request、versioned itinerary、explanation、execution event 与 replanning request/result schema。",
+      "dependencies": ["07c-forecast-horizons-fallback"],
+      "allowed_paths": ["packages/contracts", "modules/planning"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "docs/ai/agent-change-test-charter.zh-CN.md", "modules/planning/README.zh-CN.md", "packages/contracts/README.zh-CN.md"],
+      "acceptance": [
+        "itinerary carries generation time, algorithm version and input snapshot",
+        "one park and one service day per itinerary",
+        "versioned and additive"
+      ],
+      "decisions": ["Itinerary input is a single park_id and a local service date; multi-park requires a new ADR."],
+      "required_outputs": ["packages/contracts/schemas/v1/itinerary.schema.json"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "07e-planning-rule-baseline",
+      "title": "规则 planner baseline",
+      "objective": "实现规则 planner：feasibility、时间窗、步行图、schedule constraint 与可解释 fallback。",
+      "dependencies": ["07d-planning-contracts"],
+      "allowed_paths": ["modules/planning", "tests/planning"],
+      "required_reads": ["AGENTS.md", "docs/ai/context-map.zh-CN.md", "docs/ai/agent-change-test-charter.zh-CN.md", "modules/planning/README.zh-CN.md", "docs/data/forecast-readiness.zh-CN.md"],
+      "acceptance": [
+        "refurbishment, retired and unknown projects are excluded",
+        "planner consumes catalog, observation, forecast and schedule contracts only",
+        "no-solution and source-failure paths degrade with an explanation"
+      ],
+      "decisions": [
+        "Planner never calls data sources directly.",
+        "Start with a rule baseline; OR-Tools comes only after the baseline is evaluated."
+      ],
+      "required_outputs": ["modules/planning/rule-baseline.mjs", "tests/planning/rule-baseline.test.mjs"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "08a-oidc-staging",
+      "title": "OIDC 与 staging 部署",
+      "objective": "建立 OIDC 短期凭证与 staging 自动部署。",
+      "dependencies": ["07e-planning-rule-baseline"],
+      "allowed_paths": [".github", "infra", "docs"],
+      "required_reads": ["AGENTS.md", "docs/ai/agent-change-test-charter.zh-CN.md", "docs/architecture/agent-workflow.zh-CN.md", "docs/data/migration-runbook.zh-CN.md"],
+      "acceptance": [
+        "staging deploys only after deterministic checks",
+        "no long-lived cloud credentials in the repository",
+        "production environment is protected"
+      ],
+      "decisions": ["Use OIDC short-lived credentials; long-lived keys are not committed."],
+      "required_outputs": [".github/workflows/deploy-staging.yml"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "08b-canary-rollback",
+      "title": "Canary 与自动回滚",
+      "objective": "建立 canary 健康检查与失败自动回滚。",
+      "dependencies": ["08a-oidc-staging"],
+      "allowed_paths": [".github", "infra"],
+      "required_reads": ["AGENTS.md", "docs/ai/agent-change-test-charter.zh-CN.md", "docs/architecture/agent-workflow.zh-CN.md"],
+      "acceptance": [
+        "canary health failure rolls back automatically",
+        "rollback is reversible and does not delete raw data"
+      ],
+      "decisions": ["Rollback restores the previous deployment; data is never deleted."],
+      "required_outputs": [".github/workflows/deploy-staging.yml"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "08c-production-cutover-gate",
+      "title": "首次生产切换人工 gate",
+      "objective": "定义首次生产切换的人工确认、健康检查与回滚检查清单。",
+      "dependencies": ["08b-canary-rollback"],
+      "allowed_paths": ["docs"],
+      "required_reads": ["AGENTS.md", "docs/ai/agent-change-test-charter.zh-CN.md", "docs/architecture/agent-workflow.zh-CN.md", "docs/data/migration-runbook.zh-CN.md"],
+      "acceptance": [
+        "first production cutover pauses for human approval",
+        "health check and rollback checklist are documented",
+        "stopping Git collection requires the documented gate"
+      ],
+      "decisions": ["Production cutover, credential entry and stopping Git collection are human gates."],
+      "required_outputs": ["docs/data/migration-runbook.zh-CN.md"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": "production_cutover"
+    }
+  ]
+}

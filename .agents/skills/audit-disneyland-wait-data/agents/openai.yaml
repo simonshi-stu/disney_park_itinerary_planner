@@ -1,0 +1,4 @@
+interface:
+  display_name: "Disneyland Wait Data Audit"
+  short_description: "Audit Disneyland wait data and forecast readiness"
+  default_prompt: "Use $audit-disneyland-wait-data to audit the current Disneyland wait-time history and explain whether it is safe for forecasting."
