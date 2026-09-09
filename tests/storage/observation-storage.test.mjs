@@ -50,6 +50,88 @@ test("backfill keeps Single Rider but excludes it from standby analysis and link
   }
 });
 
+test("0002 catalog lifecycle migration matches the Phase 1 contract", async () => {
+  const sql0001 = await readFile(path.join(root, "infra/migrations/0001_observation_storage.sql"), "utf8");
+  const sql0002 = await readFile(path.join(root, "infra/migrations/0002_catalog_lifecycle_and_indexes.sql"), "utf8");
+  const schema = JSON.parse(await readFile(path.join(root, "packages/contracts/schemas/v1/catalog-attraction-lifecycle.schema.json"), "utf8"));
+
+  // Lifecycle vocabularies must match the JSON Schema enums.
+  const waitCapabilityEnum = schema.properties.wait_capability.enum;
+  const accessModesEnum = schema.properties.supported_access_modes.items.enum;
+  const operationalStateEnum = schema.properties.operational_state.enum;
+  const trainingDispositionEnum = schema.properties.training_disposition.enum;
+  const planningDispositionEnum = schema.properties.planning_disposition.enum;
+
+  // Assert SQL contains every enum literal from the schema.
+  for (const value of waitCapabilityEnum) {
+    assert.match(sql0002, new RegExp(`'${value}'`));
+  }
+  for (const value of accessModesEnum) {
+    assert.match(sql0002, new RegExp(`'${value}'`));
+  }
+  for (const value of operationalStateEnum) {
+    assert.match(sql0002, new RegExp(`'${value}'`));
+  }
+  for (const value of trainingDispositionEnum) {
+    assert.match(sql0002, new RegExp(`'${value}'`));
+  }
+  for (const value of planningDispositionEnum) {
+    assert.match(sql0002, new RegExp(`'${value}'`));
+  }
+
+  // Disposition rules: refurbishment/retired and unknown must match the schema's allOf constraints.
+  assert.match(sql0002, /\(operational_state IN \('refurbishment', 'retired'\)\s*AND training_disposition = 'ineligible_lifecycle'\s*AND planning_disposition = 'ineligible_lifecycle'\)/);
+  assert.match(sql0002, /\(operational_state = 'unknown'\s*AND training_disposition = 'review_required'\s*AND planning_disposition = 'review_required'\)/);
+
+  // No SELECT or EXISTS directly inside CHECK expressions (focused regression for known invalid subquery form).
+  assert.match(sql0002, /catalog\.text_array_has_unique_values\(supported_access_modes\)/);
+  assert.doesNotMatch(sql0002, /supported_access_modes = ARRAY\(SELECT/i);
+  assert.doesNotMatch(sql0002, /ARRAY\s*\(\s*SELECT DISTINCT unnest/i);
+  assert.match(sql0002, /text_array_has_unique_values\(input_values text\[\]\)/);
+  assert.doesNotMatch(sql0002, /text_array_has_unique_values\(values text\[\]\)/);
+
+  // Deferred evidence enforcement: constraint trigger must be DEFERRABLE INITIALLY DEFERRED.
+  assert.match(sql0002, /CREATE CONSTRAINT TRIGGER lifecycle_requires_evidence\s*AFTER INSERT OR UPDATE ON catalog\.lifecycle_records\s*DEFERRABLE INITIALLY DEFERRED/);
+  assert.match(sql0002, /catalog\.validate_lifecycle_evidence\(\)/);
+
+  // Evidence enforcement logic: must check evidence_count = 0 for all lifecycle rows.
+  assert.match(sql0002, /IF evidence_count = 0 THEN/);
+  assert.match(sql0002, /RAISE EXCEPTION 'lifecycle record % requires at least one evidence row'/);
+
+  // Official evidence enforcement: must check official_count = 0 for non-unknown states.
+  assert.match(sql0002, /IF NEW\.operational_state IN \('operating', 'refurbishment', 'seasonal', 'retired'\) THEN/);
+  assert.match(sql0002, /IF official_count = 0 THEN/);
+  assert.match(sql0002, /RAISE EXCEPTION 'lifecycle record % requires at least one official Disney evidence source'/);
+  assert.match(sql0002, /source_type IN \('official_disney_page', 'official_disney_app'\)/);
+
+  // Append-only lifecycle and evidence triggers.
+  assert.match(sql0002, /CREATE TRIGGER lifecycle_records_are_immutable\s*BEFORE UPDATE OR DELETE ON catalog\.lifecycle_records/);
+  assert.match(sql0002, /CREATE TRIGGER lifecycle_evidence_are_immutable\s*BEFORE UPDATE OR DELETE ON catalog\.lifecycle_evidence/);
+
+  // Valid dates: valid_to must be null or greater than valid_from.
+  assert.match(sql0002, /CHECK \(valid_to IS NULL OR valid_to > valid_from\)/);
+
+  // Empty supported_access_modes array must remain allowed (no cardinality > 0 constraint).
+  assert.doesNotMatch(sql0002, /cardinality\s*\(supported_access_modes\)\s*>\s*0/);
+
+  // Indexes must use real 0001 columns; no normalized index on park_id or snapshot_park_date.
+  assert.match(sql0001, /park_id text NOT NULL REFERENCES catalog\.parks \(park_id\)/);
+  assert.match(sql0001, /snapshot_park_date date NOT NULL/);
+  assert.match(sql0001, /snapshot_utc timestamptz NOT NULL/);
+  assert.match(sql0002, /CREATE INDEX IF NOT EXISTS lifecycle_records_attraction_valid_idx\s*ON catalog\.lifecycle_records \(canonical_attraction_id, valid_from, valid_to\)/);
+  assert.match(sql0002, /CREATE INDEX IF NOT EXISTS lifecycle_records_state_disposition_idx\s*ON catalog\.lifecycle_records \(operational_state, training_disposition, planning_disposition\)/);
+  assert.match(sql0002, /CREATE INDEX IF NOT EXISTS lifecycle_evidence_record_idx\s*ON catalog\.lifecycle_evidence \(lifecycle_record_id\)/);
+  assert.match(sql0002, /CREATE INDEX IF NOT EXISTS raw_wait_park_date_time_idx\s*ON ingestion\.raw_wait_observations \(park_id, snapshot_park_date, snapshot_utc\)/);
+  assert.doesNotMatch(sql0002, /ON observations\.normalized_wait_observations \(park_id/);
+  assert.doesNotMatch(sql0002, /ON observations\.normalized_wait_observations \(snapshot_park_date/);
+});
+
+test("backfill uses the shared migration runner and never hardcodes 0001", async () => {
+  const backfillSource = await readFile(path.join(root, "scripts/backfill-wait-times-to-postgres.mjs"), "utf8");
+  assert.match(backfillSource, /runMigrations/);
+  assert.doesNotMatch(backfillSource, /0001_observation_storage\.sql/);
+});
+
 const rawFixture = `snapshot_utc,snapshot_park_datetime,snapshot_park_date,snapshot_timezone,park_id,park_name,land,ride_id,ride_name,is_open,wait_time_minutes,source_last_updated_utc,source_last_updated_park_datetime,source_url
 2026-07-01T17:00:00.000Z,2026-07-01 10:00:00,2026-07-01,America/Los_Angeles,dca,Disney California Adventure,Grizzly Peak,ride-1,Soarin' Across America,TRUE,25,2026-07-01T16:58:00.000Z,2026-07-01 09:58:00,fixture://queue-times
 2026-07-01T17:00:00.000Z,2026-07-01 10:00:00,2026-07-01,America/Los_Angeles,dca,Disney California Adventure,Grizzly Peak,ride-sr,Soarin' Across America Single Rider,TRUE,0,2026-07-01T16:58:00.000Z,2026-07-01 09:58:00,fixture://queue-times

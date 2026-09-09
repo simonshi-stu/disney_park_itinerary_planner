@@ -1,7 +1,7 @@
-import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildBackfillPlan, rawSchemaVersion } from "../infra/backfill/wait-time-records.mjs";
+import { runMigrations } from "../infra/migrations/run-migrations.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Set(process.argv.slice(2));
@@ -22,8 +22,7 @@ const { default: pg } = await import("pg");
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 try {
-  const migration = await readFile(path.join(root, "infra", "migrations", "0001_observation_storage.sql"), "utf8");
-  await pool.query(migration);
+  await runMigrations({ pool });
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
