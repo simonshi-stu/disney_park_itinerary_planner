@@ -33,6 +33,20 @@ Hugging Face 的 `Disney-Theme-Park-Queue-Dynamics` 是一个有价值的外部�
 
 唯一进度来源：`tasks/status/project-migration-status.v1.json`。README 和模块文档不复制易变化的阶段状态。
 
+## 当前执行责任与编辑边界
+
+本项目采用「Controller 定义、DeepSeek 实现、Controller 审查、人工门禁」的分工：
+
+1. 项目负责人（本对话中的 Controller）负责确定 phase、目标、`allowed_paths` 和验收标准，并在状态文件中记录唯一阶段口径。
+2. DeepSeek Worker 负责在当前 phase 的 allowlist 内实现；不得扩大路径、修改受保护 collector、生成数据、凭据或已应用 migration，也不得自行合并或切换生产。
+3. Controller 审查每次返回的代码、测试、contract 和边界，确认 deterministic checks、业务不变量、失败/降级路径与回滚风险。
+4. 同一 phase 的 Worker 返回最多按五次尝试处理（包括 revision run）；第 6 次仍无有效返回，或结果不可应用/不可用时，Controller 直接接管修改，并保留前序 run、审查证据和接管原因。
+5. 生产数据库初始化、云资源/账单、首次 hosted restore、停止 GitHub Actions collector、正式切换和 raw retention 变更始终需要人工 gate；本手册不授予 Agent 自动执行这些动作的权限。
+
+## PostgreSQL 与 raw dataset 存储
+
+不需要为 raw dataset 再创建一个 PostgreSQL 数据库。目标边界是：同一个 PostgreSQL database 保存 catalog、`ingestion.raw_archives`/`ingestion.raw_wait_observations` 元数据与 raw 行，以及 normalized 观测；raw payload 原文件本身保存到 S3-compatible object storage（本地可用 `infra/compose.yaml` 的 MinIO，hosted 环境使用人工创建的 bucket）。`raw_archives.object_uri` 要求 `s3://`、`gs://` 或 `az://`，因此只有 PostgreSQL 还不足以完成正式回填。bucket、访问凭据和首次上传仍是人工/环境 gate，不得为了绕过它把 raw 文件写进第二个数据库或改成 `file://`。
+
 查看阶段：
 
 ```powershell
@@ -53,7 +67,7 @@ $env:DEEPSEEK_MODEL = "你的账户可用模型"
 npm.cmd run agent:run -- --phase=01-data-contracts
 ```
 
-默认最多调用 DeepSeek 两次：第一次 patch 未满足 required outputs、allowlist 或文件一致性时，Controller 会把错误自动反馈给 Worker。可以显式设置 1–3 次：
+单次 run 默认最多调用 DeepSeek 两次：第一次 patch 未满足 required outputs、allowlist 或文件一致性时，Controller 会把错误自动反馈给 Worker。单次 run 可显式设置 1–3 次；跨 revision run 累计到第 6 次仍无效时按上面的接管规则处理：
 
 ```powershell
 npm.cmd run agent:run -- --phase=01-data-contracts --attempts=2
@@ -153,6 +167,8 @@ GPT 定义任务
   -> 首次生产切换人工确认
 ```
 
-每个阶段最多自动返工 2–3 次。超过限制后必须保留日志并进入 blocked，而不是无限消耗 API token。
+每个阶段不得无限消耗 API token。每次尝试和 revision 都必须保留日志；累计到第 6 次仍无效时由 Controller 接管，或在确实需要外部权限/信息时进入 `blocked`/`human_gate`。
 
-Phase 2 为避免 DeepSeek 的 JSON/unified diff 超过单次输出容量，拆成按顺序执行的原子阶段：`02a1-migration-runner`、`02a2a-storage-schema`、`02a2b-storage-schema-test-v2`、`02a3-storage-integration`、`02b1-restore-verifier`、`02b2-restore-runbook`。全部完成才代表 storage foundation 完成；云资源创建、生产 secret 和首次 hosted restore 仍需人工操作。若 Worker 声称修改多个文件但 patch 被截断，Controller 必须拒绝该 run 并继续缩小任务，不得拼接不完整 patch。
+Phase 03b parity 的只读入口为 `node scripts/report-replay-parity.mjs`；可追加 `--date=YYYY-MM-DD` 做单日比较。命令需要已填充目标 PostgreSQL 的 `DATABASE_URL`，不会运行 migration 或写入数据库；连接失败时输出 `status: "blocked"`，所有日期保持排除。
+
+Phase 2 为避免 DeepSeek 的 JSON/unified diff 超过单次输出容量，拆成按顺序执行的原子阶段：`02a1-migration-runner`、`02a2a-storage-schema`、`02a2b-storage-schema-test-v2`、`02a2b1-pg17-parameter-regression`、`02a3a-backfill-integration`、`02a3b1-storage-scripts-v2`、`02a3b2-storage-docs`、`02b1a`/`02b1b1`/`02b1b2a`/`02b1b2b`/`02b1c`、`02b2a`/`02b2b`/`02b2c`。全部完成才代表 storage foundation 完成；云资源创建、生产 secret 和首次 hosted restore 仍需人工操作。若 Worker 声称修改多个文件但 patch 被截断，Controller 必须拒绝该 run 并继续缩小任务，不得拼接不完整 patch。
