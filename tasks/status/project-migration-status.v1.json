@@ -51,7 +51,16 @@
       "evidence": ["docs/data/migration-runbook.zh-CN.md", "npm.cmd run check"],
       "notes": "The runbook documents replay commands, idempotency, the parity gate and the closure conditions for the 27 raw-only dates (2026-07-09..2026-08-04). Live parity still requires raw object storage and a populated target database; hosted credentials, dual-write and the production cutover remain explicit human gates. No credential or private endpoint was added."
     },
-    "04a-source-envelope-use-case": { "status": "pending" },
+    "04a-source-envelope-use-case": {
+      "status": "completed",
+      "evidence": [
+        "modules/ingestion/index.mjs",
+        "tests/ingestion/source-envelope.test.mjs",
+        "package.json",
+        "npm.cmd run check"
+      ],
+      "notes": "Source-envelope use case implemented with injectable adapter/clock, explicit ok/stale/outage states, immutable envelopes and deterministic envelope_id. Ingestion performs no canonical identity resolution. The project owner explicitly authorized the package.json test wiring outside the phase allowlist (test:ingestion in npm run check plus syntax check for modules/ingestion/index.mjs). No live third-party adapter was added; the bootstrap collector remains the live fetcher. Source-health persistence and hosted cutover remain pending."
+    },
     "04b-collector-dual-write": { "status": "pending" },
     "04c-source-health-and-dual-write-window": { "status": "pending" },
     "05a-api-contracts": { "status": "pending" },
