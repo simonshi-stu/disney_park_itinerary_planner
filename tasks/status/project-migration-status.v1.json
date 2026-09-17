@@ -1,6 +1,6 @@
 {
   "status_version": "1",
-  "updated_at": "2026-09-14T00:00:00.000Z",
+  "updated_at": "2026-09-17T00:00:00.000Z",
   "phases": {
     "01-data-contracts": {
       "status": "completed",
@@ -46,7 +46,11 @@
       ],
       "notes": "The parity CLI is read-only and keeps semantic mismatches out of training_eligible_dates. A live repository-vs-PostgreSQL run still requires raw object storage and a populated target database; no API, forecasting, collector cutover, or GitHub Actions shutdown was started."
     },
-    "03c-replay-runbook-update": { "status": "pending" },
+    "03c-replay-runbook-update": {
+      "status": "completed",
+      "evidence": ["docs/data/migration-runbook.zh-CN.md", "npm.cmd run check"],
+      "notes": "The runbook documents replay commands, idempotency, the parity gate and the closure conditions for the 27 raw-only dates (2026-07-09..2026-08-04). Live parity still requires raw object storage and a populated target database; hosted credentials, dual-write and the production cutover remain explicit human gates. No credential or private endpoint was added."
+    },
     "04a-source-envelope-use-case": { "status": "pending" },
     "04b-collector-dual-write": { "status": "pending" },
     "04c-source-health-and-dual-write-window": { "status": "pending" },

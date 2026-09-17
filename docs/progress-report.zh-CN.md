@@ -1,6 +1,6 @@
 # 项目进度报告（人类阅读用）
 
-> 最后更新：2026-09-14（按需更新，非固定快照）。
+> 最后更新：2026-09-17（按需更新，非固定快照）。
 >
 > 本文档是**人类阅读的当前进度报告**，不是 Agent 的工作准则，也不是权威状态来源：
 > - Agent 的权威进度来源：`tasks/status/project-migration-status.v1.json`。
@@ -9,7 +9,7 @@
 
 ## 一句话现状
 
-项目处于「**存储基础、目标 normalizer 历史重放和 Phase 03b parity 已实现，等待 03c 手册**」阶段：Phase 0 治理、Phase 1 表征测试、Phase 2 存储基础和 Phase 03a 目标 normalizer 已提交；Phase 03b parity 报告实现与测试已落地但 live file-vs-PostgreSQL 比较尚未执行，Phase 03c 手册仍未完成。GitHub Actions bootstrap collector 继续运行，未进入 API、forecast 或正式切换。
+项目处于「**存储基础、目标 normalizer 历史重放、03b parity 报告与 03c 重放手册均已完成，等待 live parity 环境**」阶段：Phase 0–03c 的产物已全部提交；下一步是 Phase 04a ingestion use case，以及需要人工门禁的 live parity（raw object storage + 已回填的目标数据库）。GitHub Actions bootstrap collector 继续运行，未进入 API、forecast 或正式切换。
 
 ## 已完成
 
@@ -23,13 +23,14 @@
   - 只读 restore verifier 与备份恢复手册。
 - **Phase 03a 目标 normalizer 历史重放**：目标 normalizer 已覆盖全部 27 个 raw-only 日期；只读计划统计 29 个 archive、162,968 条 raw、162,228 条 normalized，其中 155,310 条为 replay 记录；closed-wait 和 timezone 违规均为 0。
 - **Phase 03b replay parity 报告**：`scripts/report-replay-parity.mjs` 提供只读、机器可读的文件/数据库比较；报告显式输出 counts、archive hash、closed/zero 语义、lineage、canonical identity、营业窗口覆盖、`excluded_dates` 和 `training_eligible_dates`。
+- **Phase 03c 重放手册**：`docs/data/migration-runbook.zh-CN.md` 新增「重放与 Parity 操作」，记录重放命令、幂等性、parity 门槛与 27 个 raw-only 日期的关闭条件。
 - **目标清洗与审计**：`modules/observations` 的目标清洗函数、历史质量审计与 `wait-time-history-audit.v1`。
 - **Agent 编排**：`tools/agent-orchestrator.mjs`（Codex 决策 + DeepSeek 执行）+ 任务 manifest + 修改/测试准则 charter。
 
 ## 未完成（下一步）
 
 1. **Phase 03b live parity gate**：在 raw object storage 和目标 PostgreSQL 具备后运行 `node scripts/report-replay-parity.mjs`；报告为 `passed` 的日期才可进入 training set。
-2. **Phase 03c 重放手册**：记录 03a/03b 命令、幂等性、parity 门槛与缺口关闭条件。
+2. **Phase 04a source-envelope use case**：在 `modules/ingestion` 建立 source-envelope 摄取 use case（无 human gate），随后进入 04b 采集双写。
 3. **Phase 04–08**：采集双写与 source health → FastAPI → Next.js PWA → 预测/规划 baseline → 部署。
 
 manifest 已于 2026-09-09 把原 6 个粗粒度阶段（03–08）拆分为 19 个原子子阶段（03a–08c），可直接用 `npm.cmd run agent:run -- --phase=<id>` 逐条驱动 DeepSeek + Codex 执行。
@@ -46,7 +47,7 @@ manifest 已于 2026-09-09 把原 6 个粗粒度阶段（03–08）拆分为 19 
 ```powershell
 npm run check                 # 全部治理与测试（需在 CI/本机运行）
 npm run agent:plan            # 查看全部阶段与状态
-npm run agent:run -- --phase=03b-replay-parity-report --dry-run       # 生成 DeepSeek prompt
-npm run agent:run -- --phase=03b-replay-parity-report --attempts=3    # 真实执行（需 DEEPSEEK_API_KEY）
+npm run agent:run -- --phase=04a-source-envelope-use-case --dry-run    # 生成下一阶段 prompt
+npm run agent:run -- --phase=04a-source-envelope-use-case --attempts=3 # 真实执行（需 DEEPSEEK_API_KEY）
 node scripts/backfill-wait-times-to-postgres.mjs --check               # 只读回填计划检查
 ```

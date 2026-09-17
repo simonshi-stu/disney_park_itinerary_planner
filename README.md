@@ -20,7 +20,7 @@ An intelligent theme-park itinerary planner that combines park catalogs, live co
 
 ## 当前阶段
 
-项目处于“存储基础完成、历史 replay parity 阶段”。治理基础、数据契约、PostgreSQL schema、目标 normalizer replay 和只读 parity 报告实现已建立；live parity 仍需对象存储 bucket 与目标数据库中的完整回填。现有静态网站、Node.js 数据采集器和 GitHub Actions 继续运行，API、forecast、正式切换均尚未开始。
+项目处于“存储基础完成、replay parity 已实现并入册”阶段。治理基础、数据契约、PostgreSQL schema、目标 normalizer replay、只读 parity 报告和重放手册已建立；live parity 仍需对象存储 bucket 与目标数据库中的完整回填。现有静态网站、Node.js 数据采集器和 GitHub Actions 继续运行，API、forecast、正式切换均尚未开始。
 
 | 能力 | 当前实现 | 目标方向 |
 | --- | --- | --- |
