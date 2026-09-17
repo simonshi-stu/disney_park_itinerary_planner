@@ -5,6 +5,7 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { buildBackfillPlan, transformationVersion, replayTransformationVersion } from "../../infra/backfill/wait-time-records.mjs";
+import { buildDatabaseParitySnapshot, buildFileParitySnapshot, buildReplayParityReport, queryDatabaseSnapshot } from "../../scripts/report-replay-parity.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -166,6 +167,71 @@ test("target-normalizer replay covers raw-only dates with target semantics and s
   } finally {
     await rm(fixtureRoot, { recursive: true, force: true });
   }
+});
+
+test("replay parity is read-only, compares the injected database snapshot, and excludes semantic mismatches by date", async () => {
+  const rawRows = [
+    { rawObservationId: "r-1", rawArchiveId: "archive-1", sha256: "hash-1", snapshotUtc: "2026-07-09T17:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca", rideId: "ride-1", rideName: "Soarin' Across America", isOpen: true, waitTimeMinutes: 25 },
+    { rawObservationId: "r-2", rawArchiveId: "archive-1", sha256: "hash-1", snapshotUtc: "2026-07-09T17:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca", rideId: "ride-2", rideName: "Space Mountain", isOpen: true, waitTimeMinutes: null },
+    { rawObservationId: "r-3", rawArchiveId: "archive-1", sha256: "hash-1", snapshotUtc: "2026-07-09T17:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca", rideId: "ride-3", rideName: "Matterhorn", isOpen: true, waitTimeMinutes: 0 },
+    { rawObservationId: "r-4", rawArchiveId: "archive-1", sha256: "hash-1", snapshotUtc: "2026-07-09T17:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca", rideId: "ride-4", rideName: "Closed Ride", isOpen: false, waitTimeMinutes: 0 }
+  ];
+  const normalizedRows = [
+    { normalizedObservationId: "n-1", rawObservationId: "r-1", canonicalAttractionId: "dca-soarin", accessMode: "standby", isOpen: true, observedWaitTimeMinutes: 25, qualityFlags: [], trainingEligibility: "standby_wait_model", transformationVersion: "target-normalizer.v1", generatedAt: "2026-07-10T00:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca" },
+    { normalizedObservationId: "n-2", rawObservationId: "r-2", canonicalAttractionId: "disneyland-space-mountain", accessMode: "standby", isOpen: true, observedWaitTimeMinutes: null, qualityFlags: ["missing_wait"], trainingEligibility: "exclude_missing_wait", transformationVersion: "target-normalizer.v1", generatedAt: "2026-07-10T00:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca" },
+    { normalizedObservationId: "n-3", rawObservationId: "r-3", canonicalAttractionId: "dca-matterhorn", accessMode: "standby", isOpen: true, observedWaitTimeMinutes: 0, qualityFlags: ["open_zero"], trainingEligibility: "standby_wait_model", transformationVersion: "target-normalizer.v1", generatedAt: "2026-07-10T00:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca" },
+    { normalizedObservationId: "n-4", rawObservationId: "r-4", canonicalAttractionId: "dca-closed", accessMode: "standby", isOpen: false, observedWaitTimeMinutes: null, qualityFlags: ["closed"], trainingEligibility: "status_model_only", transformationVersion: "target-normalizer.v1", generatedAt: "2026-07-10T00:00:00.000Z", snapshotParkDate: "2026-07-09", parkId: "dca" }
+  ];
+  const operatingWindows = [{ date: "2026-07-09", parkId: "dca", openingTime: "2026-07-09T16:00:00.000Z", closingTime: "2026-07-10T00:00:00.000Z" }];
+  const file = buildFileParitySnapshot({ rawRecords: rawRows, normalizedRecords: normalizedRows, archives: [{ rawArchiveId: "archive-1", sha256: "hash-1" }] }, { operatingWindows });
+  const dbRawRows = rawRows.map((row) => ({
+    raw_observation_id: row.rawObservationId, raw_archive_id: row.rawArchiveId, sha256: row.sha256,
+    snapshot_utc: row.snapshotUtc, snapshot_park_date: row.snapshotParkDate, park_id: row.parkId,
+    ride_id: row.rideId, ride_name: row.rideName, is_open: row.isOpen, wait_time_minutes: row.waitTimeMinutes
+  }));
+  const dbNormalizedRows = normalizedRows.map((row) => ({
+    normalized_observation_id: row.normalizedObservationId, raw_observation_id: row.rawObservationId,
+    canonical_attraction_id: row.canonicalAttractionId, access_mode: row.accessMode, is_open: row.isOpen,
+    observed_wait_time_minutes: row.observedWaitTimeMinutes, quality_flags: row.qualityFlags,
+    training_eligibility: row.trainingEligibility, transformation_version: row.transformationVersion,
+    generated_at: row.generatedAt, snapshot_park_date: row.snapshotParkDate, park_id: row.parkId
+  }));
+  const fakeClient = {
+    query(sql) {
+      return Promise.resolve({ rows: sql.includes("normalized.normalized_observation_id") ? dbNormalizedRows : dbRawRows });
+    }
+  };
+  const database = await queryDatabaseSnapshot(fakeClient, { dates: ["2026-07-09"], operatingWindows });
+  const matched = buildReplayParityReport(file, database, { runId: "parity-test", generatedAt: "2026-07-10T00:00:00.000Z" });
+  assert.equal(matched.status, "passed");
+  assert.deepEqual(matched.excluded_dates, []);
+  assert.equal(matched.dates[0].file.archive_hashes[0], "hash-1");
+  assert.equal(matched.dates[0].file.operating_window_coverage[0].inside_window_observation_count, 4);
+  assert.equal(matched.dates[0].file.lineage.normalized_orphan_count, 0);
+  assert.deepEqual(matched.dates[0].file.canonical_identity, { "dca-closed": 1, "dca-matterhorn": 1, "dca-soarin": 1, "disneyland-space-mountain": 1 });
+
+  const semanticMismatchRows = dbNormalizedRows.map((row) => row.normalized_observation_id === "n-4"
+    ? { ...row, observed_wait_time_minutes: 0 }
+    : row);
+  const mismatchedDatabase = buildDatabaseParitySnapshot({ rawRows: dbRawRows, normalizedRows: semanticMismatchRows }, { operatingWindows });
+  const blocked = buildReplayParityReport(file, mismatchedDatabase, { runId: "parity-test-mismatch" });
+  assert.equal(blocked.status, "blocked");
+  assert.deepEqual(blocked.excluded_dates, ["2026-07-09"]);
+  assert.ok(blocked.failures.some((failure) => failure.code === "closed_zero_semantics_mismatch" && failure.date === "2026-07-09"));
+  assert.deepEqual(blocked.training_eligible_dates, []);
+
+  const countHashLineageMismatch = buildReplayParityReport(
+    file,
+    buildDatabaseParitySnapshot({
+      rawRows: dbRawRows.slice(0, -1),
+      normalizedRows: dbNormalizedRows.slice(0, -1),
+      archives: [{ rawArchiveId: "archive-1", sha256: "different-hash" }]
+    }, { operatingWindows }),
+    { runId: "parity-test-count-hash-lineage" }
+  );
+  assert.ok(countHashLineageMismatch.checks.counts.mismatches.some((mismatch) => mismatch.type === "raw_count"));
+  assert.ok(countHashLineageMismatch.checks.hashes.mismatches.some((mismatch) => mismatch.type === "archive_hashes"));
+  assert.ok(countHashLineageMismatch.checks.lineage.mismatches.some((mismatch) => mismatch.type === "missing_normalized_lineage"));
 });
 
 const rawFixture = `snapshot_utc,snapshot_park_datetime,snapshot_park_date,snapshot_timezone,park_id,park_name,land,ride_id,ride_name,is_open,wait_time_minutes,source_last_updated_utc,source_last_updated_park_datetime,source_url
