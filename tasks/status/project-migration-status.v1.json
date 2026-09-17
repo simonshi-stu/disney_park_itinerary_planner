@@ -1,6 +1,6 @@
 {
   "status_version": "1",
-  "updated_at": "2026-09-09T04:57:12.864Z",
+  "updated_at": "2026-09-14T00:00:00.000Z",
   "phases": {
     "01-data-contracts": {
       "status": "completed",
@@ -26,8 +26,26 @@
     "02b2a-restore-runbook-v4-final": { "status": "completed", "evidence": ["docs/data/storage-backup-restore.zh-CN.md"] },
     "02b2b-migration-runbook-link": { "status": "completed", "evidence": ["docs/data/migration-runbook.zh-CN.md"] },
     "02b2c-infra-restore-docs": { "status": "completed", "evidence": ["infra/README.zh-CN.md"], "notes": "Implementation and local PostgreSQL 17 restore verification are complete. Hosted credentials, cloud resource creation and the first hosted restore remain explicit human gates." },
-    "03a-history-replay-normalizer": { "status": "pending", "notes": "Replay implementation landed: target-normalizer.v1 covers all 27 raw-only dates (155310 replayed rows on real repo data, 0 closed-wait and 0 timezone violations; fixture assertions pass). Full npm run check and live backfill must run outside the sandbox (node --test spawn EPERM) before marking completed." },
-    "03b-replay-parity-report": { "status": "pending" },
+    "03a-history-replay-normalizer": {
+      "status": "completed",
+      "evidence": [
+        "infra/backfill/wait-time-records.mjs",
+        "tests/storage/observation-storage.test.mjs",
+        "npm.cmd run check",
+        "node scripts/backfill-wait-times-to-postgres.mjs --check (29 archives, 162968 raw, 162228 normalized, 27 replayed dates, 155310 replayed rows, 0 closed-wait and 0 timezone violations)"
+      ],
+      "notes": "Target-normalizer.v1 replay and idempotency are verified. Persisting the plan still requires raw object storage and DATABASE_URL in the execution environment; hosted credentials and any first hosted backfill remain explicit human gates. GitHub Actions collection remains enabled."
+    },
+    "03b-replay-parity-report": {
+      "status": "completed",
+      "evidence": [
+        "scripts/report-replay-parity.mjs",
+        "tests/storage/observation-storage.test.mjs",
+        "npm.cmd run check",
+        "read-only fixture parity: matching snapshot passed; count/hash/closed-zero/lineage/canonical mismatches excluded the date"
+      ],
+      "notes": "The parity CLI is read-only and keeps semantic mismatches out of training_eligible_dates. A live repository-vs-PostgreSQL run still requires raw object storage and a populated target database; no API, forecasting, collector cutover, or GitHub Actions shutdown was started."
+    },
     "03c-replay-runbook-update": { "status": "pending" },
     "04a-source-envelope-use-case": { "status": "pending" },
     "04b-collector-dual-write": { "status": "pending" },

@@ -20,7 +20,7 @@ An intelligent theme-park itinerary planner that combines park catalogs, live co
 
 ## 当前阶段
 
-项目处于“迁移前行为锁定与数据积累”阶段。治理基础和首轮表征测试已经建立，现有静态网站和 Node.js 数据采集器继续运行；测试已覆盖采集窗口两端、CSV 规范化、API/cache fallback、collector failure、canonical mapping、closed/zero、stale、缺失等待值的当前行为、Single Rider、重复/冲突报告和 optimizer-ready selection。在正式数据契约和替代存储就绪之前，不对采集器进行行为重构。
+项目处于“存储基础完成、历史 replay parity 阶段”。治理基础、数据契约、PostgreSQL schema、目标 normalizer replay 和只读 parity 报告实现已建立；live parity 仍需对象存储 bucket 与目标数据库中的完整回填。现有静态网站、Node.js 数据采集器和 GitHub Actions 继续运行，API、forecast、正式切换均尚未开始。
 
 | 能力 | 当前实现 | 目标方向 |
 | --- | --- | --- |
