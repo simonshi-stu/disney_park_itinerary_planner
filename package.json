@@ -9,6 +9,7 @@
     "test:governance": "node --test tests/governance/project-structure.test.mjs",
     "test:characterization": "node --test tests/characterization/bootstrap-behavior.test.mjs",
     "test:observations": "node --test tests/observations/wait-time-quality.test.mjs",
+    "test:ingestion": "node --test tests/ingestion/source-envelope.test.mjs",
     "test:catalog": "node --test tests/catalog/catalog-attraction-lifecycle.test.mjs",
     "test:storage": "node --test tests/storage/observation-storage.test.mjs tests/storage/migration-runner.test.mjs tests/storage/restore-verifier.test.mjs",
     "audit:data": "node scripts/audit-wait-time-history.mjs",
@@ -16,8 +17,8 @@
     "agent:run": "node --env-file-if-exists=.env tools/agent-orchestrator.mjs run tasks/manifests/project-migration.v1.json",
     "agent:revise": "node --env-file-if-exists=.env tools/agent-orchestrator.mjs revise",
     "test:orchestrator": "node --test tests/agent-orchestrator/orchestrator.test.mjs",
-    "check:syntax": "node --check src/app.js && node --check src/data.js && node --check scripts/collect-wait-times.mjs && node --check scripts/analyze-wait-times.mjs && node --check scripts/update-cache.mjs && node --check scripts/backfill-wait-times-to-postgres.mjs && node --check scripts/audit-wait-time-history.mjs && node --check infra/backfill/wait-time-records.mjs && node --check modules/observations/index.mjs && node --check modules/observations/internal/wait-time-quality.mjs && node --check modules/observations/repository-history-adapter.mjs && node --check tools/agent-orchestrator.mjs && node --check infra/migrations/run-migrations.mjs && node --check infra/restore/verify-restored-storage.mjs",
-    "check": "npm run check:governance && npm run test:governance && npm run test:characterization && npm run test:catalog && npm run test:observations && npm run test:storage && npm run test:orchestrator && npm run check:syntax"
+    "check:syntax": "node --check src/app.js && node --check src/data.js && node --check scripts/collect-wait-times.mjs && node --check scripts/analyze-wait-times.mjs && node --check scripts/update-cache.mjs && node --check scripts/backfill-wait-times-to-postgres.mjs && node --check scripts/audit-wait-time-history.mjs && node --check infra/backfill/wait-time-records.mjs && node --check modules/observations/index.mjs && node --check modules/observations/internal/wait-time-quality.mjs && node --check modules/observations/repository-history-adapter.mjs && node --check modules/ingestion/index.mjs && node --check tools/agent-orchestrator.mjs && node --check infra/migrations/run-migrations.mjs && node --check infra/restore/verify-restored-storage.mjs",
+    "check": "npm run check:governance && npm run test:governance && npm run test:characterization && npm run test:catalog && npm run test:observations && npm run test:ingestion && npm run test:storage && npm run test:orchestrator && npm run check:syntax"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.883.0",
