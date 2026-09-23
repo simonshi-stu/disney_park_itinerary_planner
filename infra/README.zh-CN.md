@@ -10,7 +10,7 @@
 - 不同环境使用最小权限的独立 credential。
 
 ## 当前状态
-已加入 `compose.yaml`、`migrations/0001_observation_storage.sql`、`migrations/0002_catalog_lifecycle_and_indexes.sql`、`migrations/run-migrations.mjs` 和历史回填器。它们建立 PostgreSQL 的 catalog/ingestion/observations schema，并把 raw CSV 先归档到 S3-compatible object storage 后再写入 immutable raw 表。当前线上采集仍是 GitHub Actions + repository data files；在 hosted storage credential、缺失日期重放、dual-run comparison 和 rollback 验证完成前不切断 bootstrap 写入。
+已加入 `compose.yaml`、`migrations/0001_observation_storage.sql`、`migrations/0002_catalog_lifecycle_and_indexes.sql`、`migrations/0003_source_health.sql`、`migrations/run-migrations.mjs`、source-health PostgreSQL adapter 和历史回填器。它们建立 PostgreSQL 的 catalog/ingestion/observations schema，并把 raw CSV 先归档到 S3-compatible object storage 后再写入 immutable raw 表；source health 是可 upsert 的派生运行元数据。当前线上采集仍是 GitHub Actions + repository data files；在 hosted storage credential、缺失日期重放、dual-run comparison 和 rollback 验证完成前不切断 bootstrap 写入。
 
 数据库迁移由 `infra/migrations/run-migrations.mjs` 执行。运行前必须设置 `DATABASE_URL`（必填，不在此文档中提供具体值）。迁移使用 `infrastructure.schema_migrations` ledger 表记录已应用的迁移文件名、SHA-256 checksum 和应用时间；执行前通过 PostgreSQL advisory lock（项目专用 key）串行化并发运行。
 
@@ -68,6 +68,12 @@ npm.cmd run db:migrate
 ```
 
 该命令调用 `infra/migrations/run-migrations.mjs`。迁移文件按词法顺序执行，且必须为 additive。每次应用后，文件名和内容 SHA-256 checksum 写入 ledger。若已应用的迁移文件内容发生变化，checksum 不匹配，运行会 fail-closed：拒绝该迁移并抛出错误，不继续执行后续迁移。
+
+## Source health 与窗口报告
+
+`ingestion.source_health` 由 `infra/source-health-postgres.mjs` 通过 `(source_name, run_id)` upsert。它允许更新派生健康状态，不允许替代或修改 immutable raw 表。source health 写入失败必须在双写结果中显式报告，不能伪装成 hosted raw 成功。
+
+双写窗口报告使用 `node infra/report-dual-write-window.mjs <input.json>`，详情见[双写验证窗口手册](../docs/data/dual-write-window.zh-CN.md)。该命令只读，不自动连接数据库或创建云资源。
 
 ## 数据规模与分区决策
 

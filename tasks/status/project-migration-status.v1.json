@@ -1,6 +1,6 @@
 {
   "status_version": "1",
-  "updated_at": "2026-09-17T00:00:00.000Z",
+  "updated_at": "2026-09-21T00:00:00.000Z",
   "phases": {
     "01-data-contracts": {
       "status": "completed",
@@ -61,8 +61,32 @@
       ],
       "notes": "Source-envelope use case implemented with injectable adapter/clock, explicit ok/stale/outage states, immutable envelopes and deterministic envelope_id. Ingestion performs no canonical identity resolution. The project owner explicitly authorized the package.json test wiring outside the phase allowlist (test:ingestion in npm run check plus syntax check for modules/ingestion/index.mjs). No live third-party adapter was added; the bootstrap collector remains the live fetcher. Source-health persistence and hosted cutover remain pending."
     },
-    "04b-collector-dual-write": { "status": "pending" },
-    "04c-source-health-and-dual-write-window": { "status": "pending" },
+    "04b-collector-dual-write": {
+      "status": "completed",
+      "evidence": [
+        "workers/collector/dual-write.mjs",
+        "workers/collector/run-dual-write.mjs",
+        "tests/ingestion/dual-write.test.mjs",
+        ".github/workflows/collect-wait-times.yml",
+        "npm.cmd run check",
+        "disabled and missing-hosted-configuration smoke tests"
+      ],
+      "notes": "The opt-in sidecar writes the Git path first, uses payload_sha256 for payload-bearing idempotency, archives only latest_snapshot.json.rows, and reports hosted failures without blocking Git. The phase manifest allowlist was corrected to include its explicitly required ingestion tests and package wiring. Enabling hosted writes and the first hosted restore remain the explicit cloud_credentials_and_first_hosted_restore human gate; Git collection remains active."
+    },
+    "04c-source-health-and-dual-write-window": {
+      "status": "pending",
+      "evidence": [
+        "modules/ingestion/source-health.mjs",
+        "infra/migrations/0003_source_health.sql",
+        "infra/source-health-postgres.mjs",
+        "infra/report-dual-write-window.mjs",
+        "packages/contracts/schemas/v1/source-health.schema.json",
+        "packages/contracts/schemas/v1/dual-write-window-report.schema.json",
+        "tests/ingestion/source-health.test.mjs",
+        "npm.cmd run check"
+      ],
+      "notes": "Source-health persistence, outage recording, fail-closed window comparison, and the read-only machine-readable report are implemented and locally verified. The phase remains pending until a real complete hosted validation window is run with DATABASE_URL and hosted object-storage credentials; the report input currently requires manually assembled Git, hosted, expected-run, and source-health evidence."
+    },
     "05a-api-contracts": { "status": "pending" },
     "05b-api-use-cases": { "status": "pending" },
     "05c-api-fallback-behavior": { "status": "pending" },

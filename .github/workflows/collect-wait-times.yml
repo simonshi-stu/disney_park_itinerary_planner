@@ -22,12 +22,57 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - name: Install dependencies
+        run: npm ci
       - name: Collect Queue Times snapshots
+        id: collect
+        continue-on-error: true
         env:
           MIN_SNAPSHOT_INTERVAL_MINUTES: "5"
-        run: node scripts/collect-wait-times.mjs
+        run: |
+          set +e
+          before_snapshot_hash="$(sha256sum data/wait_times/latest_snapshot.json 2>/dev/null | cut -d' ' -f1)"
+          node scripts/collect-wait-times.mjs 2> "$RUNNER_TEMP/collector-error.log"
+          status=$?
+          after_snapshot_hash="$(sha256sum data/wait_times/latest_snapshot.json 2>/dev/null | cut -d' ' -f1)"
+          if [ "$status" -eq 0 ] && [ -n "$after_snapshot_hash" ] && [ "$before_snapshot_hash" != "$after_snapshot_hash" ]; then
+            echo "snapshot_written=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "snapshot_written=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ "$status" -ne 0 ]; then
+            failure_message="$(tr -d '\r\n' < "$RUNNER_TEMP/collector-error.log" | cut -c1-500)"
+            if [ -z "$failure_message" ]; then
+              failure_message="collector step failed before a snapshot was written"
+            fi
+            printf 'failure_message=%s\n' "$failure_message" >> "$GITHUB_OUTPUT"
+          fi
+          exit "$status"
+      - name: Dual-write collected snapshot
+        id: dual_write
+        if: ${{ always() && (steps.collect.outcome == 'failure' || (steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true')) }}
+        continue-on-error: true
+        env:
+          COLLECTOR_DUAL_WRITE_ENABLED: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED || 'false' }}
+          COLLECTOR_RUN_ID: ${{ github.run_id }}
+          COLLECTOR_RUN_OUTCOME: ${{ steps.collect.outcome }}
+          COLLECTOR_SOURCE_FAILURE: ${{ steps.collect.outputs.failure_message || 'collector step failed before a snapshot was written' }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RAW_ARCHIVE_BUCKET: ${{ vars.RAW_ARCHIVE_BUCKET }}
+          RAW_ARCHIVE_ENDPOINT: ${{ vars.RAW_ARCHIVE_ENDPOINT }}
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: node workers/collector/run-dual-write.mjs
+      - name: Preserve collector failure status
+        if: ${{ steps.collect.outcome == 'failure' }}
+        run: exit 1
       - name: Commit updated wait-time data
+        if: ${{ steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true' }}
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "Collect wait-time snapshot"
           file_pattern: data/wait_times/*.csv data/wait_times/latest_snapshot.json
+      - name: Surface source-health persistence failure
+        if: ${{ steps.collect.outcome == 'success' && steps.dual_write.outcome == 'failure' }}
+        run: exit 1

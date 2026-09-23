@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/dual-write-window-report.schema.json",
+  "title": "Dual-write window report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "run_id",
+    "window_start",
+    "window_end",
+    "generated_at",
+    "status",
+    "complete",
+    "coverage",
+    "source_health",
+    "failures",
+    "warnings",
+    "next_steps"
+  ],
+  "properties": {
+    "contract_version": { "const": "dual-write-window-report.v1" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "window_start": { "type": "string", "format": "date-time" },
+    "window_end": { "type": "string", "format": "date-time" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["passed", "passed_with_warnings", "failed"] },
+    "complete": { "type": "boolean" },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["expected_run_count", "git_run_count", "hosted_run_count", "matched_run_count"],
+      "properties": {
+        "expected_run_count": { "type": "integer", "minimum": 0 },
+        "git_run_count": { "type": "integer", "minimum": 0 },
+        "hosted_run_count": { "type": "integer", "minimum": 0 },
+        "matched_run_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "source_health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_count", "outage_count", "stale_count"],
+      "properties": {
+        "record_count": { "type": "integer", "minimum": 0 },
+        "outage_count": { "type": "integer", "minimum": 0 },
+        "stale_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "failures": { "type": "array", "items": { "type": "object" } },
+    "warnings": { "type": "array", "items": { "type": "object" } },
+    "next_steps": { "type": "array", "items": { "type": "string" } }
+  }
+}

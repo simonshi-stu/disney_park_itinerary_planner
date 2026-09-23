@@ -10,7 +10,9 @@ Catalog entities/mapping、raw source envelope/source health、normalized observ
 Contract 只描述数据形状和兼容策略，不实现业务规则；每个 contract 只有一个权威格式，生成类型不可手工编辑；breaking change 必须版本化或提供 migration plan；web 依赖 API contract，不依赖数据库。
 
 ## 当前状态
-`schemas/v1/` 已定义首批持久化边界：immutable raw archive、raw wait observation、normalized wait observation、wait-time history audit 和 catalog attraction lifecycle。前三者用于历史回填与 PostgreSQL adapter；审计报告用于表达开园时段覆盖、缺失/零等待语义、短暂停运和持续不可用复核候选；catalog lifecycle 用于表达排队能力、支持的 access modes、官方生命周期证据、有效期及训练/规划 disposition。它们都不改变 bootstrap CSV 的格式。
+`schemas/v1/` 已定义首批持久化边界：immutable raw archive、raw wait observation、normalized wait observation、wait-time history audit、catalog attraction lifecycle 和 source health。前三者用于历史回填与 PostgreSQL adapter；审计报告用于表达开园时段覆盖、缺失/零等待语义、短暂停运和持续不可用复核候选；catalog lifecycle 用于表达排队能力、支持的 access modes、官方生命周期证据、有效期及训练/规划 disposition；source health 用于保存可更新的来源运行状态，不替代 immutable raw evidence。它们都不改变 bootstrap CSV 的格式。
+
+`dual-write-window-report.v1` 是只读比较结果，要求调用方提供完整窗口的 expected runs、Git runs、hosted runs 和 source-health 快照；缺失输入不会被推断为成功。
 
 ## V1 等待时间约束
 - 来源在关闭状态返回的 `0` 只属于 raw 证据。

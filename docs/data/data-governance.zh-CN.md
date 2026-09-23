@@ -11,6 +11,7 @@ Queue-Times 是当前 bootstrap 来源，提供 posted wait 快照；ThemeParks 
 - 目标频率：约 15 分钟。
 - 每条记录保留 `requested_at`、`source_observed_at`、`ingested_at`、`observed_at`。
 - 每次运行写入 `run_id`、来源健康状态、HTTP/解析错误和记录计数。
+- source health 是可更新的派生元数据；raw source envelope、raw archive 和 raw observation 仍不可变。
 - 缺少某次 snapshot 不自动补写虚假值；需要在质量报告中标记缺口。
 - 未来提高到 5 分钟前，先在 staging 比较来源限流、成本、缺失率和预测收益。
 

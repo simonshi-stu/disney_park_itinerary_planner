@@ -567,7 +567,7 @@
       "title": "采集器双写",
       "objective": "在保留 Git fallback 的前提下，bootstrap 采集结果同时写入 hosted raw storage 与 PostgreSQL，用 feature flag 控制。",
       "dependencies": ["04a-source-envelope-use-case"],
-      "allowed_paths": ["workers/collector", "modules/ingestion", "infra", ".github/workflows"],
+      "allowed_paths": ["workers/collector", "modules/ingestion", "infra", ".github/workflows", "tests/ingestion", "package.json"],
       "required_reads": [
         "AGENTS.md",
         "docs/ai/context-map.zh-CN.md",
@@ -595,13 +595,16 @@
       "title": "Source health 与双写验证窗口",
       "objective": "把 source health 写入 PostgreSQL，运行一个完整双写对比窗口并产出机器可读对比报告。",
       "dependencies": ["04b-collector-dual-write"],
-      "allowed_paths": ["modules/ingestion", "infra", "tests/ingestion", "docs/data"],
+      "allowed_paths": ["modules/ingestion", "infra", "tests/ingestion", "docs/data", "packages/contracts", "workers/collector", ".github/workflows", "package.json"],
       "required_reads": [
         "AGENTS.md",
         "docs/ai/context-map.zh-CN.md",
         "docs/ai/agent-change-test-charter.zh-CN.md",
         "modules/ingestion/README.zh-CN.md",
-        "docs/data/data-governance.zh-CN.md"
+        "docs/data/data-governance.zh-CN.md",
+        "packages/contracts/README.zh-CN.md",
+        "workers/collector/dual-write.mjs",
+        "workers/collector/run-dual-write.mjs"
       ],
       "acceptance": [
         "source failures are visible in persisted source health",
@@ -609,7 +612,7 @@
         "comparison report is machine-readable"
       ],
       "decisions": ["Source health is derived metadata, not raw evidence; it may be updated."],
-      "required_outputs": ["modules/ingestion/source-health.mjs", "tests/ingestion/source-health.test.mjs"],
+      "required_outputs": ["modules/ingestion/source-health.mjs", "tests/ingestion/source-health.test.mjs", "packages/contracts/schemas/v1/source-health.schema.json", "packages/contracts/schemas/v1/dual-write-window-report.schema.json", "infra/migrations/0003_source_health.sql", "infra/source-health-postgres.mjs", "infra/report-dual-write-window.mjs"],
       "commands": ["npm.cmd run check"],
       "human_gate": false
     },

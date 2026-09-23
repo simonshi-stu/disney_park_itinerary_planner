@@ -21,7 +21,7 @@ Provide versioned, machine-checkable schemas used across modules and application
 
 ## Current Status
 
-`schemas/v1/` contains the first persisted-data boundaries: immutable raw archives, raw wait observations, and normalized wait observations. They support historical backfill and the PostgreSQL adapter without changing the bootstrap CSV format.
+`schemas/v1/` contains the first persisted-data boundaries: immutable raw archives, raw wait observations, normalized wait observations, wait-time history audits, catalog lifecycle, source health, and dual-write window reports. Source health is updateable derived metadata; the raw archive and observation contracts remain immutable. These contracts support historical backfill, source monitoring, and PostgreSQL adapters without changing the bootstrap CSV format.
 
 ## V1 Wait-Time Constraints
 
