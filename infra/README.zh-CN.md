@@ -34,7 +34,7 @@ docker compose -f infra/compose.yaml up -d
 node scripts/backfill-wait-times-to-postgres.mjs
 ```
 
-回填可重复执行；raw 使用内容 hash 和来源行号生成稳定 ID，冲突只跳过，不覆盖。`--skip-upload` 仅用于对象已经归档的环境，并要求 `RAW_ARCHIVE_BASE_URI`。hosted validation 的完整入口是 `.github/workflows/backfill-hosted-validation.yml`：它只允许从 `feat/04c-hosted-validation` 手动运行，要求显式输入 `validation-only`，并在写入后运行 `npm.cmd run report:hosted-backfill` 等价的只读核验。报告 contract 为 `hosted-backfill-report.v1`，未通过 Git/Neon/R2/parity 全部匹配前不得清理本地数据。
+回填可重复执行；raw 使用内容 hash 和来源行号生成稳定 ID，冲突只跳过，不覆盖。`--skip-upload` 仅用于对象已经归档的环境，并要求 `RAW_ARCHIVE_BASE_URI`。hosted validation 的完整入口是 `.github/workflows/collect-wait-times.yml` 的 `backfill-hosted-validation` 手动 operation：它只允许从 `feat/04c-hosted-validation` 运行，要求显式输入 `validation-only`，并在写入后运行 `npm.cmd run report:hosted-backfill` 等价的只读核验。报告 contract 为 `hosted-backfill-report.v1`，未通过 Git/Neon/R2/parity 全部匹配前不得清理本地数据。
 
 回填 workflow 使用现有 `DATABASE_URL`、`RAW_ARCHIVE_BUCKET`、`RAW_ARCHIVE_ENDPOINT` 和最小权限对象存储凭据；人工运行前必须再次确认 `DATABASE_URL` 是 Neon validation branch，而不是 production。对象存储或 Neon 超载、配额不足、订阅中断或凭据暂时失效时，不重试到 production，也不关闭采集：保留 GitHub Actions 的 Git fallback，记录 source-health/hosted failure，待服务恢复后按 hash 幂等补写并重新生成报告。
 
