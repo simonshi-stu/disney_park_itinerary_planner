@@ -10,7 +10,7 @@
 - 不同环境使用最小权限的独立 credential。
 
 ## 当前状态
-已加入 `compose.yaml`、`migrations/0001_observation_storage.sql`、`migrations/0002_catalog_lifecycle_and_indexes.sql`、`migrations/0003_source_health.sql`、`migrations/run-migrations.mjs`、source-health PostgreSQL adapter 和历史回填器。它们建立 PostgreSQL 的 catalog/ingestion/observations schema，并把 raw CSV 先归档到 S3-compatible object storage 后再写入 immutable raw 表；source health 是可 upsert 的派生运行元数据。当前线上采集仍是 GitHub Actions + repository data files；在 hosted storage credential、缺失日期重放、dual-run comparison 和 rollback 验证完成前不切断 bootstrap 写入。
+已加入 `compose.yaml`、`migrations/0001_observation_storage.sql`、`migrations/0002_catalog_lifecycle_and_indexes.sql`、`migrations/0003_source_health.sql`、`migrations/run-migrations.mjs`、source-health PostgreSQL adapter 和历史回填器。它们建立 PostgreSQL 的 catalog/ingestion/observations schema，并把 raw CSV 先归档到 S3-compatible object storage 后再写入 immutable raw 表；source health 是可 upsert 的派生运行元数据。04c hosted dual-write window 已在私有 R2 和 Neon validation branch 上通过，机器可读证据位于 `docs/data/dual-write-window-2026-09-24.input.json` 与 `.report.json`。当前线上采集仍保留 GitHub Actions + repository data files；正式 production cutover、rollback 验证和停止 bootstrap 写入仍需人工 gate。
 
 数据库迁移由 `infra/migrations/run-migrations.mjs` 执行。运行前必须设置 `DATABASE_URL`（必填，不在此文档中提供具体值）。迁移使用 `infrastructure.schema_migrations` ledger 表记录已应用的迁移文件名、SHA-256 checksum 和应用时间；执行前通过 PostgreSQL advisory lock（项目专用 key）串行化并发运行。
 
@@ -34,7 +34,9 @@ docker compose -f infra/compose.yaml up -d
 node scripts/backfill-wait-times-to-postgres.mjs
 ```
 
-回填可重复执行；raw 使用内容 hash 和来源行号生成稳定 ID，冲突只跳过，不覆盖。`--skip-upload` 仅用于对象已经归档的环境，并要求 `RAW_ARCHIVE_BASE_URI`。
+回填可重复执行；raw 使用内容 hash 和来源行号生成稳定 ID，冲突只跳过，不覆盖。`--skip-upload` 仅用于对象已经归档的环境，并要求 `RAW_ARCHIVE_BASE_URI`。hosted validation 的完整入口是 `.github/workflows/backfill-hosted-validation.yml`：它只允许从 `feat/04c-hosted-validation` 手动运行，要求显式输入 `validation-only`，并在写入后运行 `npm.cmd run report:hosted-backfill` 等价的只读核验。报告 contract 为 `hosted-backfill-report.v1`，未通过 Git/Neon/R2/parity 全部匹配前不得清理本地数据。
+
+回填 workflow 使用现有 `DATABASE_URL`、`RAW_ARCHIVE_BUCKET`、`RAW_ARCHIVE_ENDPOINT` 和最小权限对象存储凭据；人工运行前必须再次确认 `DATABASE_URL` 是 Neon validation branch，而不是 production。对象存储或 Neon 超载、配额不足、订阅中断或凭据暂时失效时，不重试到 production，也不关闭采集：保留 GitHub Actions 的 Git fallback，记录 source-health/hosted failure，待服务恢复后按 hash 幂等补写并重新生成报告。
 
 ## 恢复验证（只读）
 

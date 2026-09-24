@@ -1,0 +1,97 @@
+name: Backfill hosted validation
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_validation_target:
+        description: "Type validation-only; this workflow must never target production"
+        required: true
+        type: string
+      date:
+        description: "Optional service date (YYYY-MM-DD); leave empty for the full Git archive set"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: backfill-hosted-validation
+  cancel-in-progress: false
+
+jobs:
+  target-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require the validation branch and explicit confirmation
+        env:
+          CONFIRMATION: ${{ inputs.confirm_validation_target }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/feat/04c-hosted-validation" || {
+            echo "This workflow is restricted to feat/04c-hosted-validation." >&2
+            exit 1
+          }
+          test "$CONFIRMATION" = "validation-only" || {
+            echo "The confirmation must be exactly validation-only." >&2
+            exit 1
+          }
+
+  backfill:
+    needs: target-gate
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      RAW_ARCHIVE_BUCKET: ${{ vars.RAW_ARCHIVE_BUCKET }}
+      RAW_ARCHIVE_ENDPOINT: ${{ vars.RAW_ARCHIVE_ENDPOINT }}
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      HOSTED_TARGET_LABEL: neon-validation-branch-only
+      BACKFILL_DATE: ${{ inputs.date }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate archive plan
+        run: |
+          set -euo pipefail
+          if [[ -n "$BACKFILL_DATE" && ! "$BACKFILL_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "date must be YYYY-MM-DD" >&2
+            exit 1
+          fi
+          if [[ -n "$BACKFILL_DATE" ]]; then
+            node scripts/backfill-wait-times-to-postgres.mjs --check --date="$BACKFILL_DATE" > hosted-backfill-plan.json
+          else
+            node scripts/backfill-wait-times-to-postgres.mjs --check > hosted-backfill-plan.json
+          fi
+      - name: Upload immutable raw archives and replay PostgreSQL
+        run: |
+          set -euo pipefail
+          if [[ -n "$BACKFILL_DATE" ]]; then
+            node scripts/backfill-wait-times-to-postgres.mjs --date="$BACKFILL_DATE" > hosted-backfill-write.json
+          else
+            node scripts/backfill-wait-times-to-postgres.mjs > hosted-backfill-write.json
+          fi
+      - name: Verify Git, Neon, R2 and replay lineage
+        run: |
+          set -euo pipefail
+          if [[ -n "$BACKFILL_DATE" ]]; then
+            node scripts/report-hosted-backfill.mjs --date="$BACKFILL_DATE" > hosted-backfill-report.json
+          else
+            node scripts/report-hosted-backfill.mjs > hosted-backfill-report.json
+          fi
+          cat hosted-backfill-report.json
+      - name: Retain machine-readable evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-backfill-${{ github.run_id }}
+          if-no-files-found: warn
+          path: |
+            hosted-backfill-plan.json
+            hosted-backfill-write.json
+            hosted-backfill-report.json

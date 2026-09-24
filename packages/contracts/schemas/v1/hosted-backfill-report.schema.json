@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/hosted-backfill-report.schema.json",
+  "title": "Hosted raw backfill report v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "run_id",
+    "generated_at",
+    "status",
+    "complete",
+    "scope",
+    "counts",
+    "classification_counts",
+    "archives",
+    "neon_only",
+    "r2_only",
+    "replay_parity",
+    "failures",
+    "next_steps"
+  ],
+  "properties": {
+    "contract_version": { "const": "hosted-backfill-report.v1" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "status": { "enum": ["passed", "blocked"] },
+    "complete": { "type": "boolean" },
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_scope", "target_label", "bucket", "object_prefix"],
+      "properties": {
+        "root_scope": { "type": "string" },
+        "target_label": { "type": ["string", "null"] },
+        "bucket": { "type": ["string", "null"] },
+        "object_prefix": { "type": "string" }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["git_archives", "git_raw_observations", "git_normalized_observations", "neon_archives", "r2_objects", "matched_archives"],
+      "properties": {
+        "git_archives": { "type": "integer", "minimum": 0 },
+        "git_raw_observations": { "type": "integer", "minimum": 0 },
+        "git_normalized_observations": { "type": "integer", "minimum": 0 },
+        "neon_archives": { "type": "integer", "minimum": 0 },
+        "r2_objects": { "type": "integer", "minimum": 0 },
+        "matched_archives": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "classification_counts": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 },
+      "required": ["matched", "git_only", "neon_only", "r2_only", "hash_mismatch", "count_mismatch", "r2_error"]
+    },
+    "archives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["raw_archive_id", "sha256", "source_name", "byte_size", "row_count", "normalized_row_count", "classification", "issues"],
+        "properties": {
+          "raw_archive_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "source_name": { "type": "string", "minLength": 1 },
+          "byte_size": { "type": "integer", "minimum": 1 },
+          "row_count": { "type": "integer", "minimum": 0 },
+          "normalized_row_count": { "type": "integer", "minimum": 0 },
+          "classification": { "type": "string" },
+          "issues": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "neon_only": { "type": "array", "items": { "type": "object" } },
+    "r2_only": { "type": "array", "items": { "type": "object" } },
+    "replay_parity": { "type": ["object", "null"] },
+    "failures": { "type": "array", "items": { "type": "object" } },
+    "next_steps": { "type": "array", "items": { "type": "string" } }
+  }
+}

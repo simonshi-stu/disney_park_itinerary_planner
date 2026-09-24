@@ -26,6 +26,14 @@ Git CSV 在迁移完成前保留为 bootstrap fallback 和审计证据，不能�
 
 每个阶段必须生成机器可读结果，至少包含 `run_id`、输入快照、代码/schema 版本、计数、失败原因和下一步建议。Agent 可以自动重试幂等阶段，但遇到数据删除、生产切换或账单权限变更必须暂停。
 
+## Hosted validation 历史回填
+
+`.github/workflows/backfill-hosted-validation.yml` 是唯一受控的 hosted 历史回填入口。它只接受 `feat/04c-hosted-validation`，必须手动输入 `validation-only`，目标是 Neon `dual-write-validation-2026-09` 与私有 R2；不得从 `main`、production workflow 或未确认的数据库 URL 运行。workflow 先保存 `--check` 计划，再上传 Git raw archive、写入 Neon raw/normalized 行，最后运行 `hosted-backfill-report.v1` 只读报告并把计划、写入结果和报告作为 Actions artifact 留档。
+
+报告逐 archive 输出 Git path/date/SHA-256/byte size/row count/source metadata，并分类 `matched`、`git_only`、`neon_only`、`r2_only`、`hash_mismatch`、`count_mismatch` 或 `r2_error`；R2 还会 HEAD/下载 hash 验证 metadata、内容 SHA-256 和 byte size，Neon 会验证 raw count、normalized count、raw lineage、closed/zero 语义、canonical identity 与 operating-window parity。只有报告 `status=passed` 且 `complete=true` 才能进入人工清理门禁。
+
+如果 Neon/R2 超载、配额或订阅暂时不可用，回填应 fail closed：保留 GitHub Actions 定时采集和 Git fallback，不把失败写成 hosted 成功，不删除本地或 Git 历史；服务恢复后重复执行同一 workflow，hash/稳定 ID/唯一约束保证补写幂等。Git fallback 是临时保护路径，不是永久存储切换，也不因本次 hosted 回填而关闭。
+
 ## 重放与 Parity 操作
 
 Stage 3–5 的只读命令、幂等性与门槛如下。命令只依赖仓库数据，以及 `DATABASE_URL` 指向的目标 PostgreSQL 和已上传的 raw archive。
