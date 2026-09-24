@@ -45,7 +45,13 @@ test("source-health contract and migration are versioned and additive", async ()
   assert.match(migration, /UNIQUE \(source_name, run_id\)/);
   assert.doesNotMatch(migration, /DROP TABLE|ALTER TABLE .* DROP/i);
 
-  const record = buildSourceHealthRecord({ envelope, runId: "schema-run", recordCount: 2, clock: fixedClock });
+  const record = buildSourceHealthRecord({
+    envelope,
+    runId: "schema-run",
+    recordCount: 2,
+    dualWriteResult: { fallback: { status: "written" }, hosted: { status: "written" } },
+    clock: fixedClock
+  });
   assertSchemaConformance(record, schema);
   const report = compareDualWriteWindow({
     runId: "schema-report",
@@ -151,6 +157,45 @@ test("dual-write window report passes only when expected Git and hosted runs mat
   assert.deepEqual(report.failures, []);
 });
 
+test("dual-write window report rejects malformed or contradictory health evidence", () => {
+  const healthyRecord = buildSourceHealthRecord({
+    envelope,
+    runId: "run-health-validation",
+    recordCount: 2,
+    dualWriteResult: { fallback: { status: "written" }, hosted: { status: "written" } },
+    clock: fixedClock
+  });
+  const report = compareDualWriteWindow({
+    runId: "window-report-health-validation",
+    windowStart: "2026-07-01T14:59:00.000Z",
+    windowEnd: "2026-07-01T15:16:00.000Z",
+    expectedRuns: [{ run_id: "run-health-validation", observed_at: "2026-07-01T15:00:00.000Z" }],
+    gitRuns: [{ run_id: "run-health-validation", status: "written", payload_sha256: payloadHash, record_count: 2, observed_at: "2026-07-01T15:00:00.000Z" }],
+    hostedRuns: [{ run_id: "run-health-validation", status: "written", payload_sha256: payloadHash, record_count: 2, observed_at: "2026-07-01T15:00:00.000Z" }],
+    sourceHealthRecords: [{ ...healthyRecord, source_status: "invalid", hosted_write_status: "failed" }]
+  });
+
+  assert.equal(report.status, "failed");
+  assert.ok(report.failures.some((failure) => failure.type === "invalid_source_health_status"));
+  assert.ok(report.failures.some((failure) => failure.type === "source_health_hosted_not_written"));
+});
+
+test("dual-write window report rejects invalid run hashes and counts", () => {
+  const report = compareDualWriteWindow({
+    runId: "window-report-evidence-validation",
+    windowStart: "2026-07-01T14:59:00.000Z",
+    windowEnd: "2026-07-01T15:16:00.000Z",
+    expectedRuns: [{ run_id: "run-invalid-evidence", observed_at: "2026-07-01T15:00:00.000Z" }],
+    gitRuns: [{ run_id: "run-invalid-evidence", status: "written", payload_sha256: "not-a-hash", record_count: -1, observed_at: "2026-07-01T15:00:00.000Z" }],
+    hostedRuns: [{ run_id: "run-invalid-evidence", status: "written", payload_sha256: "not-a-hash", record_count: -1, observed_at: "2026-07-01T15:00:00.000Z" }],
+    sourceHealthRecords: []
+  });
+
+  assert.equal(report.status, "failed");
+  assert.ok(report.failures.some((failure) => failure.type === "invalid_payload_hash"));
+  assert.ok(report.failures.some((failure) => failure.type === "invalid_record_count"));
+});
+
 test("dual-write window report excludes a missing or mismatched hosted run", () => {
   const report = compareDualWriteWindow({
     runId: "window-report-2",
@@ -192,7 +237,13 @@ test("dual-write window report fails when payload hashes or record counts are ab
     expectedRuns: [{ run_id: "run-1", observed_at: "2026-07-01T15:00:00.000Z" }],
     gitRuns: [{ run_id: "run-1", observed_at: "2026-07-01T15:00:00.000Z", status: "written" }],
     hostedRuns: [{ run_id: "run-1", observed_at: "2026-07-01T15:00:00.000Z", status: "written" }],
-    sourceHealthRecords: [buildSourceHealthRecord({ envelope, runId: "run-1", recordCount: 1, clock: fixedClock })]
+    sourceHealthRecords: [buildSourceHealthRecord({
+      envelope,
+      runId: "run-1",
+      recordCount: 1,
+      dualWriteResult: { fallback: { status: "written" }, hosted: { status: "written" } },
+      clock: fixedClock
+    })]
   });
   assert.equal(report.status, "failed");
   assert.ok(report.failures.some((failure) => failure.type === "missing_payload_hash"));
@@ -221,7 +272,13 @@ test("read-only report entrypoint emits the versioned machine-readable result", 
     expectedRuns: [{ run_id: "run-1", observed_at: "2026-07-01T15:00:00.000Z" }],
     gitRuns: [{ run_id: "run-1", observed_at: "2026-07-01T15:00:00.000Z", status: "written", payload_sha256: payloadHash, record_count: 1 }],
     hostedRuns: [{ run_id: "run-1", observed_at: "2026-07-01T15:00:00.000Z", status: "written", payload_sha256: payloadHash, record_count: 1 }],
-    sourceHealthRecords: [buildSourceHealthRecord({ envelope, runId: "run-1", recordCount: 1, clock: fixedClock })]
+    sourceHealthRecords: [buildSourceHealthRecord({
+      envelope,
+      runId: "run-1",
+      recordCount: 1,
+      dualWriteResult: { fallback: { status: "written" }, hosted: { status: "written" } },
+      clock: fixedClock
+    })]
   }), "utf8");
 
   const report = await reportDualWriteWindow(inputPath);

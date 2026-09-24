@@ -6,6 +6,7 @@ export const dualWriteWindowReportVersion = "dual-write-window-report.v1";
 const sourceStatuses = new Set(["ok", "stale", "outage"]);
 const fallbackStatuses = new Set(["written", "failed", "not_attempted"]);
 const hostedStatuses = new Set(["disabled", "written", "failed", "not_attempted"]);
+const sha256Pattern = /^[a-f0-9]{64}$/;
 
 export function buildSourceHealthRecord(options = {}) {
   const {
@@ -149,6 +150,52 @@ export function compareDualWriteWindow(options = {}) {
     }
     if (!healthRecord) runFailures.push({ type: "missing_source_health", run_id: expectedRun.runId });
 
+    if (healthRecord && gitRun?.status === "written" && healthRecord.fallback_status !== "written") {
+      runFailures.push({
+        type: "source_health_fallback_not_written",
+        run_id: expectedRun.runId,
+        status: healthRecord.fallback_status
+      });
+    }
+    if (healthRecord && hostedRun?.status === "written" && healthRecord.hosted_write_status !== "written") {
+      runFailures.push({
+        type: "source_health_hosted_not_written",
+        run_id: expectedRun.runId,
+        status: healthRecord.hosted_write_status
+      });
+    }
+    if (healthRecord && gitRun?.status === "written" && hostedRun?.status === "written") {
+      if (!healthRecord.payload_sha256) {
+        runFailures.push({ type: "source_health_missing_payload_hash", run_id: expectedRun.runId });
+      } else {
+        if (healthRecord.payload_sha256 !== gitRun.payloadSha256) {
+          runFailures.push({
+            type: "source_health_git_hash_mismatch",
+            run_id: expectedRun.runId,
+            source_health: healthRecord.payload_sha256,
+            git: gitRun.payloadSha256
+          });
+        }
+        if (healthRecord.payload_sha256 !== hostedRun.payloadSha256) {
+          runFailures.push({
+            type: "source_health_hosted_hash_mismatch",
+            run_id: expectedRun.runId,
+            source_health: healthRecord.payload_sha256,
+            hosted: hostedRun.payloadSha256
+          });
+        }
+      }
+      if (healthRecord.record_count !== gitRun.recordCount || healthRecord.record_count !== hostedRun.recordCount) {
+        runFailures.push({
+          type: "source_health_record_count_mismatch",
+          run_id: expectedRun.runId,
+          source_health: healthRecord.record_count,
+          git: gitRun.recordCount,
+          hosted: hostedRun.recordCount
+        });
+      }
+    }
+
     if (runFailures.length) failures.push(...runFailures);
     else matchedRunCount += 1;
   }
@@ -211,20 +258,33 @@ function normalizeRunSet(runs, kind, start, end, failures) {
   const records = [];
   const byRunId = new Map();
   for (const value of runs) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      failures.push({ type: "invalid_run", kind, reason: "run must be an object" });
+      continue;
+    }
     const runId = value?.run_id;
     if (typeof runId !== "string" || runId.trim() === "") {
       failures.push({ type: "invalid_run", kind, reason: "run_id is required" });
       continue;
     }
     const timestamp = runTimestamp(value);
-    if (!timestamp || !insideWindow(timestamp, start, end)) continue;
+    if (!timestamp) {
+      failures.push({ type: hasTimestamp(value, ["started_at", "observed_at", "ingested_at", "generated_at"]) ? "invalid_run_timestamp" : "missing_run_timestamp", kind, run_id: runId });
+      continue;
+    }
+    if (!insideWindow(timestamp, start, end)) continue;
     if (byRunId.has(runId)) {
       failures.push({ type: "duplicate_run", kind, run_id: runId });
       continue;
     }
+    const status = value.status || value.fallback_status || value.hosted_write_status || "unknown";
+    if (![...fallbackStatuses, ...hostedStatuses].includes(status)) {
+      failures.push({ type: "invalid_run_status", kind, run_id: runId, status });
+    }
+    validateEvidenceFields(value, kind, runId, failures);
     const record = {
       runId,
-      status: value.status || value.fallback_status || value.hosted_write_status || "unknown",
+      status,
       payloadSha256: value.payload_sha256 || value.deduplication_key || null,
       recordCount: Number.isInteger(value.record_count) ? value.record_count : null
     };
@@ -239,12 +299,25 @@ function normalizeHealthRecords(records, start, end, failures) {
   const byRunId = new Map();
   const inWindow = [];
   for (const record of records) {
+    if (!record || typeof record !== "object" || Array.isArray(record)) {
+      failures.push({ type: "invalid_source_health", reason: "record must be an object" });
+      continue;
+    }
     const timestamp = healthTimestamp(record);
-    if (!record?.run_id || !timestamp || !insideWindow(timestamp, start, end)) continue;
+    if (!record?.run_id) {
+      failures.push({ type: "invalid_source_health", reason: "run_id is required" });
+      continue;
+    }
+    if (!timestamp) {
+      failures.push({ type: hasTimestamp(record, ["ingested_at", "generated_at", "started_at", "observed_at"]) ? "invalid_source_health_timestamp" : "missing_source_health_timestamp", run_id: record.run_id });
+      continue;
+    }
+    if (!insideWindow(timestamp, start, end)) continue;
     if (byRunId.has(record.run_id)) {
       failures.push({ type: "duplicate_source_health", run_id: record.run_id });
       continue;
     }
+    validateSourceHealthRecord(record, failures);
     byRunId.set(record.run_id, record);
     inWindow.push(record);
   }
@@ -263,6 +336,77 @@ function healthTimestamp(record) {
   if (!value) return null;
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function hasTimestamp(record, fields) {
+  return fields.some((field) => record?.[field] !== undefined && record[field] !== null && record[field] !== "");
+}
+
+function validateEvidenceFields(value, kind, runId, failures) {
+  if (value.payload_sha256 !== undefined && value.payload_sha256 !== null && value.payload_sha256 !== "" && !sha256Pattern.test(String(value.payload_sha256))) {
+    failures.push({ type: "invalid_payload_hash", kind, run_id: runId });
+  }
+  if (value.deduplication_key !== undefined && value.deduplication_key !== null && value.deduplication_key !== "" && !sha256Pattern.test(String(value.deduplication_key))) {
+    failures.push({ type: "invalid_deduplication_key", kind, run_id: runId });
+  }
+  if (value.record_count !== undefined && (!Number.isInteger(value.record_count) || value.record_count < 0)) {
+    failures.push({ type: "invalid_record_count", kind, run_id: runId, record_count: value.record_count });
+  }
+}
+
+function validateSourceHealthRecord(record, failures) {
+  const runId = record.run_id;
+  if (record.contract_version !== sourceHealthVersion) {
+    failures.push({ type: "invalid_source_health_contract", run_id: runId });
+  }
+  if (!sha256Pattern.test(String(record.source_health_id || ""))) {
+    failures.push({ type: "invalid_source_health_id", run_id: runId });
+  }
+  if (!sha256Pattern.test(String(record.envelope_id || ""))) {
+    failures.push({ type: "invalid_source_health_envelope_id", run_id: runId });
+  }
+  if (typeof record.source_name !== "string" || record.source_name.trim() === "") {
+    failures.push({ type: "invalid_source_health_source_name", run_id: runId });
+  }
+  if (!sourceStatuses.has(record.source_status)) {
+    failures.push({ type: "invalid_source_health_status", run_id: runId, status: record.source_status });
+  }
+  if (!fallbackStatuses.has(record.fallback_status)) {
+    failures.push({ type: "invalid_source_health_fallback_status", run_id: runId, status: record.fallback_status });
+  }
+  if (!hostedStatuses.has(record.hosted_write_status)) {
+    failures.push({ type: "invalid_source_health_hosted_status", run_id: runId, status: record.hosted_write_status });
+  }
+  for (const field of ["requested_at", "ingested_at", "generated_at"]) {
+    if (!isValidInstant(record[field])) failures.push({ type: "invalid_source_health_timestamp", run_id: runId, field });
+  }
+  if (record.observed_at !== null && record.observed_at !== undefined && !isValidInstant(record.observed_at)) {
+    failures.push({ type: "invalid_source_health_timestamp", run_id: runId, field: "observed_at" });
+  }
+  if (record.source_observed_at !== null && record.source_observed_at !== undefined && !isValidInstant(record.source_observed_at)) {
+    failures.push({ type: "invalid_source_health_timestamp", run_id: runId, field: "source_observed_at" });
+  }
+  if (!Number.isInteger(record.record_count) || record.record_count < 0) {
+    failures.push({ type: "invalid_source_health_record_count", run_id: runId });
+  }
+  if (record.payload_sha256 !== null && record.payload_sha256 !== undefined && !sha256Pattern.test(String(record.payload_sha256))) {
+    failures.push({ type: "invalid_source_health_payload_hash", run_id: runId });
+  }
+  if (record.payload_byte_size !== null && record.payload_byte_size !== undefined && (!Number.isInteger(record.payload_byte_size) || record.payload_byte_size < 0)) {
+    failures.push({ type: "invalid_source_health_payload_size", run_id: runId });
+  }
+  if (record.source_age_minutes !== null && record.source_age_minutes !== undefined && (typeof record.source_age_minutes !== "number" || !Number.isFinite(record.source_age_minutes) || record.source_age_minutes < 0)) {
+    failures.push({ type: "invalid_source_health_age", run_id: runId });
+  }
+  for (const field of ["adapter_version", "schema_version"]) {
+    if (typeof record[field] !== "string" || record[field].trim() === "") {
+      failures.push({ type: "invalid_source_health_field", run_id: runId, field });
+    }
+  }
+}
+
+function isValidInstant(value) {
+  return typeof value === "string" && !Number.isNaN(new Date(value).getTime());
 }
 
 function insideWindow(value, start, end) {

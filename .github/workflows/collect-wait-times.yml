@@ -48,6 +48,14 @@ jobs:
             printf 'failure_message=%s\n' "$failure_message" >> "$GITHUB_OUTPUT"
           fi
           exit "$status"
+      - name: Commit updated wait-time data
+        id: git_fallback
+        if: ${{ steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true' }}
+        continue-on-error: true
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Collect wait-time snapshot"
+          file_pattern: data/wait_times/*.csv data/wait_times/latest_snapshot.json
       - name: Dual-write collected snapshot
         id: dual_write
         if: ${{ always() && (steps.collect.outcome == 'failure' || (steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true')) }}
@@ -57,6 +65,7 @@ jobs:
           COLLECTOR_RUN_ID: ${{ github.run_id }}
           COLLECTOR_RUN_OUTCOME: ${{ steps.collect.outcome }}
           COLLECTOR_SOURCE_FAILURE: ${{ steps.collect.outputs.failure_message || 'collector step failed before a snapshot was written' }}
+          COLLECTOR_GIT_FALLBACK_OUTCOME: ${{ steps.git_fallback.outcome || 'not_attempted' }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           RAW_ARCHIVE_BUCKET: ${{ vars.RAW_ARCHIVE_BUCKET }}
           RAW_ARCHIVE_ENDPOINT: ${{ vars.RAW_ARCHIVE_ENDPOINT }}
@@ -64,15 +73,9 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: node workers/collector/run-dual-write.mjs
+      - name: Surface dual-write failure
+        if: ${{ steps.dual_write.outcome == 'failure' }}
+        run: exit 1
       - name: Preserve collector failure status
         if: ${{ steps.collect.outcome == 'failure' }}
-        run: exit 1
-      - name: Commit updated wait-time data
-        if: ${{ steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true' }}
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "Collect wait-time snapshot"
-          file_pattern: data/wait_times/*.csv data/wait_times/latest_snapshot.json
-      - name: Surface source-health persistence failure
-        if: ${{ steps.collect.outcome == 'success' && steps.dual_write.outcome == 'failure' }}
         run: exit 1

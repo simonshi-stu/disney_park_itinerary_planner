@@ -6,7 +6,7 @@ import { ingestSourceSnapshot } from "../../modules/ingestion/index.mjs";
 import { buildSourceHealthRecord, persistSourceHealthRecord } from "../../modules/ingestion/source-health.mjs";
 import { runMigrations } from "../../infra/migrations/run-migrations.mjs";
 import { createPostgresSourceHealthRepository } from "../../infra/source-health-postgres.mjs";
-import { dualWriteFeatureFlag, isDualWriteEnabled, runDualWrite } from "./dual-write.mjs";
+import { DualWriteError, dualWriteFeatureFlag, isDualWriteEnabled, runDualWrite } from "./dual-write.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -45,17 +45,37 @@ export async function runBootstrapDualWrite(options = {}) {
   const input = await loadLatestSnapshot(rootDir);
   const envelope = await buildSourceEnvelope(input, options.clock);
   const writeGitFallback = async () => {
+    if (environment.COLLECTOR_GIT_FALLBACK_OUTCOME === "failure") {
+      throw new Error("Git fallback commit failed before hosted persistence was attempted");
+    }
     await access(input.csvPath);
   };
   const writeHosted = enabled ? createHostedWriter(input, environment) : undefined;
-  const result = await runDualWrite({
-    envelope,
-    enabled,
-    runId: environment.COLLECTOR_RUN_ID || undefined,
-    clock: options.clock,
-    writeGitFallback,
-    writeHosted
-  });
+  let result;
+  try {
+    result = await runDualWrite({
+      envelope,
+      enabled,
+      runId: environment.COLLECTOR_RUN_ID || undefined,
+      clock: options.clock,
+      writeGitFallback,
+      writeHosted
+    });
+  } catch (error) {
+    if (!(error instanceof DualWriteError)) throw error;
+    const sourceHealth = await persistSourceHealthForRun({
+      envelope,
+      result: error.result,
+      recordCount: input.latest.rows.length,
+      environment,
+      repository: options.sourceHealthRepository,
+      clock: options.clock
+    });
+    const resultWithHealth = deepFreeze({ ...error.result, source_health: sourceHealth });
+    error.resultWithHealth = resultWithHealth;
+    if (options.log !== false) console.log(JSON.stringify(resultWithHealth, null, 2));
+    throw error;
+  }
   const sourceHealth = await persistSourceHealthForRun({
     envelope,
     result,

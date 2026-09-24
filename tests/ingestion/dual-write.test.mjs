@@ -272,6 +272,29 @@ test("source-health persistence failure is visible in the sidecar result", async
   assert.equal(result.source_health.error.type, "source_health_write_error");
 });
 
+test("Git fallback failure is persisted to source health before the sidecar fails", async (t) => {
+  const sandbox = await makeSidecarSandbox(t);
+  let storedHealth = null;
+  await assert.rejects(
+    () => runBootstrapDualWrite({
+      rootDir: sandbox,
+      enabled: false,
+      environment: {
+        COLLECTOR_RUN_ID: "run-git-fallback-failure",
+        COLLECTOR_GIT_FALLBACK_OUTCOME: "failure"
+      },
+      clock: fixedClock(),
+      log: false,
+      sourceHealthRepository: { async upsertSourceHealth(record) { storedHealth = record; } }
+    }),
+    /Git fallback write failed/
+  );
+
+  assert.equal(storedHealth.source_status, "ok");
+  assert.equal(storedHealth.fallback_status, "failed");
+  assert.equal(storedHealth.hosted_write_status, "not_attempted");
+});
+
 test("raw persistence validates park dates and maps archive and observation rows", async () => {
   const queries = [];
   const client = {
