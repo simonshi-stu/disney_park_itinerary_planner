@@ -1,6 +1,6 @@
 {
   "status_version": "1",
-  "updated_at": "2026-09-21T00:00:00.000Z",
+  "updated_at": "2026-09-24T01:53:46.227Z",
   "phases": {
     "01-data-contracts": {
       "status": "completed",
@@ -42,9 +42,10 @@
         "scripts/report-replay-parity.mjs",
         "tests/storage/observation-storage.test.mjs",
         "npm.cmd run check",
-        "read-only fixture parity: matching snapshot passed; count/hash/closed-zero/lineage/canonical mismatches excluded the date"
+        "read-only fixture parity: matching snapshot passed; count/hash/closed-zero/lineage/canonical mismatches excluded the date",
+        "local live parity rehearsal: run_id=87e5b5ca-901f-49dd-b76e-58a9e688c6f4, status=passed, 29/29 dates eligible, 0 failures; local MinIO + PostgreSQL"
       ],
-      "notes": "The parity CLI is read-only and keeps semantic mismatches out of training_eligible_dates. A live repository-vs-PostgreSQL run still requires raw object storage and a populated target database; no API, forecasting, collector cutover, or GitHub Actions shutdown was started."
+      "notes": "The parity CLI is read-only and keeps semantic mismatches out of training_eligible_dates. The local MinIO + PostgreSQL live rehearsal passed for 29/29 dates; hosted parity still requires the hosted raw bucket and populated target database. No API, forecasting, collector cutover, or GitHub Actions shutdown was started."
     },
     "03c-replay-runbook-update": {
       "status": "completed",
@@ -69,9 +70,10 @@
         "tests/ingestion/dual-write.test.mjs",
         ".github/workflows/collect-wait-times.yml",
         "npm.cmd run check",
-        "disabled and missing-hosted-configuration smoke tests"
+        "disabled and missing-hosted-configuration smoke tests",
+        "local dual-write smoke: run_id=local-dual-write-20260924-01, Git fallback + MinIO + PostgreSQL + source_health written; repeated run kept 30 archives/163056 raw/1 health row"
       ],
-      "notes": "The opt-in sidecar writes the Git path first, uses payload_sha256 for payload-bearing idempotency, archives only latest_snapshot.json.rows, and reports hosted failures without blocking Git. The phase manifest allowlist was corrected to include its explicitly required ingestion tests and package wiring. Enabling hosted writes and the first hosted restore remain the explicit cloud_credentials_and_first_hosted_restore human gate; Git collection remains active."
+      "notes": "The opt-in sidecar writes the Git path first, uses payload_sha256 for payload-bearing idempotency, archives only latest_snapshot.json.rows, and reports hosted failures without blocking Git. A local smoke confirmed hosted raw/source-health persistence and repeat idempotency; the snapshot was stale, so this is not a complete validation window. The phase manifest allowlist was corrected to include its explicitly required ingestion tests and package wiring. Enabling hosted writes and the first hosted restore remain the explicit cloud_credentials_and_first_hosted_restore human gate; Git collection remains active."
     },
     "04c-source-health-and-dual-write-window": {
       "status": "pending",
@@ -83,9 +85,10 @@
         "packages/contracts/schemas/v1/source-health.schema.json",
         "packages/contracts/schemas/v1/dual-write-window-report.schema.json",
         "tests/ingestion/source-health.test.mjs",
-        "npm.cmd run check"
+        "npm.cmd run check",
+        "Neon additive migration applied: 0003_source_health.sql; hosted raw/normalized/source-health counts remain zero"
       ],
-      "notes": "Source-health persistence, outage recording, fail-closed window comparison, and the read-only machine-readable report are implemented and locally verified. The phase remains pending until a real complete hosted validation window is run with DATABASE_URL and hosted object-storage credentials; the report input currently requires manually assembled Git, hosted, expected-run, and source-health evidence."
+      "notes": "Source-health persistence, outage recording, fail-closed window comparison, and the read-only machine-readable report are implemented and locally verified. Neon now has the additive source-health schema but no migrated business rows. The phase remains pending until a real complete hosted validation window is run with DATABASE_URL and hosted object-storage credentials; the report input currently requires manually assembled Git, hosted, expected-run, and source-health evidence."
     },
     "05a-api-contracts": { "status": "pending" },
     "05b-api-use-cases": { "status": "pending" },
