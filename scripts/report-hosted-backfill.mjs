@@ -10,6 +10,7 @@ import {
 
 export const hostedBackfillContractVersion = "hosted-backfill-report.v1";
 const expectedTargetLabel = "neon-validation-branch-only";
+export const hostedDiagnosticSampleLimit = 20;
 
 /**
  * Build an evidence report from already loaded Git, PostgreSQL and object-store
@@ -134,7 +135,7 @@ export function buildHostedBackfillReport({
     };
   });
 
-  const neonOnly = (neon.archives || [])
+  const neonOnlyAll = (neon.archives || [])
     .filter((archive) => !expectedIds.has(String(archive.raw_archive_id)))
     .filter((archive) => !isVerifiedHostedPair(archive, r2ByKey, bucket))
     .map((archive) => ({
@@ -146,7 +147,8 @@ export function buildHostedBackfillReport({
       raw_observation_count: numberOrNull(neon.rawCounts?.get(String(archive.raw_archive_id))),
       normalized_observation_count: numberOrNull(neon.normalizedCounts?.get(String(archive.raw_archive_id)))
     }));
-  const r2Only = r2Objects
+  const neonOnly = neonOnlyAll.slice(0, hostedDiagnosticSampleLimit);
+  const r2OnlyAll = r2Objects
     .filter((object) => !expectedKeys.has(String(object.key)))
     .filter((object) => !isVerifiedNeonPair(object, neon.archives || [], bucket))
     .map((object) => ({
@@ -156,7 +158,8 @@ export function buildHostedBackfillReport({
       listed_byte_size: numberOrNull(object.size),
       etag: object.etag || null
     }));
-  const hostedOnly = (neon.archives || [])
+  const r2Only = r2OnlyAll.slice(0, hostedDiagnosticSampleLimit);
+  const hostedOnlyAll = (neon.archives || [])
     .filter((archive) => !expectedIds.has(String(archive.raw_archive_id)))
     .filter((archive) => isVerifiedHostedPair(archive, r2ByKey, bucket))
     .map((archive) => {
@@ -173,13 +176,14 @@ export function buildHostedBackfillReport({
         content_sha256: object?.content_sha256 || null
       };
     });
+  const hostedOnly = hostedOnlyAll.slice(0, hostedDiagnosticSampleLimit);
 
   const classificationCounts = {
     matched: archives.filter((archive) => archive.classification === "matched").length,
     git_only: archives.filter((archive) => archive.classification === "git_only").length,
-    neon_only: archives.filter((archive) => archive.classification === "neon_only").length + neonOnly.length,
-    r2_only: archives.filter((archive) => archive.classification === "r2_only").length + r2Only.length,
-    hosted_only: hostedOnly.length,
+    neon_only: archives.filter((archive) => archive.classification === "neon_only").length + neonOnlyAll.length,
+    r2_only: archives.filter((archive) => archive.classification === "r2_only").length + r2OnlyAll.length,
+    hosted_only: hostedOnlyAll.length,
     hash_mismatch: archives.filter((archive) => archive.classification === "hash_mismatch").length,
     count_mismatch: archives.filter((archive) => archive.classification === "count_mismatch").length,
     r2_error: archives.filter((archive) => archive.classification === "r2_error").length
@@ -194,10 +198,34 @@ export function buildHostedBackfillReport({
   for (const archive of archives.filter((entry) => entry.classification !== "matched")) {
     failures.push({ type: archive.classification, source_name: archive.source_name, issues: archive.issues });
   }
-  if (neonOnly.length) failures.push({ type: "neon_only", count: neonOnly.length, source_names: neonOnly.map((archive) => archive.source_name) });
-  if (r2Only.length) failures.push({ type: "r2_only", count: r2Only.length, keys: r2Only.map((object) => object.key) });
+  if (neonOnlyAll.length) failures.push({
+    type: "neon_only",
+    count: neonOnlyAll.length,
+    source_names: neonOnly.map((archive) => archive.source_name),
+    omitted_count: neonOnlyAll.length - neonOnly.length,
+    sample_limit: hostedDiagnosticSampleLimit
+  });
+  if (r2OnlyAll.length) failures.push({
+    type: "r2_only",
+    count: r2OnlyAll.length,
+    keys: r2Only.map((object) => object.key),
+    omitted_count: r2OnlyAll.length - r2Only.length,
+    sample_limit: hostedDiagnosticSampleLimit
+  });
   if (!replayParity || replayParity.status !== "passed") {
-    failures.push({ type: "replay_parity_blocked", detail: replayParity?.failures?.slice(0, 20) || [] });
+    const parityFailureCount = Number.isInteger(replayParity?.failure_count)
+      ? replayParity.failure_count
+      : (replayParity?.failures || []).length;
+    const parityFailureSamples = (replayParity?.failures || [])
+      .filter((failure) => failure.type !== "additional_parity_mismatches_omitted")
+      .slice(0, hostedDiagnosticSampleLimit);
+    failures.push({
+      type: "replay_parity_blocked",
+      failure_count: parityFailureCount,
+      omitted_count: Math.max(0, parityFailureCount - parityFailureSamples.length),
+      detail: parityFailureSamples,
+      sample_limit: hostedDiagnosticSampleLimit
+    });
   }
   const complete = !failures.length && archives.every((archive) => archive.classification === "matched");
 
@@ -222,6 +250,18 @@ export function buildHostedBackfillReport({
       matched_archives: classificationCounts.matched
     },
     classification_counts: classificationCounts,
+    diagnostic_samples: {
+      sample_limit: hostedDiagnosticSampleLimit,
+      git_archives: {
+        total_count: archives.length,
+        included_count: archives.length,
+        omitted_count: 0
+      },
+      neon_only: sampleCounts(neonOnlyAll.length, neonOnly.length),
+      r2_only: sampleCounts(r2OnlyAll.length, r2Only.length),
+      hosted_only: sampleCounts(hostedOnlyAll.length, hostedOnly.length),
+      replay_parity: summarizeParityDiagnostics(replayParity)
+    },
     archives,
     neon_only: neonOnly,
     r2_only: r2Only,
@@ -239,6 +279,45 @@ export function buildHostedBackfillReport({
           "Resolve every Git/Neon/R2 classification and rerun the read-only report.",
           "Keep GitHub Actions and Git fallback enabled while hosted storage is incomplete."
         ]
+  };
+}
+
+function sampleCounts(totalCount, includedCount) {
+  return {
+    total_count: totalCount,
+    included_count: includedCount,
+    omitted_count: totalCount - includedCount
+  };
+}
+
+function summarizeParityDiagnostics(replayParity) {
+  if (!replayParity) return null;
+  const checks = Object.fromEntries(Object.entries(replayParity.checks || {}).map(([name, check]) => {
+    const mismatchCount = Number.isInteger(check.mismatch_count)
+      ? check.mismatch_count
+      : (check.mismatches || []).length;
+    const differenceCount = Number.isInteger(check.difference_count)
+      ? check.difference_count
+      : mismatchCount;
+    const includedCount = (check.mismatches || []).length;
+    return [name, {
+      mismatch_count: mismatchCount,
+      difference_count: differenceCount,
+      included_count: includedCount,
+      omitted_count: Math.max(0, mismatchCount - includedCount)
+    }];
+  }));
+  const failureCount = Number.isInteger(replayParity.failure_count)
+    ? replayParity.failure_count
+    : (replayParity.failures || []).length;
+  const includedFailureCount = (replayParity.failures || [])
+    .filter((failure) => failure.type !== "additional_parity_mismatches_omitted").length;
+  return {
+    status: replayParity.status || "blocked",
+    failure_count: failureCount,
+    included_failure_count: includedFailureCount,
+    omitted_failure_count: Math.max(0, failureCount - includedFailureCount),
+    checks
   };
 }
 

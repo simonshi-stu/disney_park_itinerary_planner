@@ -5,6 +5,9 @@ import { fileURLToPath } from "node:url";
 import { buildBackfillPlan } from "../infra/backfill/wait-time-records.mjs";
 
 export const parityContractVersion = "replay-parity.v1";
+export const parityDiagnosticSampleLimit = 20;
+const dateDiagnosticSampleLimit = 5;
+const failureDiagnosticSampleLimit = 40;
 
 /**
  * Compare a file replay plan with a read-only database snapshot.
@@ -44,7 +47,9 @@ export function buildReplayParityReport(input, positionalDatabaseSnapshot, posit
       run_id: runId,
       checked_at: generatedAt,
       status: "blocked",
+      failure_count: 1,
       counts: { file: fileSnapshot.counts, database: databaseSnapshot ? summarizeSnapshot(databaseSnapshot).counts : null },
+      diagnostic_sample_limit: parityDiagnosticSampleLimit,
       dates: [],
       excluded_dates: [],
       training_eligible_dates: [],
@@ -60,24 +65,27 @@ export function buildReplayParityReport(input, positionalDatabaseSnapshot, posit
       run_id: runId,
       checked_at: generatedAt,
       status: "blocked",
+      failure_count: 1,
       counts: {
         file: fileSnapshot.counts,
         database: null
       },
+      diagnostic_sample_limit: parityDiagnosticSampleLimit,
       dates: fileSnapshot.dates.map((date) => ({
         date,
         status: "excluded",
+        mismatch_count: 1,
         mismatches: [{ type: "database_unavailable", expected: "read_only_snapshot", actual: message }]
       })),
       excluded_dates: fileSnapshot.dates,
       training_eligible_dates: [],
       checks: {
-        counts: { passed: false, mismatches: [{ type: "database_unavailable", detail: message }] },
-        hashes: { passed: false, mismatches: [] },
-        closed_zero_semantics: { passed: false, mismatches: [] },
-        lineage: { passed: false, mismatches: [] },
-        canonical_identity: { passed: false, mismatches: [] },
-        operating_window_coverage: { passed: false, mismatches: [] }
+        counts: failedCheck([{ type: "database_unavailable", detail: message }], fileSnapshot.dates.length),
+        hashes: unverifiedCheck(),
+        closed_zero_semantics: unverifiedCheck(),
+        lineage: unverifiedCheck(),
+        canonical_identity: unverifiedCheck(),
+        operating_window_coverage: unverifiedCheck()
       },
       failures: [{ type: "database_unavailable", detail: message }],
       next_steps: [
@@ -90,15 +98,17 @@ export function buildReplayParityReport(input, positionalDatabaseSnapshot, posit
   const database = summarizeSnapshot(databaseSnapshot);
   const expectedByDate = mapByDate(plan, fileSnapshot);
   const actualByDate = mapByDate(databaseSnapshot, database);
-  const countCheck = compareDateValues(expectedByDate, actualByDate, "raw_count", "normalized_count");
+  const countCheckCollector = createMismatchCollector();
+  addDateValueMismatches(countCheckCollector, expectedByDate, actualByDate, ["raw_count", "normalized_count"]);
   if (fileSnapshot.counts.raw_archives !== database.counts.raw_archives) {
-    countCheck.passed = false;
-    countCheck.mismatches.push({
+    const mismatch = {
       type: "raw_archive_count",
       expected: fileSnapshot.counts.raw_archives,
       actual: database.counts.raw_archives
-    });
+    };
+    countCheckCollector.add(mismatch, differenceMagnitude(mismatch.expected, mismatch.actual));
   }
+  const countCheck = countCheckCollector.finish();
   const checks = {
     counts: countCheck,
     hashes: compareDateValues(expectedByDate, actualByDate, "archive_hashes"),
@@ -121,44 +131,75 @@ export function buildReplayParityReport(input, positionalDatabaseSnapshot, posit
     )
   };
 
-  const dateMismatches = new Map();
+  const dateMismatchCounts = new Map();
+  const dateMismatchSamples = new Map();
+  const globalMismatchSamples = [];
+  let globalMismatchCount = 0;
   for (const check of Object.values(checks)) {
-    for (const mismatch of check.mismatches) {
-      if (mismatch.date) {
-        if (!dateMismatches.has(mismatch.date)) dateMismatches.set(mismatch.date, []);
-        dateMismatches.get(mismatch.date).push(mismatch);
-      } else {
-        // A global mismatch (for example an orphan normalized row) cannot be
-        // attributed to one service date, so fail closed for every date.
-        for (const date of fileSnapshot.dates) {
-          if (!dateMismatches.has(date)) dateMismatches.set(date, []);
-          dateMismatches.get(date).push(mismatch);
-        }
+    for (const [date, count] of check._dateCounts) {
+      dateMismatchCounts.set(date, (dateMismatchCounts.get(date) || 0) + count);
+      const samples = dateMismatchSamples.get(date) || [];
+      for (const mismatch of check._dateSamples.get(date) || []) {
+        if (samples.length >= dateDiagnosticSampleLimit) break;
+        samples.push(mismatch);
       }
+      dateMismatchSamples.set(date, samples);
+    }
+    globalMismatchCount += check._globalCount;
+    for (const mismatch of check._globalSamples) {
+      if (globalMismatchSamples.length >= dateDiagnosticSampleLimit) break;
+      globalMismatchSamples.push(mismatch);
     }
   }
   const allDates = [...new Set([...fileSnapshot.dates, ...database.dates])].sort();
+  const fileDateSet = new Set(fileSnapshot.dates);
   const dates = allDates.map((date) => ({
     date,
-    status: dateMismatches.has(date) ? "excluded" : "eligible",
-    mismatches: dateMismatches.get(date) || [],
+    status: (dateMismatchCounts.get(date) || 0) > 0 || (fileDateSet.has(date) && globalMismatchCount > 0) ? "excluded" : "eligible",
+    mismatch_count: (dateMismatchCounts.get(date) || 0) + (fileDateSet.has(date) ? globalMismatchCount : 0),
+    mismatches: [
+      ...(fileDateSet.has(date) ? globalMismatchSamples : []),
+      ...(dateMismatchSamples.get(date) || [])
+    ].slice(0, dateDiagnosticSampleLimit),
     file: buildDateDetail(fileSnapshot.byDate.get(date), plan, date, operatingWindows),
     database: buildDateDetail(database.byDate.get(date), databaseSnapshot, date, operatingWindows)
   }));
   const excludedDates = dates.filter((entry) => entry.status === "excluded").map((entry) => entry.date);
-  const failures = Object.entries(checks)
-    .filter(([, check]) => !check.passed)
-    .flatMap(([name, check]) => check.mismatches.map((detail) => ({
-      check: name,
-      code: failureCode(name, detail.type),
-      ...detail
-    })));
+  const failures = [];
+  let totalMismatchCount = 0;
+  let totalDifferenceCount = 0;
+  for (const [name, check] of Object.entries(checks)) {
+    if (check.passed) continue;
+    totalMismatchCount += check.mismatch_count;
+    totalDifferenceCount += check.difference_count;
+    for (const detail of check.mismatches) {
+      if (failures.length >= failureDiagnosticSampleLimit) break;
+      failures.push({
+        check: name,
+        code: failureCode(name, detail.type),
+        ...detail
+      });
+    }
+  }
+  if (totalMismatchCount > failures.length) {
+    failures.push({
+      type: "additional_parity_mismatches_omitted",
+      mismatch_count: totalMismatchCount,
+      difference_count: totalDifferenceCount,
+      omitted_mismatch_count: totalMismatchCount - failures.length,
+      sample_limit: failureDiagnosticSampleLimit
+    });
+  }
+  const checkSummaries = Object.fromEntries(Object.entries(checks).map(([name, check]) => [name, publicCheckSummary(check)]));
+  const blocked = Object.values(checks).some((check) => !check.passed);
 
   return {
     contract_version: parityContractVersion,
     run_id: runId,
     checked_at: generatedAt,
-    status: failures.length ? "blocked" : "passed",
+    status: blocked ? "blocked" : "passed",
+    failure_count: totalMismatchCount,
+    diagnostic_sample_limit: parityDiagnosticSampleLimit,
     counts: {
       file: fileSnapshot.counts,
       database: database.counts
@@ -166,7 +207,7 @@ export function buildReplayParityReport(input, positionalDatabaseSnapshot, posit
     dates,
     excluded_dates: excludedDates,
     training_eligible_dates: dates.filter((entry) => entry.status === "eligible").map((entry) => entry.date),
-    checks,
+    checks: checkSummaries,
     failures,
     next_steps: failures.length
       ? [
@@ -417,24 +458,119 @@ function mapByDate(snapshot, summary) {
   return summary.byDate;
 }
 
-function compareDateValues(expectedByDate, actualByDate, ...fields) {
+function createMismatchCollector() {
+  let mismatchCount = 0;
+  let differenceCount = 0;
   const mismatches = [];
+  const dateCounts = new Map();
+  const dateSamples = new Map();
+  const globalSamples = [];
+  let globalCount = 0;
+
+  return {
+    add(mismatch, differences = 1) {
+      mismatchCount += 1;
+      differenceCount += Math.max(1, Number(differences) || 1);
+      if (mismatches.length < parityDiagnosticSampleLimit) mismatches.push(mismatch);
+      const date = mismatch.date === null || mismatch.date === undefined ? null : String(mismatch.date);
+      if (date === null) {
+        globalCount += 1;
+        if (globalSamples.length < dateDiagnosticSampleLimit) globalSamples.push(mismatch);
+      } else {
+        dateCounts.set(date, (dateCounts.get(date) || 0) + 1);
+        const samples = dateSamples.get(date) || [];
+        if (samples.length < dateDiagnosticSampleLimit) samples.push(mismatch);
+        dateSamples.set(date, samples);
+      }
+    },
+    finish() {
+      const summary = {
+        passed: mismatchCount === 0,
+        mismatch_count: mismatchCount,
+        difference_count: differenceCount,
+        sample_limit: parityDiagnosticSampleLimit,
+        sampled_mismatch_count: mismatches.length,
+        omitted_mismatch_count: mismatchCount - mismatches.length,
+        mismatches
+      };
+      Object.defineProperties(summary, {
+        _dateCounts: { value: dateCounts },
+        _dateSamples: { value: dateSamples },
+        _globalCount: { value: globalCount },
+        _globalSamples: { value: globalSamples }
+      });
+      return summary;
+    }
+  };
+}
+
+function unverifiedCheck() {
+  return { ...createMismatchCollector().finish(), passed: false, verified: false };
+}
+
+function failedCheck(mismatches, differences = mismatches.length) {
+  const collector = createMismatchCollector();
+  for (const mismatch of mismatches) collector.add(mismatch, differences);
+  return collector.finish();
+}
+
+function publicCheckSummary(check) {
+  return {
+    passed: check.passed,
+    mismatch_count: check.mismatch_count,
+    difference_count: check.difference_count,
+    sample_limit: check.sample_limit,
+    sampled_mismatch_count: check.sampled_mismatch_count,
+    omitted_mismatch_count: check.omitted_mismatch_count,
+    mismatches: check.mismatches
+  };
+}
+
+function compareDateValues(expectedByDate, actualByDate, ...fields) {
+  const collector = createMismatchCollector();
+  addDateValueMismatches(collector, expectedByDate, actualByDate, fields);
+  return collector.finish();
+}
+
+function addDateValueMismatches(collector, expectedByDate, actualByDate, fields) {
   const dates = [...new Set([...expectedByDate.keys(), ...actualByDate.keys()])].sort();
   for (const date of dates) {
     const expected = expectedByDate.get(date) || {};
     const actual = actualByDate.get(date) || {};
     for (const field of fields) {
       if (!sameValue(expected[field], actual[field])) {
-        mismatches.push({
-          date,
-          type: field,
-          expected: expected[field] ?? null,
-          actual: actual[field] ?? null
-        });
+        const expectedValue = expected[field] ?? null;
+        const actualValue = actual[field] ?? null;
+        const mismatch = { date, type: field };
+        if (Array.isArray(expectedValue) || Array.isArray(actualValue)) {
+          mismatch.expected = Array.isArray(expectedValue) ? expectedValue.slice(0, parityDiagnosticSampleLimit) : expectedValue;
+          mismatch.actual = Array.isArray(actualValue) ? actualValue.slice(0, parityDiagnosticSampleLimit) : actualValue;
+          if (Array.isArray(expectedValue)) mismatch.expected_count = expectedValue.length;
+          if (Array.isArray(actualValue)) mismatch.actual_count = actualValue.length;
+          mismatch.sample_limit = parityDiagnosticSampleLimit;
+        } else {
+          mismatch.expected = expectedValue;
+          mismatch.actual = actualValue;
+        }
+        collector.add(mismatch, differenceMagnitude(expectedValue, actualValue));
       }
     }
   }
-  return { passed: mismatches.length === 0, mismatches };
+}
+
+function differenceMagnitude(expected, actual) {
+  if (typeof expected === "number" && typeof actual === "number") {
+    return Math.max(1, Math.abs(expected - actual));
+  }
+  if (Array.isArray(expected) || Array.isArray(actual)) {
+    const left = new Set(expected || []);
+    const right = new Set(actual || []);
+    let differences = 0;
+    for (const value of left) if (!right.has(value)) differences += 1;
+    for (const value of right) if (!left.has(value)) differences += 1;
+    return Math.max(1, differences);
+  }
+  return 1;
 }
 
 function buildDateDetail(summary, snapshot, date, operatingWindows) {
@@ -489,31 +625,83 @@ function compareLineage(plan, databaseSnapshot) {
   const expectedDates = new Map((plan.rawRecords || []).map((row) => [row.rawObservationId, row.snapshotParkDate]));
   const actualDates = new Map((databaseSnapshot.rawRecords || []).map((row) => [row.rawObservationId, row.snapshotParkDate]));
   const rawIds = new Set((databaseSnapshot.rawRecords || []).map((row) => row.rawObservationId));
-  const missing = [...expected].filter((key) => !actual.has(key)).sort();
-  const unexpected = [...actual].filter((key) => !expected.has(key)).sort();
-  const orphan = [...(databaseSnapshot.normalizedRecords || [])]
-    .filter((row) => !rawIds.has(row.rawObservationId))
-    .map((row) => row.rawObservationId)
-    .sort();
-  const mismatches = [];
-  for (const [date, keys] of groupLineageKeysByDate(missing, expectedDates)) {
-    mismatches.push({ type: "missing_normalized_lineage", date, expected: keys, actual: [] });
+  const collector = createMismatchCollector();
+  const missing = collectLineageKeysByDate(expected, actual, expectedDates);
+  const unexpected = collectLineageKeysByDate(actual, expected, actualDates);
+  for (const [date, group] of missing) {
+    collector.add({
+      type: "missing_normalized_lineage",
+      date,
+      expected: group.samples,
+      expected_count: group.count,
+      actual: [],
+      actual_count: 0,
+      sample_limit: parityDiagnosticSampleLimit
+    }, group.count);
   }
-  for (const [date, keys] of groupLineageKeysByDate(unexpected, actualDates)) {
-    mismatches.push({ type: "unexpected_normalized_lineage", date, expected: [], actual: keys });
+  for (const [date, group] of unexpected) {
+    collector.add({
+      type: "unexpected_normalized_lineage",
+      date,
+      expected: [],
+      expected_count: 0,
+      actual: group.samples,
+      actual_count: group.count,
+      sample_limit: parityDiagnosticSampleLimit
+    }, group.count);
   }
-  if (orphan.length) mismatches.push({ type: "orphan_normalized_lineage", date: null, expected: [], actual: orphan });
-  return { passed: mismatches.length === 0, mismatches };
+  let orphanCount = 0;
+  const orphanSamples = [];
+  for (const row of databaseSnapshot.normalizedRecords || []) {
+    if (rawIds.has(row.rawObservationId)) continue;
+    orphanCount += 1;
+    pushSortedSample(orphanSamples, row.rawObservationId, parityDiagnosticSampleLimit);
+  }
+  if (orphanCount) {
+    collector.add({
+      type: "orphan_normalized_lineage",
+      date: null,
+      expected: [],
+      expected_count: 0,
+      actual: orphanSamples,
+      actual_count: orphanCount,
+      sample_limit: parityDiagnosticSampleLimit
+    }, orphanCount);
+  }
+  return collector.finish();
 }
 
-function groupLineageKeysByDate(keys, dateByRawId) {
+function collectLineageKeysByDate(source, comparedWith, dateByRawId) {
   const grouped = new Map();
-  for (const key of keys) {
-    const date = dateByRawId.get(key.split("\u001f")[0]) || null;
-    if (!grouped.has(date)) grouped.set(date, []);
-    grouped.get(date).push(key);
+  for (const key of source) {
+    if (comparedWith.has(key)) continue;
+    const rawId = key.slice(0, key.indexOf("\u001f"));
+    const date = dateByRawId.get(rawId) || null;
+    if (!grouped.has(date)) grouped.set(date, { count: 0, samples: [] });
+    const group = grouped.get(date);
+    group.count += 1;
+    pushSortedSample(group.samples, key, parityDiagnosticSampleLimit);
   }
   return grouped;
+}
+
+function pushSortedSample(samples, value, limit) {
+  const valueKey = sampleSortKey(value);
+  if (samples.length === limit && valueKey >= sampleSortKey(samples.at(-1))) return;
+  let low = 0;
+  let high = samples.length;
+  while (low < high) {
+    const middle = (low + high) >> 1;
+    if (sampleSortKey(samples[middle]) < valueKey) low = middle + 1;
+    else high = middle;
+  }
+  samples.splice(low, 0, value);
+  if (samples.length > limit) samples.pop();
+}
+
+function sampleSortKey(value) {
+  const key = typeof value === "object" && value !== null ? value.key : value;
+  return String(key);
 }
 
 function compareCanonicalIdentity(plan, databaseSnapshot) {
@@ -526,33 +714,44 @@ function compareCanonicalIdentity(plan, databaseSnapshot) {
     row.canonicalAttractionId
   ]));
   const rawById = new Map((plan.rawRecords || []).map((row) => [row.rawObservationId, row]));
-  const mismatches = [];
+  const grouped = new Map();
   for (const [key, expectedId] of expected) {
     const actualId = actual.get(key);
     if (actualId !== expectedId) {
       const date = rawById.get(key.split("\u001f")[0])?.snapshotParkDate;
-      mismatches.push({ type: "canonical_attraction_id", date, key, expected: expectedId, actual: actualId ?? null });
+      const groupKey = date ?? null;
+      if (!grouped.has(groupKey)) grouped.set(groupKey, { count: 0, samples: [] });
+      const group = grouped.get(groupKey);
+      group.count += 1;
+      pushSortedSample(group.samples, { key, expected: expectedId, actual: actualId ?? null }, parityDiagnosticSampleLimit);
     }
   }
-  return { passed: mismatches.length === 0, mismatches };
+  const collector = createMismatchCollector();
+  for (const [date, group] of grouped) {
+    collector.add({
+      type: "canonical_attraction_id",
+      date,
+      mismatch_count: group.count,
+      samples: group.samples,
+      sample_limit: parityDiagnosticSampleLimit
+    }, group.count);
+  }
+  return collector.finish();
 }
 
 function compareOperatingCoverage(expectedByDate, actualByDate, windows) {
   if (!Array.isArray(windows) || windows.length === 0) {
-    return {
-      passed: false,
-      mismatches: [{ type: "operating_window_unavailable", expected: "at_least_one_window", actual: 0 }]
-    };
+    return failedCheck([{ type: "operating_window_unavailable", expected: "at_least_one_window", actual: 0 }]);
   }
   const normalizedWindows = windows
     .map(normalizeWindow)
     .filter((window) => window && expectedByDate.has(window.date));
-  const mismatches = [];
+  const collector = createMismatchCollector();
   const availableWindowKeys = new Set(normalizedWindows.map((window) => `${window.date}\u001f${window.parkId}`));
   for (const [date, summary] of expectedByDate) {
     for (const parkId of new Set((summary.rawRows || []).map((row) => String(row.parkId)))) {
       if (!availableWindowKeys.has(`${date}\u001f${parkId}`)) {
-        mismatches.push({ date, type: "operating_window_unavailable", expected: `${date}/${parkId}`, actual: null });
+        collector.add({ date, type: "operating_window_unavailable", expected: `${date}/${parkId}`, actual: null });
       }
     }
   }
@@ -561,7 +760,7 @@ function compareOperatingCoverage(expectedByDate, actualByDate, windows) {
     const expected = expectedByDate.get(key);
     const actual = actualByDate.get(key);
     if (!expected || !actual) {
-      mismatches.push({ date: key, type: "operating_window_date_missing", expected: Boolean(expected), actual: Boolean(actual) });
+      collector.add({ date: key, type: "operating_window_date_missing", expected: Boolean(expected), actual: Boolean(actual) });
       continue;
     }
     const expectedRows = expected.rawRows || [];
@@ -570,11 +769,17 @@ function compareOperatingCoverage(expectedByDate, actualByDate, windows) {
     const actualCoverage = coverageForWindow(actualRows, window);
     for (const field of ["observed_snapshot_count", "in_window_observation_count", "largest_gap_minutes"]) {
       if (!sameValue(expectedCoverage[field], actualCoverage[field])) {
-        mismatches.push({ date: key, type: `operating_window_${field}`, expected: expectedCoverage[field], actual: actualCoverage[field] });
+        const mismatch = {
+          date: key,
+          type: `operating_window_${field}`,
+          expected: expectedCoverage[field],
+          actual: actualCoverage[field]
+        };
+        collector.add(mismatch, differenceMagnitude(mismatch.expected, mismatch.actual));
       }
     }
   }
-  return { passed: mismatches.length === 0, mismatches };
+  return collector.finish();
 }
 
 function normalizeWindow(window) {

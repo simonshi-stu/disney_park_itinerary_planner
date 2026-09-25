@@ -19,6 +19,15 @@ test("versioned contracts preserve closed, access-mode, lineage, and timezone ru
   assert.equal(normalized.allOf[0].then.properties.observed_wait_time_minutes.type, "null");
 });
 
+test("hosted backfill v1 contract keeps Git archive evidence complete and documents optional bounded diagnostics", async () => {
+  const schema = JSON.parse(await readFile(path.join(root, "packages/contracts/schemas/v1/hosted-backfill-report.schema.json"), "utf8"));
+  assert.equal(schema.properties.archives.maxItems, undefined);
+  assert.ok(!schema.required.includes("diagnostic_samples"), "older v1 reports remain readable");
+  assert.deepEqual(schema.properties.diagnostic_samples.required, ["sample_limit", "git_archives", "neon_only", "r2_only", "hosted_only", "replay_parity"]);
+  assert.ok(schema.$defs.parity_check.properties.mismatch_count);
+  assert.ok(schema.$defs.parity_check.properties.difference_count);
+});
+
 test("PostgreSQL migration makes raw data immutable and keeps closed waits out of analysis", async () => {
   const sql = await readFile(path.join(root, "infra/migrations/0001_observation_storage.sql"), "utf8");
   assert.match(sql, /raw_wait_observations_are_immutable/);
@@ -232,6 +241,132 @@ test("replay parity is read-only, compares the injected database snapshot, and e
   assert.ok(countHashLineageMismatch.checks.counts.mismatches.some((mismatch) => mismatch.type === "raw_count"));
   assert.ok(countHashLineageMismatch.checks.hashes.mismatches.some((mismatch) => mismatch.type === "archive_hashes"));
   assert.ok(countHashLineageMismatch.checks.lineage.mismatches.some((mismatch) => mismatch.type === "missing_normalized_lineage"));
+});
+
+test("replay parity bounds difference samples while counting every mismatch and excluding every affected date", () => {
+  const rawRecords = Array.from({ length: 64 }, (_, index) => {
+    const date = new Date(Date.UTC(2026, 0, index + 1)).toISOString().slice(0, 10);
+    return {
+      rawObservationId: `raw-${String(index).padStart(3, "0")}`,
+      rawArchiveId: "archive-many-dates",
+      snapshotParkDate: date,
+      snapshotUtc: `${date}T17:00:00.000Z`,
+      parkId: "dca",
+      parkName: "Disney California Adventure",
+      rideId: `ride-${index}`,
+      rideName: `Ride ${index}`,
+      isOpen: true,
+      waitTimeMinutes: 15
+    };
+  });
+  const normalizedRecords = rawRecords.map((raw, index) => ({
+    normalizedObservationId: `normalized-${String(index).padStart(3, "0")}`,
+    rawObservationId: raw.rawObservationId,
+    canonicalAttractionId: `dca-attraction-${index}`,
+    accessMode: "standby",
+    isOpen: true,
+    observedWaitTimeMinutes: 15,
+    transformationVersion: "target-normalizer.v1"
+  }));
+  const archives = [{ rawArchiveId: "archive-many-dates", sha256: "archive-hash" }];
+  const operatingWindows = rawRecords.map(({ snapshotParkDate: date }) => ({
+    date,
+    parkId: "dca",
+    openingTime: `${date}T16:00:00.000Z`,
+    closingTime: `${date}T23:00:00.000Z`
+  }));
+  const file = buildFileParitySnapshot({ rawRecords, normalizedRecords, archives }, { operatingWindows });
+  const database = buildDatabaseParitySnapshot({ rawRows: rawRecords, normalizedRows: [], archives }, { operatingWindows });
+
+  const report = buildReplayParityReport({
+    plan: file,
+    databaseSnapshot: database,
+    operatingWindows,
+    runId: "large-difference-fixture"
+  });
+
+  assert.equal(report.status, "blocked");
+  assert.equal(report.failure_count, 192);
+  assert.equal(report.checks.lineage.passed, false);
+  assert.equal(report.checks.lineage.mismatch_count, 64);
+  assert.equal(report.checks.lineage.difference_count, 64);
+  assert.equal(report.checks.lineage.mismatches.length, 20);
+  assert.equal(report.checks.lineage.omitted_mismatch_count, 44);
+  assert.equal(report.checks.lineage.mismatches[0].expected_count, 1);
+  assert.equal(report.checks.canonical_identity.difference_count, 64);
+  assert.equal(report.checks.counts.mismatch_count, 64);
+  assert.equal(report.dates.length, 64);
+  assert.ok(report.dates.every((entry) => entry.status === "excluded" && entry.mismatch_count > 0));
+  assert.equal(report.excluded_dates.length, 64);
+  assert.deepEqual(report.training_eligible_dates, []);
+  assert.ok(report.failures.some((failure) => failure.type === "additional_parity_mismatches_omitted"));
+  assert.ok(JSON.stringify(report).length < 100_000, "bounded parity diagnostics should remain serializable and small");
+});
+
+test("missing database snapshot never marks unchecked parity checks as passed", () => {
+  const date = "2026-07-09";
+  const report = buildReplayParityReport({
+    plan: buildFileParitySnapshot({
+      archives: [{ rawArchiveId: "archive-a", sha256: "hash-a" }],
+      rawRecords: [{ rawObservationId: "raw-a", rawArchiveId: "archive-a", snapshotParkDate: date }],
+      normalizedRecords: []
+    }),
+    databaseSnapshot: null,
+    databaseError: "validation database unavailable"
+  });
+  assert.equal(report.status, "blocked");
+  assert.deepEqual(report.excluded_dates, [date]);
+  assert.ok(Object.values(report.checks).every((check) => check.passed === false));
+  assert.equal(report.checks.lineage.verified, false);
+});
+
+test("global archive-count parity failure still excludes every file date", () => {
+  const date = "2026-07-09";
+  const rawRecords = [{
+    rawObservationId: "raw-archive-count",
+    rawArchiveId: "archive-a",
+    snapshotParkDate: date,
+    snapshotUtc: `${date}T17:00:00.000Z`,
+    parkId: "dca",
+    parkName: "Disney California Adventure",
+    rideId: "ride-a",
+    rideName: "Ride A",
+    isOpen: true,
+    waitTimeMinutes: 15
+  }];
+  const normalizedRecords = [{
+    normalizedObservationId: "normalized-archive-count",
+    rawObservationId: "raw-archive-count",
+    canonicalAttractionId: "dca-ride-a",
+    accessMode: "standby",
+    isOpen: true,
+    observedWaitTimeMinutes: 15,
+    transformationVersion: "target-normalizer.v1"
+  }];
+  const archives = [{ rawArchiveId: "archive-a", sha256: "hash-a", sourceName: "archive-a.csv" }];
+  const operatingWindows = [{
+    date,
+    parkId: "dca",
+    openingTime: `${date}T16:00:00.000Z`,
+    closingTime: `${date}T23:00:00.000Z`
+  }];
+  const file = buildFileParitySnapshot({ rawRecords, normalizedRecords, archives }, { operatingWindows });
+  const database = buildDatabaseParitySnapshot({
+    rawRows: rawRecords,
+    normalizedRows: normalizedRecords,
+    archives: [
+      ...archives,
+      { rawArchiveId: "unexpected-archive", sha256: "hash-extra", sourceName: "unexpected.csv" }
+    ]
+  }, { operatingWindows });
+
+  const report = buildReplayParityReport({ plan: file, databaseSnapshot: database, operatingWindows, runId: "global-archive-count" });
+
+  assert.equal(report.status, "blocked");
+  assert.equal(report.checks.counts.mismatch_count, 1);
+  assert.equal(report.checks.counts.mismatches[0].type, "raw_archive_count");
+  assert.deepEqual(report.excluded_dates, [date]);
+  assert.deepEqual(report.training_eligible_dates, []);
 });
 
 const rawFixture = `snapshot_utc,snapshot_park_datetime,snapshot_park_date,snapshot_timezone,park_id,park_name,land,ride_id,ride_name,is_open,wait_time_minutes,source_last_updated_utc,source_last_updated_park_datetime,source_url

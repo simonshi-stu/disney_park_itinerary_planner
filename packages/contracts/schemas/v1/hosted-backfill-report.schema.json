@@ -56,6 +56,38 @@
       "additionalProperties": { "type": "integer", "minimum": 0 },
       "required": ["matched", "git_only", "neon_only", "r2_only", "hosted_only", "hash_mismatch", "count_mismatch", "r2_error"]
     },
+    "diagnostic_samples": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sample_limit", "git_archives", "neon_only", "r2_only", "hosted_only", "replay_parity"],
+      "properties": {
+        "sample_limit": { "type": "integer", "minimum": 1 },
+        "git_archives": { "$ref": "#/$defs/sample_counts" },
+        "neon_only": { "$ref": "#/$defs/sample_counts" },
+        "r2_only": { "$ref": "#/$defs/sample_counts" },
+        "hosted_only": { "$ref": "#/$defs/sample_counts" },
+        "replay_parity": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["status", "failure_count", "included_failure_count", "omitted_failure_count", "checks"],
+              "properties": {
+                "status": { "enum": ["passed", "blocked"] },
+                "failure_count": { "type": "integer", "minimum": 0 },
+                "included_failure_count": { "type": "integer", "minimum": 0 },
+                "omitted_failure_count": { "type": "integer", "minimum": 0 },
+                "checks": {
+                  "type": "object",
+                  "additionalProperties": { "$ref": "#/$defs/parity_sample_counts" }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
     "archives": {
       "type": "array",
       "items": {
@@ -77,8 +109,63 @@
     "neon_only": { "type": "array", "items": { "type": "object" } },
     "r2_only": { "type": "array", "items": { "type": "object" } },
     "hosted_only": { "type": "array", "items": { "type": "object" } },
-    "replay_parity": { "type": ["object", "null"] },
+    "replay_parity": {
+      "type": ["object", "null"],
+      "properties": {
+        "failure_count": { "type": "integer", "minimum": 0 },
+        "diagnostic_sample_limit": { "type": "integer", "minimum": 1 },
+        "checks": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/parity_check" }
+        },
+        "dates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "mismatch_count": { "type": "integer", "minimum": 0 },
+              "mismatches": { "type": "array", "items": { "type": "object" } }
+            }
+          }
+        }
+      }
+    },
     "failures": { "type": "array", "items": { "type": "object" } },
     "next_steps": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "sample_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total_count", "included_count", "omitted_count"],
+      "properties": {
+        "total_count": { "type": "integer", "minimum": 0 },
+        "included_count": { "type": "integer", "minimum": 0 },
+        "omitted_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "parity_sample_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mismatch_count", "difference_count", "included_count", "omitted_count"],
+      "properties": {
+        "mismatch_count": { "type": "integer", "minimum": 0 },
+        "difference_count": { "type": "integer", "minimum": 0 },
+        "included_count": { "type": "integer", "minimum": 0 },
+        "omitted_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "parity_check": {
+      "type": "object",
+      "properties": {
+        "passed": { "type": "boolean" },
+        "mismatch_count": { "type": "integer", "minimum": 0 },
+        "difference_count": { "type": "integer", "minimum": 0 },
+        "sample_limit": { "type": "integer", "minimum": 1 },
+        "sampled_mismatch_count": { "type": "integer", "minimum": 0 },
+        "omitted_mismatch_count": { "type": "integer", "minimum": 0 },
+        "mismatches": { "type": "array", "items": { "type": "object" } }
+      }
+    }
   }
 }

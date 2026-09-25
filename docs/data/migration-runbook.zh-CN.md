@@ -30,7 +30,9 @@ Git CSV 在迁移完成前保留为 bootstrap fallback 和审计证据，不能�
 
 `.github/workflows/collect-wait-times.yml` 中的 `backfill-hosted-validation` 手动 operation 是唯一受控的 hosted 历史回填入口。它只接受 `feat/04c-hosted-validation`，必须手动输入 `validation-only`，目标是 Neon `dual-write-validation-2026-09` 与私有 R2；不得从 `main`、production workflow 或未确认的数据库 URL 运行。workflow 先保存 `--check` 计划，再上传 Git raw archive、写入 Neon raw/normalized 行，最后运行 `hosted-backfill-report.v1` 只读报告并把计划、写入结果和报告作为 Actions artifact 留档。`audit-hosted-backfill` operation 使用相同分支与确认门禁，只执行只读 Git/Neon/R2/hash/lineage/parity 核验，不上传对象、不写数据库。普通 schedule、repository_dispatch 和默认 `collect` 手动 operation 仍只执行现有采集路径。
 
-报告逐 archive 输出 Git path/date/SHA-256/byte size/row count/source metadata，并分类 `matched`、`git_only`、`neon_only`、`r2_only`、`hosted_only`、`hash_mismatch`、`count_mismatch` 或 `r2_error`；已有但不属于 Git 历史范围的 Neon/R2 对象，只有在 archive hash、对象内容 SHA-256 和 byte size 相互匹配时才作为 `hosted_only` 单独记录。R2 还会 HEAD/下载 hash 验证 metadata、内容 SHA-256 和 byte size，Neon 会验证 raw count、normalized count、raw lineage、closed/zero 语义、canonical identity 与 operating-window parity。只有报告 `status=passed` 且 `complete=true` 才能进入人工清理门禁。
+报告逐 archive 输出 Git path/date/SHA-256/byte size/row count/source metadata，并分类 `matched`、`git_only`、`neon_only`、`r2_only`、`hosted_only`、`hash_mismatch`、`count_mismatch` 或 `r2_error`；Git `archives` 中的每项始终完整输出，不能为控制报告大小而抽样。Neon/R2 差异数组最多保留 20 个样本，完整类别总量由 `classification_counts` 与 `diagnostic_samples.*.total_count` 表达；已有但不属于 Git 历史范围的 Neon/R2 对象，只有在 archive hash、对象内容 SHA-256 和 byte size 相互匹配时才作为 `hosted_only` 单独记录。R2 还会 HEAD/下载 hash 验证 metadata、内容 SHA-256 和 byte size，Neon 会验证 raw count、normalized count、raw lineage、closed/zero 语义、canonical identity 与 operating-window parity。只有报告 `status=passed` 且 `complete=true` 才能进入人工清理门禁。
+
+Parity 的每个 check 保留最多 20 条 mismatch 样本；每个日期的 `mismatches` 最多展示 5 条。lineage 等按日期聚合的样本同时提供 expected/actual 完整数量和有界 ID 列表。`mismatch_count` 表示 mismatch 组数，`difference_count` 表示底层差异数，`omitted_mismatch_count` 表示 check 中未展开的组数；日期仍按全部差异判定并完整列入 `excluded_dates`，不能依据样本列表推断日期 eligible。parity failure 列表最多展开 40 条并给出遗漏计数。`hosted-backfill-report.v1` 增加可选 `diagnostic_samples` 与 parity 计数字段；schema 版本保持 v1（对旧报告读取兼容），但此前假设差异数组穷举全部项目的消费者必须迁移为读取完整计数、并把数组仅作为诊断样本。`status`、`complete` 与 fail-closed eligibility 语义不变。
 
 如果 Neon/R2 超载、配额或订阅暂时不可用，回填应 fail closed：保留 GitHub Actions 定时采集和 Git fallback，不把失败写成 hosted 成功，不删除本地或 Git 历史；服务恢复后重复执行同一 workflow，hash/稳定 ID/唯一约束保证补写幂等。Git fallback 是临时保护路径，不是永久存储切换，也不因本次 hosted 回填而关闭。
 
@@ -63,6 +65,7 @@ Parity CLI 在只读事务中执行 SELECT，不运行 migration、不写数据�
 - 只有出现在 `training_eligible_dates` 的日期可以进入 forecast training set。
 - 任一检查不通过的日期进入 `excluded_dates`；无法归因到单日的全局不一致（例如 orphan normalized 行）按 fail-closed 排除全部日期。
 - 报告含 `run_id`、`checked_at`、`status`、counts、failures 与 next_steps，须与输入快照一起留档。
+- 差异样本数组有界；判定、`mismatch_count`/`difference_count`、`excluded_dates` 与 `training_eligible_dates` 均由全量比较得出，不能因为报告只展示部分诊断而放宽 fail-closed 门槛。
 
 ### 缺口关闭条件
 

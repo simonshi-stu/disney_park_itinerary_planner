@@ -12,7 +12,7 @@ Contract 只描述数据形状和兼容策略，不实现业务规则；每个 c
 ## 当前状态
 `schemas/v1/` 已定义首批持久化边界：immutable raw archive、raw wait observation、normalized wait observation、wait-time history audit、catalog attraction lifecycle 和 source health。前三者用于历史回填与 PostgreSQL adapter；审计报告用于表达开园时段覆盖、缺失/零等待语义、短暂停运和持续不可用复核候选；catalog lifecycle 用于表达排队能力、支持的 access modes、官方生命周期证据、有效期及训练/规划 disposition；source health 用于保存可更新的来源运行状态，不替代 immutable raw evidence。它们都不改变 bootstrap CSV 的格式。
 
-`dual-write-window-report.v1` 是只读比较结果，要求调用方提供完整窗口的 expected runs、Git runs、hosted runs 和 source-health 快照；缺失输入不会被推断为成功。`hosted-backfill-report.v1` 是历史回填 checkpoint，逐 archive 对比 Git manifest、Neon raw/normalized lineage 和私有 R2 对象的 key、metadata、内容 SHA-256 与 byte size；它只读验证，不执行回填或删除。
+`dual-write-window-report.v1` 是只读比较结果，要求调用方提供完整窗口的 expected runs、Git runs、hosted runs 和 source-health 快照；缺失输入不会被推断为成功。`hosted-backfill-report.v1` 是历史回填 checkpoint，逐 archive 对比 Git manifest、Neon raw/normalized lineage 和私有 R2 对象的 key、metadata、内容 SHA-256 与 byte size；它只读验证，不执行回填或删除。hosted 报告保留每个 Git archive 的 hash/count 完整证据，差异明细和 parity mismatch 列表是有界样本，完整总量由 `classification_counts`、`diagnostic_samples` 和 parity check 的计数字段表达；消费方不得把样本数组长度当作差异总数。
 
 ## V1 等待时间约束
 - 来源在关闭状态返回的 `0` 只属于 raw 证据。
