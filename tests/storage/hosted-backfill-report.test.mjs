@@ -84,3 +84,42 @@ test("hosted backfill report marks hash and row-count mismatches and requires ta
   assert.ok(report.archives[0].issues.includes("r2:content_sha256_mismatch"));
   assert.ok(report.failures.some((failure) => failure.type === "target_confirmation_missing"));
 });
+
+test("hosted backfill report treats a verified non-Git Neon/R2 archive as out-of-scope hosted evidence", () => {
+  const plan = planFixture();
+  plan.archives = plan.archives.slice(0, 1);
+  plan.rawRecords = plan.rawRecords.slice(0, 2);
+  plan.normalizedRecords = plan.normalizedRecords.slice(0, 1);
+  const smokeHash = "c".repeat(64);
+  const smokeName = "wait_times_snapshot_smoke.csv";
+  const smokeKey = `wait-times/${smokeHash}/${smokeName}`;
+  const report = buildHostedBackfillReport({
+    plan,
+    root: "",
+    bucket: "validation-bucket",
+    targetLabel: "neon-validation-branch-only",
+    neon: {
+      archives: [
+        { raw_archive_id: shaA, sha256: shaA, byte_size: 10, source_name: "wait_times_2026-07-01.csv", object_uri: `s3://validation-bucket/wait-times/${shaA}/wait_times_2026-07-01.csv` },
+        { raw_archive_id: smokeHash, sha256: smokeHash, byte_size: 4, source_name: smokeName, object_uri: `s3://validation-bucket/${smokeKey}` }
+      ],
+      rawCounts: new Map([[shaA, 2], [smokeHash, 88]]),
+      normalizedCounts: new Map([[shaA, 1]])
+    },
+    r2: {
+      objects: [
+        { key: `wait-times/${shaA}/wait_times_2026-07-01.csv`, sha256: shaA, source_name: "wait_times_2026-07-01.csv", size: 10, head_content_length: 10, metadata_sha256: shaA, content_sha256: shaA },
+        { key: smokeKey, sha256: smokeHash, source_name: smokeName, size: 4, head_content_length: 4, metadata_sha256: smokeHash, content_sha256: smokeHash }
+      ]
+    },
+    replayParity: { status: "passed", failures: [] },
+    runId: "hosted-only-run"
+  });
+
+  assert.equal(report.status, "passed");
+  assert.equal(report.classification_counts.hosted_only, 1);
+  assert.equal(report.classification_counts.neon_only, 0);
+  assert.equal(report.classification_counts.r2_only, 0);
+  assert.equal(report.hosted_only[0].source_name, smokeName);
+  assert.ok(!report.failures.some((failure) => failure.type === "neon_only" || failure.type === "r2_only"));
+});

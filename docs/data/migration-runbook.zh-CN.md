@@ -28,9 +28,9 @@ Git CSV 在迁移完成前保留为 bootstrap fallback 和审计证据，不能�
 
 ## Hosted validation 历史回填
 
-`.github/workflows/collect-wait-times.yml` 中的 `backfill-hosted-validation` 手动 operation 是唯一受控的 hosted 历史回填入口。它只接受 `feat/04c-hosted-validation`，必须手动输入 `validation-only`，目标是 Neon `dual-write-validation-2026-09` 与私有 R2；不得从 `main`、production workflow 或未确认的数据库 URL 运行。workflow 先保存 `--check` 计划，再上传 Git raw archive、写入 Neon raw/normalized 行，最后运行 `hosted-backfill-report.v1` 只读报告并把计划、写入结果和报告作为 Actions artifact 留档。普通 schedule、repository_dispatch 和默认 `collect` 手动 operation 仍只执行现有采集路径。
+`.github/workflows/collect-wait-times.yml` 中的 `backfill-hosted-validation` 手动 operation 是唯一受控的 hosted 历史回填入口。它只接受 `feat/04c-hosted-validation`，必须手动输入 `validation-only`，目标是 Neon `dual-write-validation-2026-09` 与私有 R2；不得从 `main`、production workflow 或未确认的数据库 URL 运行。workflow 先保存 `--check` 计划，再上传 Git raw archive、写入 Neon raw/normalized 行，最后运行 `hosted-backfill-report.v1` 只读报告并把计划、写入结果和报告作为 Actions artifact 留档。`audit-hosted-backfill` operation 使用相同分支与确认门禁，只执行只读 Git/Neon/R2/hash/lineage/parity 核验，不上传对象、不写数据库。普通 schedule、repository_dispatch 和默认 `collect` 手动 operation 仍只执行现有采集路径。
 
-报告逐 archive 输出 Git path/date/SHA-256/byte size/row count/source metadata，并分类 `matched`、`git_only`、`neon_only`、`r2_only`、`hash_mismatch`、`count_mismatch` 或 `r2_error`；R2 还会 HEAD/下载 hash 验证 metadata、内容 SHA-256 和 byte size，Neon 会验证 raw count、normalized count、raw lineage、closed/zero 语义、canonical identity 与 operating-window parity。只有报告 `status=passed` 且 `complete=true` 才能进入人工清理门禁。
+报告逐 archive 输出 Git path/date/SHA-256/byte size/row count/source metadata，并分类 `matched`、`git_only`、`neon_only`、`r2_only`、`hosted_only`、`hash_mismatch`、`count_mismatch` 或 `r2_error`；已有但不属于 Git 历史范围的 Neon/R2 对象，只有在 archive hash、对象内容 SHA-256 和 byte size 相互匹配时才作为 `hosted_only` 单独记录。R2 还会 HEAD/下载 hash 验证 metadata、内容 SHA-256 和 byte size，Neon 会验证 raw count、normalized count、raw lineage、closed/zero 语义、canonical identity 与 operating-window parity。只有报告 `status=passed` 且 `complete=true` 才能进入人工清理门禁。
 
 如果 Neon/R2 超载、配额或订阅暂时不可用，回填应 fail closed：保留 GitHub Actions 定时采集和 Git fallback，不把失败写成 hosted 成功，不删除本地或 Git 历史；服务恢复后重复执行同一 workflow，hash/稳定 ID/唯一约束保证补写幂等。Git fallback 是临时保护路径，不是永久存储切换，也不因本次 hosted 回填而关闭。
 

@@ -30,16 +30,30 @@ export function buildHostedBackfillReport({
   objectStorageError = null
 }) {
   const rawArchiveByObservationId = new Map((plan.rawRecords || []).map((row) => [row.rawObservationId, row.rawArchiveId]));
-  const expectedArchives = plan.archives.map((archive) => ({
-    raw_archive_id: archive.rawArchiveId,
-    sha256: archive.sha256,
-    source_name: archive.sourceName,
-    path: root ? path.relative(root, archive.filePath).replaceAll(path.sep, "/") : archive.filePath,
-    date: archive.sourceName.match(/(\d{4}-\d{2}-\d{2})/)?.[1] || null,
-    byte_size: archive.byteSize,
-    row_count: plan.rawRecords.filter((row) => row.rawArchiveId === archive.rawArchiveId).length,
-    normalized_row_count: plan.normalizedRecords.filter((row) => rawArchiveByObservationId.get(row.rawObservationId) === archive.rawArchiveId).length
-  }));
+  const expectedArchives = plan.archives.map((archive) => {
+    const archiveRawRows = plan.rawRecords.filter((row) => row.rawArchiveId === archive.rawArchiveId);
+    const distinct = (field) => [...new Set(archiveRawRows.map((row) => row[field]).filter((value) => value !== null && value !== undefined && value !== ""))].sort();
+    const snapshotTimes = archiveRawRows.map((row) => row.snapshotUtc).filter(Boolean).sort();
+    return {
+      raw_archive_id: archive.rawArchiveId,
+      sha256: archive.sha256,
+      source_name: archive.sourceName,
+      path: root ? path.relative(root, archive.filePath).replaceAll(path.sep, "/") : archive.filePath,
+      date: archive.sourceName.match(/(\d{4}-\d{2}-\d{2})/)?.[1] || null,
+      byte_size: archive.byteSize,
+      row_count: archiveRawRows.length,
+      normalized_row_count: plan.normalizedRecords.filter((row) => rawArchiveByObservationId.get(row.rawObservationId) === archive.rawArchiveId).length,
+      source_metadata: {
+        park_ids: distinct("parkId"),
+        park_names: distinct("parkName"),
+        snapshot_dates: distinct("snapshotParkDate"),
+        timezones: distinct("snapshotTimezone"),
+        source_urls: distinct("sourceUrl"),
+        snapshot_utc_start: snapshotTimes[0] || null,
+        snapshot_utc_end: snapshotTimes.at(-1) || null
+      }
+    };
+  });
   const expectedIds = new Set(expectedArchives.map((archive) => archive.raw_archive_id));
   const expectedKeys = new Set(expectedArchives.map((archive) => objectKey(archive, bucket)));
   const neonById = new Map((neon.archives || []).map((archive) => [String(archive.raw_archive_id), archive]));
@@ -122,6 +136,7 @@ export function buildHostedBackfillReport({
 
   const neonOnly = (neon.archives || [])
     .filter((archive) => !expectedIds.has(String(archive.raw_archive_id)))
+    .filter((archive) => !isVerifiedHostedPair(archive, r2ByKey, bucket))
     .map((archive) => ({
       raw_archive_id: String(archive.raw_archive_id),
       sha256: String(archive.sha256),
@@ -133,6 +148,7 @@ export function buildHostedBackfillReport({
     }));
   const r2Only = r2Objects
     .filter((object) => !expectedKeys.has(String(object.key)))
+    .filter((object) => !isVerifiedNeonPair(object, neon.archives || [], bucket))
     .map((object) => ({
       key: String(object.key),
       source_name: object.source_name || null,
@@ -140,12 +156,30 @@ export function buildHostedBackfillReport({
       listed_byte_size: numberOrNull(object.size),
       etag: object.etag || null
     }));
+  const hostedOnly = (neon.archives || [])
+    .filter((archive) => !expectedIds.has(String(archive.raw_archive_id)))
+    .filter((archive) => isVerifiedHostedPair(archive, r2ByKey, bucket))
+    .map((archive) => {
+      const key = objectUriToKey(archive.object_uri, bucket);
+      const object = key ? r2ByKey.get(key) : null;
+      return {
+        raw_archive_id: String(archive.raw_archive_id),
+        sha256: String(archive.sha256),
+        source_name: String(archive.source_name),
+        object_key: key,
+        byte_size: numberOrNull(archive.byte_size),
+        raw_observation_count: numberOrNull(neon.rawCounts?.get(String(archive.raw_archive_id))),
+        normalized_observation_count: numberOrNull(neon.normalizedCounts?.get(String(archive.raw_archive_id))),
+        content_sha256: object?.content_sha256 || null
+      };
+    });
 
   const classificationCounts = {
     matched: archives.filter((archive) => archive.classification === "matched").length,
     git_only: archives.filter((archive) => archive.classification === "git_only").length,
     neon_only: archives.filter((archive) => archive.classification === "neon_only").length + neonOnly.length,
     r2_only: archives.filter((archive) => archive.classification === "r2_only").length + r2Only.length,
+    hosted_only: hostedOnly.length,
     hash_mismatch: archives.filter((archive) => archive.classification === "hash_mismatch").length,
     count_mismatch: archives.filter((archive) => archive.classification === "count_mismatch").length,
     r2_error: archives.filter((archive) => archive.classification === "r2_error").length
@@ -191,6 +225,7 @@ export function buildHostedBackfillReport({
     archives,
     neon_only: neonOnly,
     r2_only: r2Only,
+    hosted_only: hostedOnly,
     replay_parity: replayParity || null,
     failures,
     next_steps: complete
@@ -209,6 +244,35 @@ export function buildHostedBackfillReport({
 
 export function objectKey(archive, bucket) {
   return `wait-times/${archive.sha256}/${archive.source_name}`;
+}
+
+function objectUriToKey(objectUri, bucket) {
+  if (!objectUri || !bucket) return null;
+  try {
+    const uri = new URL(objectUri);
+    if (uri.protocol !== "s3:" || uri.hostname !== bucket) return null;
+    return uri.pathname.replace(/^\/+/, "");
+  } catch {
+    return null;
+  }
+}
+
+function isVerifiedHostedPair(archive, r2ByKey, bucket) {
+  const key = objectUriToKey(archive.object_uri, bucket);
+  const object = key ? r2ByKey.get(key) : null;
+  return Boolean(object
+    && !object.verification_error
+    && String(archive.sha256) === String(object.content_sha256)
+    && String(archive.sha256) === String(object.sha256)
+    && numberOrNull(archive.byte_size) === numberOrNull(object.head_content_length)
+    && numberOrNull(archive.byte_size) === numberOrNull(object.size));
+}
+
+function isVerifiedNeonPair(object, neonArchives, bucket) {
+  return neonArchives.some((archive) => String(archive.sha256) === String(object.content_sha256)
+    && numberOrNull(archive.byte_size) === numberOrNull(object.head_content_length)
+    && numberOrNull(archive.byte_size) === numberOrNull(object.size)
+    && objectUriToKey(archive.object_uri, bucket) === String(object.key));
 }
 
 async function loadNeonState(client, plan) {

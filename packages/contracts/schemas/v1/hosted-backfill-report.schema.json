@@ -16,6 +16,7 @@
     "archives",
     "neon_only",
     "r2_only",
+    "hosted_only",
     "replay_parity",
     "failures",
     "next_steps"
@@ -53,7 +54,7 @@
     "classification_counts": {
       "type": "object",
       "additionalProperties": { "type": "integer", "minimum": 0 },
-      "required": ["matched", "git_only", "neon_only", "r2_only", "hash_mismatch", "count_mismatch", "r2_error"]
+      "required": ["matched", "git_only", "neon_only", "r2_only", "hosted_only", "hash_mismatch", "count_mismatch", "r2_error"]
     },
     "archives": {
       "type": "array",
@@ -75,6 +76,7 @@
     },
     "neon_only": { "type": "array", "items": { "type": "object" } },
     "r2_only": { "type": "array", "items": { "type": "object" } },
+    "hosted_only": { "type": "array", "items": { "type": "object" } },
     "replay_parity": { "type": ["object", "null"] },
     "failures": { "type": "array", "items": { "type": "object" } },
     "next_steps": { "type": "array", "items": { "type": "string" } }

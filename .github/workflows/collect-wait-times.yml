@@ -4,13 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       operation:
-        description: "collect keeps the normal manual collector; backfill-hosted-validation is validation-only"
+        description: "collect is the normal collector; backfill-hosted-validation writes; audit-hosted-backfill is read-only"
         required: true
         default: collect
         type: choice
         options:
           - collect
           - backfill-hosted-validation
+          - audit-hosted-backfill
       confirm_validation_target:
         description: "Required only for backfill-hosted-validation; type validation-only"
         required: false
@@ -99,7 +100,7 @@ jobs:
         run: exit 1
 
   backfill-target-gate:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.operation == 'backfill-hosted-validation' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.operation == 'backfill-hosted-validation' || inputs.operation == 'audit-hosted-backfill') }}
     runs-on: ubuntu-latest
     steps:
       - name: Require the validation branch and explicit confirmation
@@ -108,7 +109,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$GITHUB_REF" = "refs/heads/feat/04c-hosted-validation" || {
-            echo "Hosted historical backfill is restricted to feat/04c-hosted-validation." >&2
+            echo "Hosted historical validation is restricted to feat/04c-hosted-validation." >&2
             exit 1
           }
           test "$CONFIRMATION" = "validation-only" || {
@@ -120,6 +121,8 @@ jobs:
     needs: backfill-target-gate
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.operation == 'backfill-hosted-validation' }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       RAW_ARCHIVE_BUCKET: ${{ vars.RAW_ARCHIVE_BUCKET }}
@@ -175,3 +178,46 @@ jobs:
             hosted-backfill-plan.json
             hosted-backfill-write.json
             hosted-backfill-report.json
+
+  audit-hosted-backfill:
+    needs: backfill-target-gate
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.operation == 'audit-hosted-backfill' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      RAW_ARCHIVE_BUCKET: ${{ vars.RAW_ARCHIVE_BUCKET }}
+      RAW_ARCHIVE_ENDPOINT: ${{ vars.RAW_ARCHIVE_ENDPOINT }}
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      HOSTED_TARGET_LABEL: neon-validation-branch-only
+      BACKFILL_DATE: ${{ inputs.date }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Install dependencies
+        run: npm ci
+      - name: Read-only Git, Neon, R2 and lineage audit
+        run: |
+          set -euo pipefail
+          if [[ -n "$BACKFILL_DATE" && ! "$BACKFILL_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "date must be YYYY-MM-DD" >&2
+            exit 1
+          fi
+          if [[ -n "$BACKFILL_DATE" ]]; then
+            node scripts/report-hosted-backfill.mjs --date="$BACKFILL_DATE" > hosted-backfill-report.json
+          else
+            node scripts/report-hosted-backfill.mjs > hosted-backfill-report.json
+          fi
+          cat hosted-backfill-report.json
+      - name: Retain read-only audit evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-backfill-audit-${{ github.run_id }}
+          if-no-files-found: warn
+          path: hosted-backfill-report.json
