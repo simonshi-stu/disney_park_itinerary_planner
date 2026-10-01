@@ -655,6 +655,106 @@ test("workflow exposes no legacy raw write operation and keeps the audit read-on
   assert.match(workflow, /node scripts\/report-hosted-backfill\.mjs/, "the audit keeps using the read-only report command");
 });
 
+test("workflow materializes normalized-only inputs from Variables and a Secret before the sidecar", async () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+  const workflow = await readFile(path.join(root, ".github/workflows/collect-wait-times.yml"), "utf8");
+
+  const collectJobStart = workflow.indexOf("jobs:\n  collect:");
+  const auditJobStart = workflow.indexOf("  audit-target-gate:");
+  assert.ok(collectJobStart !== -1 && auditJobStart > collectJobStart, "collect job section is discoverable");
+  const collectJob = workflow.slice(collectJobStart, auditJobStart);
+
+  const gitCommitIndex = collectJob.indexOf("Commit updated wait-time data");
+  const prepIndex = collectJob.indexOf("Prepare normalized-only hosted inputs");
+  const surfacePrepIndex = collectJob.indexOf("Surface hosted input preparation failure");
+  const sidecarIndex = collectJob.indexOf("Normalized-only dual-write sidecar");
+  const sidecarSurfaceIndex = collectJob.indexOf("Surface dual-write failure");
+  assert.ok(gitCommitIndex !== -1 && prepIndex > gitCommitIndex, "input preparation runs after the Git fallback commit");
+  assert.ok(surfacePrepIndex > prepIndex && sidecarIndex > surfacePrepIndex, "the sidecar runs after preparation and its failure surface");
+
+  const prep = collectJob.slice(prepIndex, surfacePrepIndex);
+  const sidecar = collectJob.slice(sidecarIndex, sidecarSurfaceIndex);
+  const surfacePrep = collectJob.slice(surfacePrepIndex, sidecarIndex);
+
+  // Sources are JSON Variables plus an encrypted Secret, never old *_PATH variable sources.
+  assert.ok(prep.includes("vars.NORMALIZED_ONLY_REVIEWED_CATALOG_JSON"));
+  assert.ok(prep.includes("vars.NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON"));
+  assert.ok(prep.includes("secrets.NORMALIZED_ONLY_AUTHORIZATION_JSON"));
+  assert.doesNotMatch(
+    workflow,
+    /(?:vars|secrets)\.NORMALIZED_ONLY_(?:REVIEWED_CATALOG|ACCESS_MODE_MAPPING|AUTHORIZATION)_PATH/
+  );
+
+  // Only materialize for a relevant run and only when the flag is exactly true.
+  assert.match(prep, /always\(\) && \(steps\.collect\.outcome == 'failure' \|\|/);
+  assert.ok(prep.includes(`"$COLLECTOR_DUAL_WRITE_ENABLED" != "true"`));
+
+  // Ephemeral RUNNER_TEMP files with restrictive permissions and safe creation flags.
+  assert.ok(prep.includes('mktemp -d "$RUNNER_TEMP/normalized-only-inputs-'));
+  assert.ok(prep.includes("umask 077"));
+  assert.ok(prep.includes("mode: 0o600"));
+  assert.ok(prep.includes('flag: "wx"'));
+
+  // Only paths leave through GITHUB_OUTPUT; JSON contents are never written or echoed.
+  const outputRedirections = prep
+    .split("\n")
+    .filter((line) => line.includes('"$GITHUB_OUTPUT"'));
+  assert.ok(outputRedirections.length >= 2, "preparation exposes outputs for the disabled and enabled paths");
+  for (const line of outputRedirections) {
+    assert.doesNotMatch(line, /JSON/);
+    if (line.includes("=")) assert.match(line, /_path=/);
+  }
+  for (const name of ["reviewed_catalog_path", "access_mode_mapping_path", "authorization_path"]) {
+    assert.ok(prep.includes(`printf '${name}=%s\\n' "$${name}"`), `${name} is exposed as a path output`);
+  }
+  assert.doesNotMatch(prep, /(?:echo|printf)[^\n]*NORMALIZED_ONLY_[A-Z_]*_JSON/);
+
+  // JSON validation happens inside preparation, before any sidecar/cloud access.
+  assert.ok(prep.includes("JSON.parse"));
+  assert.ok(prep.includes("must be a nonempty GitHub Variable or Secret"));
+  assert.ok(prep.includes("must contain valid JSON"));
+  assert.match(
+    prep,
+    /parsed === null \|\| typeof parsed !== "object" \|\| Array\.isArray\(parsed\)/,
+    "array JSON must be rejected before any cloud access"
+  );
+  assert.ok(sidecar.includes("steps.dual_write_inputs.outcome == 'success'"));
+  assert.ok(sidecar.includes(
+    "NORMALIZED_ONLY_REVIEWED_CATALOG_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && steps.dual_write_inputs.outputs.reviewed_catalog_path || '' }}"
+  ));
+  assert.ok(sidecar.includes(
+    "NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && steps.dual_write_inputs.outputs.access_mode_mapping_path || '' }}"
+  ));
+  assert.ok(sidecar.includes(
+    "NORMALIZED_ONLY_AUTHORIZATION_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && steps.dual_write_inputs.outputs.authorization_path || '' }}"
+  ));
+
+  // Disabled mode materializes nothing and the sidecar receives no cloud config.
+  assert.ok(prep.includes("Normalized-only dual-write is disabled; no hosted input files were materialized."));
+  for (const name of [
+    "DATABASE_URL",
+    "RAW_ARCHIVE_BUCKET",
+    "RAW_ARCHIVE_ENDPOINT",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_SECRET_ACCESS_KEY",
+    "NORMALIZED_ONLY_REVIEWED_CATALOG_PATH",
+    "NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH",
+    "NORMALIZED_ONLY_AUTHORIZATION_PATH",
+    "NORMALIZED_ONLY_EXPECTED_TARGET_SHA256"
+  ]) {
+    assert.ok(
+      sidecar.includes(`${name}: \${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' &&`),
+      `${name} must stay gated on the explicit opt-in`
+    );
+  }
+
+  // A preparation failure is explicit, red, and preconnection; Git fallback already committed.
+  assert.ok(surfacePrep.includes("failure()"));
+  assert.ok(surfacePrep.includes("steps.dual_write_inputs.outcome == 'failure'"));
+  assert.ok(surfacePrep.includes("before any cloud connection"));
+  assert.ok(surfacePrep.includes("exit 1"));
+});
+
 function createFakeR2({ failPut = false } = {}) {
   const objects = new Map();
   const calls = [];

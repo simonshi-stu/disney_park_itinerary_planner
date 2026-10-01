@@ -74,6 +74,68 @@ jobs:
         with:
           commit_message: "Collect wait-time snapshot"
           file_pattern: data/wait_times/*.csv data/wait_times/latest_snapshot.json
+      - name: Prepare normalized-only hosted inputs
+        id: dual_write_inputs
+        # Human gate: only when COLLECTOR_DUAL_WRITE_ENABLED is exactly true materialize
+        # reviewed inputs from non-secret Variables and the validation authorization from
+        # an encrypted Secret into 0600 files under RUNNER_TEMP. JSON values are never
+        # echoed and only the ephemeral file paths leave this step via GITHUB_OUTPUT.
+        if: ${{ always() && (steps.collect.outcome == 'failure' || (steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true')) }}
+        env:
+          COLLECTOR_DUAL_WRITE_ENABLED: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED || 'false' }}
+          NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && vars.NORMALIZED_ONLY_REVIEWED_CATALOG_JSON || '' }}
+          NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && vars.NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON || '' }}
+          NORMALIZED_ONLY_AUTHORIZATION_JSON: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && secrets.NORMALIZED_ONLY_AUTHORIZATION_JSON || '' }}
+        run: |
+          set -euo pipefail
+          if [ "$COLLECTOR_DUAL_WRITE_ENABLED" != "true" ]; then
+            printf 'reviewed_catalog_path=\naccess_mode_mapping_path=\nauthorization_path=\n' >> "$GITHUB_OUTPUT"
+            echo "Normalized-only dual-write is disabled; no hosted input files were materialized."
+            exit 0
+          fi
+          umask 077
+          input_dir="$(mktemp -d "$RUNNER_TEMP/normalized-only-inputs-XXXXXXXX")"
+          reviewed_catalog_path="$input_dir/reviewed-catalog.json"
+          access_mode_mapping_path="$input_dir/access-mode-mapping.json"
+          authorization_path="$input_dir/authorization.json"
+          REVIEWED_CATALOG_PATH="$reviewed_catalog_path" \
+          ACCESS_MODE_MAPPING_PATH="$access_mode_mapping_path" \
+          AUTHORIZATION_PATH="$authorization_path" \
+          node <<'NODE'
+          const { writeFileSync } = require("node:fs");
+
+          const inputs = [
+            ["NORMALIZED_ONLY_REVIEWED_CATALOG_JSON", process.env.REVIEWED_CATALOG_PATH],
+            ["NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON", process.env.ACCESS_MODE_MAPPING_PATH],
+            ["NORMALIZED_ONLY_AUTHORIZATION_JSON", process.env.AUTHORIZATION_PATH]
+          ];
+          for (const [name, filePath] of inputs) {
+            const raw = process.env[name];
+            if (typeof raw !== "string" || raw.trim() === "") {
+              throw new Error(`${name} must be a nonempty GitHub Variable or Secret before the sidecar can run`);
+            }
+            let parsed;
+            try {
+              parsed = JSON.parse(raw);
+            } catch {
+              throw new Error(`${name} must contain valid JSON before the sidecar can run`);
+            }
+            if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+              throw new Error(`${name} must contain a JSON object before the sidecar can run`);
+            }
+            writeFileSync(filePath, `${JSON.stringify(parsed)}\n`, { mode: 0o600, flag: "wx" });
+          }
+          NODE
+          {
+            printf 'reviewed_catalog_path=%s\n' "$reviewed_catalog_path"
+            printf 'access_mode_mapping_path=%s\n' "$access_mode_mapping_path"
+            printf 'authorization_path=%s\n' "$authorization_path"
+          } >> "$GITHUB_OUTPUT"
+      - name: Surface hosted input preparation failure
+        if: ${{ failure() && steps.dual_write_inputs.outcome == 'failure' }}
+        run: |
+          echo "Normalized-only hosted input preparation failed before any cloud connection; the Git fallback commit above is unaffected. Configure the NORMALIZED_ONLY_* Variables/Secret and re-run." >&2
+          exit 1
       - name: Normalized-only dual-write sidecar (opt-in, disabled by default)
         id: dual_write
         # Human gate: enabling COLLECTOR_DUAL_WRITE_ENABLED selects the normalized-only
@@ -81,8 +143,9 @@ jobs:
         # requires an already-applied 0004, and the source-health fallback requires the
         # same current validation-only authorization/target fingerprint and writes only
         # when ingestion.source_health already exists. With the flag disabled this step
-        # receives no cloud env at all.
-        if: ${{ always() && (steps.collect.outcome == 'failure' || (steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true')) }}
+        # receives no cloud env at all. The sidecar runs only after input preparation
+        # succeeded, so a materialization failure never reaches R2/Neon.
+        if: ${{ always() && steps.dual_write_inputs.outcome == 'success' && (steps.collect.outcome == 'failure' || (steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true')) }}
         continue-on-error: true
         env:
           COLLECTOR_DUAL_WRITE_ENABLED: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED || 'false' }}
@@ -96,9 +159,9 @@ jobs:
           AWS_REGION: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && (vars.AWS_REGION || 'us-west-2') || '' }}
           AWS_ACCESS_KEY_ID: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && secrets.AWS_ACCESS_KEY_ID || '' }}
           AWS_SECRET_ACCESS_KEY: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && secrets.AWS_SECRET_ACCESS_KEY || '' }}
-          NORMALIZED_ONLY_REVIEWED_CATALOG_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && vars.NORMALIZED_ONLY_REVIEWED_CATALOG_PATH || '' }}
-          NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && vars.NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH || '' }}
-          NORMALIZED_ONLY_AUTHORIZATION_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && vars.NORMALIZED_ONLY_AUTHORIZATION_PATH || '' }}
+          NORMALIZED_ONLY_REVIEWED_CATALOG_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && steps.dual_write_inputs.outputs.reviewed_catalog_path || '' }}
+          NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && steps.dual_write_inputs.outputs.access_mode_mapping_path || '' }}
+          NORMALIZED_ONLY_AUTHORIZATION_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && steps.dual_write_inputs.outputs.authorization_path || '' }}
           NORMALIZED_ONLY_EXPECTED_TARGET_SHA256: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && vars.NORMALIZED_ONLY_EXPECTED_TARGET_SHA256 || '' }}
         run: node workers/collector/run-dual-write.mjs
       - name: Surface dual-write failure
