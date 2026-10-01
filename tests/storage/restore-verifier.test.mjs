@@ -26,9 +26,27 @@ const REQUIRED_RELATIONS = [
   "infrastructure.schema_migrations",
 ];
 
-function makeFakeClient({ missingRelations = [], migrationRows = [] } = {}) {
+const OPTIONAL_0004 = "0004_r2_lineage_normalized_observations.sql";
+const REQUIRED_0004_RELATIONS = [
+  "ingestion.raw_archive_line_references",
+  "observations.normalized_wait_observations_v2",
+  "catalog.catalog_entry_snapshots",
+];
+const REQUIRED_0004_TRIGGERS = [
+  ["ingestion.raw_archive_line_references", "raw_archive_line_references_are_immutable"],
+  ["observations.normalized_wait_observations_v2", "normalized_wait_observations_v2_are_immutable"],
+  ["catalog.catalog_entry_snapshots", "catalog_entry_snapshots_are_immutable"],
+];
+
+function makeFakeClient({
+  missingRelations = [],
+  missingTriggers = [],
+  includeV2Relations = false,
+  migrationRows = [],
+} = {}) {
   const available = new Set(
-    REQUIRED_RELATIONS.filter((r) => !missingRelations.includes(r))
+    [...REQUIRED_RELATIONS, ...(includeV2Relations ? REQUIRED_0004_RELATIONS : [])]
+      .filter((r) => !missingRelations.includes(r))
   );
   return {
     async query(sql, params = []) {
@@ -52,12 +70,15 @@ function makeFakeClient({ missingRelations = [], migrationRows = [] } = {}) {
       }
       if (text.includes("FROM pg_trigger")) {
         const [table, trigger] = params;
+        const triggerKey = `${table}:${trigger}`;
         const hasTrigger =
           available.has(table) &&
-          ((table === "ingestion.raw_archives" &&
-            trigger === "raw_archives_are_immutable") ||
-            (table === "ingestion.raw_wait_observations" &&
-              trigger === "raw_wait_observations_are_immutable"));
+          !missingTriggers.includes(triggerKey) &&
+          ([
+            ["ingestion.raw_archives", "raw_archives_are_immutable"],
+            ["ingestion.raw_wait_observations", "raw_wait_observations_are_immutable"],
+            ...REQUIRED_0004_TRIGGERS,
+          ].some(([knownTable, knownTrigger]) => knownTable === table && knownTrigger === trigger));
         return { rows: hasTrigger ? [{}] : [], rowCount: hasTrigger ? 1 : 0 };
       }
       if (text.includes("AS orphan_count")) {
@@ -177,12 +198,12 @@ test("verifyRestoredStorage returns ok report for healthy storage", async () => 
     filename: m.filename,
     checksum: m.checksum,
   }));
-  const client = makeFakeClient({ migrationRows });
+  const client = makeFakeClient({ migrationRows, includeV2Relations: true });
   const report = await verifyRestoredStorage(client);
 
   assert.equal(report.status, "ok");
   assert.equal(report.failures.length, 0);
-  assert.equal(report.checks.length, 6);
+  assert.equal(report.checks.length, 8);
   assert.ok(report.run_id);
   assert.ok(report.checked_at);
   assert.ok(report.checks.every((c) => c.passed));
@@ -196,6 +217,7 @@ test("verifyRestoredStorage reports missing relations as failed", async () => {
   }));
   const client = makeFakeClient({
     missingRelations: ["catalog.parks", "ingestion.raw_archives"],
+    includeV2Relations: true,
     migrationRows,
   });
   const report = await verifyRestoredStorage(client);
@@ -225,7 +247,7 @@ test("verifyRestoredStorage rolls back on unexpected query failure", async () =>
     filename: m.filename,
     checksum: m.checksum,
   }));
-  const baseClient = makeFakeClient({ migrationRows });
+  const baseClient = makeFakeClient({ migrationRows, includeV2Relations: true });
   const executedSql = [];
   const client = {
     async query(sql, params = []) {
@@ -253,7 +275,7 @@ test("verifyRestoredStorage healthy verification issues only read-only SQL", asy
     filename: m.filename,
     checksum: m.checksum,
   }));
-  const baseClient = makeFakeClient({ migrationRows });
+  const baseClient = makeFakeClient({ migrationRows, includeV2Relations: true });
   const executedSql = [];
   const client = {
     async query(sql, params = []) {
@@ -285,4 +307,79 @@ test("verifyRestoredStorage healthy verification issues only read-only SQL", asy
       `healthy verification must not issue ${token}`
     );
   }
+});
+
+test("verifyRestoredStorage accepts the legacy 0003 ledger and reports gated 0004 as deferred optional", async () => {
+  const migrations = await discoverMigrations(MIGRATIONS_DIR);
+  const migrationRows = migrations
+    .filter((migration) => migration.filename !== OPTIONAL_0004)
+    .map(({ filename, checksum }) => ({ filename, checksum }));
+  const client = makeFakeClient({ migrationRows });
+
+  const report = await verifyRestoredStorage(client);
+
+  assert.equal(report.status, "ok");
+  const ledgerCheck = report.checks.find((check) => check.name === "migration_ledger");
+  assert.equal(ledgerCheck.passed, true);
+  assert.deepEqual(ledgerCheck.detail.missing, []);
+  assert.deepEqual(ledgerCheck.detail.deferred_optional, [OPTIONAL_0004]);
+  assert.ok(!report.checks.some((check) => check.name.startsWith("required_0004_")));
+
+  const missingLegacyMigration = makeFakeClient({
+    migrationRows: migrationRows.filter(
+      (migration) => migration.filename !== "0003_source_health.sql"
+    ),
+  });
+  const missingLegacyReport = await verifyRestoredStorage(missingLegacyMigration);
+  assert.equal(missingLegacyReport.status, "failed");
+  assert.ok(missingLegacyReport.checks
+    .find((check) => check.name === "migration_ledger")
+    .detail.missing.includes("0003_source_health.sql"));
+});
+
+test("verifyRestoredStorage fails closed when an applied 0004 checksum differs", async () => {
+  const migrations = await discoverMigrations(MIGRATIONS_DIR);
+  const migrationRows = migrations.map((migration) => ({
+    filename: migration.filename,
+    checksum: migration.filename === OPTIONAL_0004 ? "0".repeat(64) : migration.checksum,
+  }));
+  const client = makeFakeClient({ migrationRows, includeV2Relations: true });
+
+  const report = await verifyRestoredStorage(client);
+
+  assert.equal(report.status, "failed");
+  const ledgerCheck = report.checks.find((check) => check.name === "migration_ledger");
+  assert.equal(ledgerCheck.passed, false);
+  assert.deepEqual(ledgerCheck.detail.checksum_mismatch, [OPTIONAL_0004]);
+  assert.equal(report.checks.find((check) => check.name === "required_0004_relations").passed, true);
+  assert.equal(report.checks.find((check) => check.name === "required_0004_immutability_triggers").passed, true);
+});
+
+test("verifyRestoredStorage requires 0004 relations and immutability triggers when its ledger row exists", async () => {
+  const migrations = await discoverMigrations(MIGRATIONS_DIR);
+  const migrationRows = migrations.map(({ filename, checksum }) => ({ filename, checksum }));
+  const missingRelationClient = makeFakeClient({
+    migrationRows,
+    includeV2Relations: true,
+    missingRelations: ["observations.normalized_wait_observations_v2"],
+  });
+
+  const missingRelationReport = await verifyRestoredStorage(missingRelationClient);
+  assert.equal(missingRelationReport.status, "failed");
+  assert.deepEqual(
+    missingRelationReport.checks.find((check) => check.name === "required_0004_relations").detail.missing,
+    ["observations.normalized_wait_observations_v2"]
+  );
+
+  const missingTriggerClient = makeFakeClient({
+    migrationRows,
+    includeV2Relations: true,
+    missingTriggers: ["catalog.catalog_entry_snapshots:catalog_entry_snapshots_are_immutable"],
+  });
+  const missingTriggerReport = await verifyRestoredStorage(missingTriggerClient);
+  assert.equal(missingTriggerReport.status, "failed");
+  assert.deepEqual(
+    missingTriggerReport.checks.find((check) => check.name === "required_0004_immutability_triggers").detail.missing,
+    [{ table: "catalog.catalog_entry_snapshots", trigger: "catalog_entry_snapshots_are_immutable" }]
+  );
 });

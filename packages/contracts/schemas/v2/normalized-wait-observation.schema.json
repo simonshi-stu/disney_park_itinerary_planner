@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v2/normalized-wait-observation.schema.json",
+  "title": "Normalized wait observation v2",
+  "description": "Persisted normalized observation with its own UTC event time, park context, and stable raw archive-line key; consumers do not need a PostgreSQL raw-observation row to interpret it.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "normalized_observation_id",
+    "raw_observation_id",
+    "operator_id",
+    "resort_id",
+    "park_id",
+    "park_timezone",
+    "observed_at_utc",
+    "canonical_attraction_id",
+    "canonical_attraction_name",
+    "canonical_category",
+    "canonical_match_source",
+    "access_mode",
+    "is_open",
+    "observed_wait_time_minutes",
+    "quality_flags",
+    "training_eligibility",
+    "transformation_version",
+    "generated_at"
+  ],
+  "properties": {
+    "contract_version": { "const": "normalized-wait-observation.v2" },
+    "normalized_observation_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "raw_observation_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Stable key for the corresponding raw-archive-line-reference.v1 record."
+    },
+    "operator_id": { "type": "string", "minLength": 1 },
+    "resort_id": { "type": "string", "minLength": 1 },
+    "park_id": { "type": "string", "minLength": 1 },
+    "park_timezone": {
+      "type": "string",
+      "minLength": 1,
+      "description": "IANA time-zone identifier for interpreting park-local dates."
+    },
+    "observed_at_utc": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "canonical_attraction_id": { "type": "string", "minLength": 1 },
+    "canonical_attraction_name": { "type": "string", "minLength": 1 },
+    "canonical_category": { "type": "string", "enum": ["attraction", "entertainment"] },
+    "canonical_match_source": { "type": "string", "minLength": 1 },
+    "access_mode": { "type": "string", "enum": ["standby", "single_rider", "virtual_queue", "other"] },
+    "is_open": { "type": "boolean" },
+    "observed_wait_time_minutes": { "type": ["number", "null"], "minimum": 0 },
+    "quality_flags": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "training_eligibility": { "type": "string", "minLength": 1 },
+    "transformation_version": { "type": "string", "minLength": 1 },
+    "generated_at": { "type": "string", "format": "date-time", "pattern": "Z$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "is_open": { "const": false } }, "required": ["is_open"] },
+      "then": { "properties": { "observed_wait_time_minutes": { "type": "null" } } }
+    }
+  ]
+}

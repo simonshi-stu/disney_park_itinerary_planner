@@ -6,8 +6,11 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   discoverMigrations,
+  MIGRATIONS_DIR,
+  parseCliOptions,
   runMigrations,
   sha256Hex,
+  VALIDATION_ONLY_MIGRATION,
 } from "../../infra/migrations/run-migrations.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -17,6 +20,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
  */
 function createFakePool({ appliedRows = [], failOnQuery = null, failUnlock = false } = {}) {
   const queries = [];
+  const events = { connectCalls: 0 };
   const client = {
     released: false,
     async query(sql, params) {
@@ -51,10 +55,11 @@ function createFakePool({ appliedRows = [], failOnQuery = null, failUnlock = fal
   };
   const pool = {
     async connect() {
+      events.connectCalls += 1;
       return client;
     },
   };
-  return { pool, client, queries };
+  return { pool, client, queries, events };
 }
 
 async function createTempMigrationsDir(files) {
@@ -113,6 +118,141 @@ test("runMigrations applies new migrations in lexical order and records them", a
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
+});
+
+test("default runner applies at most 0003 and defers later migration files", async () => {
+  const dir = await createTempMigrationsDir({
+    "0001_first.sql": "SELECT 1;",
+    "0002_second.sql": "SELECT 2;",
+    "0003_third.sql": "SELECT 3;",
+    "0004_r2_lineage_normalized_observations.sql": "SELECT 4;",
+    "0005_future.sql": "SELECT 5;",
+  });
+  const { pool, queries } = createFakePool();
+  try {
+    const result = await runMigrations({ pool, migrationsDir: dir });
+    assert.deepEqual(result.applied, ["0001_first.sql", "0002_second.sql", "0003_third.sql"]);
+    assert.deepEqual(result.deferred, [
+      "0004_r2_lineage_normalized_observations.sql",
+      "0005_future.sql"
+    ]);
+    assert.ok(!queries.some((query) => query.sql.includes("SELECT 4;") || query.sql.includes("SELECT 5;")));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("deferred migrations already in the ledger still have their checksums verified", async () => {
+  const dir = await createTempMigrationsDir({
+    "0001_first.sql": "SELECT 1;",
+    "0004_r2_lineage_normalized_observations.sql": "SELECT 4; -- changed",
+  });
+  const appliedRows = [{
+    filename: "0004_r2_lineage_normalized_observations.sql",
+    checksum: sha256Hex("SELECT 4;"),
+    applied_at: "2026-07-01T00:00:00Z"
+  }];
+  const { pool, queries } = createFakePool({ appliedRows });
+  try {
+    await assert.rejects(runMigrations({ pool, migrationsDir: dir }), /checksum mismatch/);
+    assert.ok(!queries.some((query) => query.sql.includes("SELECT 1;")));
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("0004 authorization is exact, validation-only, and rejected for custom directories before connecting", async () => {
+  const dir = await createTempMigrationsDir({
+    "0001_first.sql": "SELECT 1;",
+    "0004_r2_lineage_normalized_observations.sql": "SELECT 4;",
+  });
+  const { pool, events } = createFakePool();
+  try {
+    await assert.rejects(runMigrations({
+      pool,
+      migrationsDir: dir,
+      authorizeValidationOnlyMigration: VALIDATION_ONLY_MIGRATION
+    }), /valid only for the repository migrations directory/);
+    assert.equal(events.connectCalls, 0);
+
+    await assert.rejects(runMigrations({ pool, migrationAuthorization: "all" }), /Unknown runMigrations option/);
+    assert.equal(events.connectCalls, 0);
+    await assert.rejects(runMigrations({
+      pool,
+      authorizeValidationOnlyMigration: "0005_future.sql"
+    }), /limited to 0004_r2_lineage_normalized_observations\.sql/);
+    assert.equal(events.connectCalls, 0);
+  } finally {
+    await rm(dir, { recursive: true, force: true });
+  }
+});
+
+test("CLI accepts only the explicit validation-only 0004 authorization flag", () => {
+  assert.deepEqual(parseCliOptions([]), {});
+  assert.deepEqual(parseCliOptions(["--authorize-validation-only-0004"]), {
+    authorizeValidationOnlyMigration: VALIDATION_ONLY_MIGRATION
+  });
+  for (const args of [["--all"], ["--authorize-validation-only-0004", "--anything"], ["0004"]]) {
+    assert.throws(() => parseCliOptions(args), /Unknown migration runner arguments/);
+  }
+});
+
+test("real migration directory: default legacy path defers 0004 and explicit authorization selects only it", async () => {
+  const migrations = await discoverMigrations(MIGRATIONS_DIR);
+  const migration0004 = migrations.find(({ filename }) => filename === VALIDATION_ONLY_MIGRATION);
+  assert.ok(migration0004, "the real directory includes 0004 for this gate test");
+
+  const legacy = createFakePool();
+  const defaultResult = await runMigrations({ pool: legacy.pool });
+  assert.deepEqual(defaultResult.applied, [
+    "0001_observation_storage.sql",
+    "0002_catalog_lifecycle_and_indexes.sql",
+    "0003_source_health.sql"
+  ]);
+  assert.deepEqual(defaultResult.deferred, [VALIDATION_ONLY_MIGRATION]);
+  assert.ok(!legacy.queries.some(({ sql }) => sql === migration0004.content));
+
+  const explicitlyAuthorized = createFakePool();
+  const authorizedResult = await runMigrations({
+    pool: explicitlyAuthorized.pool,
+    authorizeValidationOnlyMigration: VALIDATION_ONLY_MIGRATION
+  });
+  assert.deepEqual(authorizedResult.applied, [
+    "0001_observation_storage.sql",
+    "0002_catalog_lifecycle_and_indexes.sql",
+    "0003_source_health.sql",
+    VALIDATION_ONLY_MIGRATION
+  ]);
+  assert.deepEqual(authorizedResult.deferred, []);
+  assert.equal(explicitlyAuthorized.queries.filter(({ sql }) => sql === migration0004.content).length, 1);
+});
+
+test("default worker remains compatible after authorized 0004 and ledger retries never rewrite it", async () => {
+  const migrations = await discoverMigrations(MIGRATIONS_DIR);
+  const migration0004 = migrations.find(({ filename }) => filename === VALIDATION_ONLY_MIGRATION);
+  assert.ok(migration0004);
+  const appliedRows = migrations.map(({ filename, checksum }) => ({
+    filename,
+    checksum,
+    applied_at: "2026-09-24T00:00:00Z"
+  }));
+
+  const legacyAfter0004 = createFakePool({ appliedRows });
+  const legacyResult = await runMigrations({ pool: legacyAfter0004.pool });
+  assert.deepEqual(legacyResult.skipped, [
+    "0001_observation_storage.sql",
+    "0002_catalog_lifecycle_and_indexes.sql",
+    "0003_source_health.sql"
+  ]);
+  assert.deepEqual(legacyResult.deferred, [], "an already applied 0004 is verified but not treated as deferred");
+  assert.ok(!legacyAfter0004.queries.some(({ sql }) => sql === migration0004.content));
+
+  const mismatchedRows = appliedRows.map((row) => row.filename === VALIDATION_ONLY_MIGRATION
+    ? { ...row, checksum: "0".repeat(64) }
+    : row);
+  const corruptedLedger = createFakePool({ appliedRows: mismatchedRows });
+  await assert.rejects(runMigrations({ pool: corruptedLedger.pool }), /checksum mismatch/);
+  assert.ok(!corruptedLedger.queries.some(({ sql }) => sql === migration0004.content));
 });
 
 test("runMigrations skips already-applied migrations with matching checksums", async () => {

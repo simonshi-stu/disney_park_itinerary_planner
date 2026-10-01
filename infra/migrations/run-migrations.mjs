@@ -6,6 +6,13 @@ import { fileURLToPath } from "node:url";
 const MIGRATIONS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)));
 const LEDGER_TABLE = "infrastructure.schema_migrations";
 const ADVISORY_LOCK_KEY = 727001; // arbitrary project-specific key
+const DEFAULT_MAX_MIGRATION_VERSION = 3;
+const VALIDATION_ONLY_MIGRATION = "0004_r2_lineage_normalized_observations.sql";
+const RUN_MIGRATION_OPTIONS = new Set([
+  "pool",
+  "migrationsDir",
+  "authorizeValidationOnlyMigration"
+]);
 
 /**
  * Compute SHA-256 hex digest of a string.
@@ -99,14 +106,16 @@ export async function runMigrationFile(client, migration) {
  * @param {object} options
  * @param {object} options.pool - pg Pool-like object with connect() returning a client-like object.
  * @param {string} [options.migrationsDir] - directory containing migration files.
- * @returns {Promise<{applied: string[], skipped: string[], rejected: string[]}>}
+ * @param {string} [options.authorizeValidationOnlyMigration] - exact 0004 filename; only valid for this repository's migration directory.
+ * @returns {Promise<{applied: string[], skipped: string[], deferred: string[], rejected: string[]}>}
  */
-export async function runMigrations({ pool, migrationsDir = MIGRATIONS_DIR }) {
+export async function runMigrations(options = {}) {
+  const { pool, migrationsDir = MIGRATIONS_DIR, authorizeValidationOnlyMigration } = validateRunOptions(options);
   const client = await pool.connect();
   let lockAcquired = false;
   let primaryError = null;
   let unlockError = null;
-  const result = { applied: [], skipped: [], rejected: [] };
+  const result = { applied: [], skipped: [], deferred: [], rejected: [] };
 
   try {
     lockAcquired = await acquireAdvisoryLock(client);
@@ -114,17 +123,39 @@ export async function runMigrations({ pool, migrationsDir = MIGRATIONS_DIR }) {
     await bootstrapLedger(client);
     const migrations = await discoverMigrations(migrationsDir);
     const applied = await loadAppliedMigrations(client);
+    const migrationsByName = new Map(migrations.map((migration) => [migration.filename, migration]));
 
-    for (const migration of migrations) {
+    // Validate the full discovered ledger, including migrations currently outside the
+    // default execution ceiling. A deferred migration must not become a checksum blind spot.
+    for (const [filename, existing] of applied) {
+      const migration = migrationsByName.get(filename);
+      if (!migration) {
+        result.rejected.push(filename);
+        throw new Error(`Applied migration ${filename} is missing from the migration directory.`);
+      }
+      if (existing.checksum !== migration.checksum) {
+        result.rejected.push(filename);
+        throw new Error(
+          `Migration ${filename} has changed since it was applied (checksum mismatch). ` +
+          `Expected ${existing.checksum}, got ${migration.checksum}.`
+        );
+      }
+    }
+
+    const explicitlyAuthorized = authorizeValidationOnlyMigration === VALIDATION_ONLY_MIGRATION;
+    const authorizedMigrations = migrations.filter((migration) => {
+      const version = Number(migration.filename.match(/^(\d+)_/)[1]);
+      return version <= DEFAULT_MAX_MIGRATION_VERSION ||
+        (explicitlyAuthorized && migration.filename === VALIDATION_ONLY_MIGRATION);
+    });
+    const authorizedNames = new Set(authorizedMigrations.map((migration) => migration.filename));
+    result.deferred.push(...migrations
+      .filter((migration) => !authorizedNames.has(migration.filename) && !applied.has(migration.filename))
+      .map((migration) => migration.filename));
+
+    for (const migration of authorizedMigrations) {
       const existing = applied.get(migration.filename);
       if (existing) {
-        if (existing.checksum !== migration.checksum) {
-          result.rejected.push(migration.filename);
-          throw new Error(
-            `Migration ${migration.filename} has changed since it was applied (checksum mismatch). ` +
-            `Expected ${existing.checksum}, got ${migration.checksum}.`
-          );
-        }
         result.skipped.push(migration.filename);
         continue;
       }
@@ -158,16 +189,58 @@ export async function runMigrations({ pool, migrationsDir = MIGRATIONS_DIR }) {
   return result;
 }
 
+function validateRunOptions(options) {
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw new TypeError("runMigrations options must be an object.");
+  }
+  for (const key of Reflect.ownKeys(options)) {
+    if (typeof key !== "string" || !RUN_MIGRATION_OPTIONS.has(key)) {
+      throw new TypeError(`Unknown runMigrations option: ${String(key)}.`);
+    }
+  }
+  if (!options.pool || typeof options.pool.connect !== "function") {
+    throw new TypeError("runMigrations requires a pool with connect().");
+  }
+
+  const migrationsDir = options.migrationsDir ?? MIGRATIONS_DIR;
+  if (typeof migrationsDir !== "string") {
+    throw new TypeError("migrationsDir must be a path string.");
+  }
+  const resolvedMigrationsDir = path.resolve(migrationsDir);
+  const authorization = options.authorizeValidationOnlyMigration;
+  if (authorization !== undefined && authorization !== VALIDATION_ONLY_MIGRATION) {
+    throw new Error(`Migration authorization is limited to ${VALIDATION_ONLY_MIGRATION}.`);
+  }
+  if (authorization === VALIDATION_ONLY_MIGRATION && resolvedMigrationsDir !== MIGRATIONS_DIR) {
+    throw new Error("The validation-only 0004 authorization is valid only for the repository migrations directory.");
+  }
+  return {
+    pool: options.pool,
+    migrationsDir: resolvedMigrationsDir,
+    authorizeValidationOnlyMigration: authorization
+  };
+}
+
+function parseCliOptions(args) {
+  if (args.length === 0) return {};
+  if (args.length === 1 && args[0] === "--authorize-validation-only-0004") {
+    return { authorizeValidationOnlyMigration: VALIDATION_ONLY_MIGRATION };
+  }
+  throw new Error(`Unknown migration runner arguments: ${args.join(" ") || "(empty)"}.`);
+}
+
 /**
  * Thin CLI entrypoint.
  */
 async function main() {
+  const options = parseCliOptions(process.argv.slice(2));
   const { default: pg } = await import("pg");
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
   try {
-    const result = await runMigrations({ pool });
+    const result = await runMigrations({ pool, ...options });
     console.log(`Applied: ${result.applied.join(", ") || "(none)"}`);
     console.log(`Skipped: ${result.skipped.join(", ") || "(none)"}`);
+    console.log(`Deferred without validation-only authorization: ${result.deferred.join(", ") || "(none)"}`);
     if (result.rejected.length > 0) {
       console.error(`Rejected: ${result.rejected.join(", ")}`);
       process.exitCode = 1;
@@ -185,4 +258,11 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   });
 }
 
-export { MIGRATIONS_DIR, LEDGER_TABLE, ADVISORY_LOCK_KEY };
+export {
+  MIGRATIONS_DIR,
+  LEDGER_TABLE,
+  ADVISORY_LOCK_KEY,
+  DEFAULT_MAX_MIGRATION_VERSION,
+  VALIDATION_ONLY_MIGRATION,
+  parseCliOptions
+};

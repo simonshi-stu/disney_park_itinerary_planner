@@ -54,6 +54,9 @@
     "create paid cloud resources or change budget",
     "write production secrets or OIDC trust policy",
     "first production database initialization and data cutover",
+    "review and explicitly approve merging the hosted-validation branch into main; this is separate from production deployment",
+    "separately authorize any production credentials, schema application, hosted writes, or collector cutover",
+    "upgrade any hosted service plan or accept additional recurring cost; the project owner decides and performs upgrades, never automate them",
     "stop GitHub CSV collection",
     "delete or shorten raw retention"
   ],
@@ -617,10 +620,354 @@
       "human_gate": false
     },
     {
+      "id": "04d1-hosted-persistence-contracts",
+      "title": "R2 raw 与 Neon normalized-only 持久化 contracts",
+      "objective": "先版本化定义 R2 immutable raw payload、Neon normalized observation、轻量 catalog/source-health 与 R2 archive-line reference 的边界，并以新增 ADR 明确处置 ADR-0006 的历史 raw-row 持久化决定。",
+      "dependencies": ["04c-source-health-and-dual-write-window"],
+      "allowed_paths": ["packages/contracts", "tests/storage/observation-storage.test.mjs", "docs/adr"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "packages/contracts/README.zh-CN.md",
+        "packages/contracts/schemas/v1/raw-archive.schema.json",
+        "packages/contracts/schemas/v1/raw-wait-observation.schema.json",
+        "packages/contracts/schemas/v1/normalized-wait-observation.schema.json",
+        "packages/contracts/schemas/v1/catalog-attraction-lifecycle.schema.json",
+        "packages/contracts/schemas/v1/source-health.schema.json",
+        "docs/adr/0006-postgresql-and-object-storage-backfill.md",
+        "infra/migrations/0001_observation_storage.sql",
+        "infra/migrations/0002_catalog_lifecycle_and_indexes.sql",
+        "infra/migrations/0003_source_health.sql"
+      ],
+      "acceptance": [
+        "versioned persisted-record contracts describe normalized observations with UTC event time, park identity/timezone and stable source lineage without requiring a PostgreSQL raw observation row",
+        "a lightweight archive-line reference carries the R2 URI, content SHA-256 and source line number needed to retrieve immutable raw evidence",
+        "contracts keep raw payload content in R2 and define Neon production persistence as normalized observations plus only necessary catalog, source-health and archive-line metadata; no new raw observation rows are written",
+        "any incompatible change to normalized-wait-observation.v1 has an explicit new contract version and migration/compatibility plan",
+        "an additive ADR scopes the new rule to future production writes and explicitly preserves existing validation/history rows and applied migrations",
+        "contract assertions use representative fixtures and run through npm.cmd run check"
+      ],
+      "decisions": [
+        "Add docs/adr/0008-r2-raw-neon-normalized-persistence.md; do not silently rewrite accepted ADR-0006. The new decision supersedes its PostgreSQL raw-row destination only for future production writes.",
+        "R2 is the immutable raw-payload source of truth. Neon production stores normalized wait observations, minimum catalog data, source-health metadata and only the R2 URI/SHA-256/source-line reference needed for lineage; never insert a raw source observation row.",
+        "Keep a stable raw_observation_id derived from archive content identity and source line. The normalized record must carry the UTC observation timestamp and park timezone needed by consumers without joining a raw observation payload row.",
+        "Do not edit existing v1 contracts in place when required fields or lineage semantics become incompatible; publish a versioned contract and migration plan.",
+        "Existing validation-branch raw rows and already-applied migrations are historical evidence: do not delete, rewrite or clean them up in this phase.",
+        "Manual execution check (not runtime-enforced): owner direction authorizes DeepSeek V4.1 Flash Max as the sole coding executor for Phase 04d; GPT-6 Luna must not be used. The prior validation branch expired 2026-09-30 and must not be treated as a current write target; any later write needs a separately approved current validation target. Before any dependent phase or action behind human_gate, a human must inspect prerequisite evidence and explicitly authorize it; manifest dependencies and human_gate values are planning metadata, not execution locks."
+      ],
+      "required_outputs": [
+        "docs/adr/0008-r2-raw-neon-normalized-persistence.md",
+        "packages/contracts/schemas/v2/normalized-wait-observation.schema.json",
+        "packages/contracts/schemas/v1/raw-archive-line-reference.schema.json",
+        "packages/contracts/README.zh-CN.md",
+        "tests/storage/observation-storage.test.mjs"
+      ],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "04d2-catalog-and-normalizer",
+      "title": "轻量 catalog 与 R2 行记录 normalizer",
+      "objective": "基于已批准的版本化 contracts 建立 Disneyland Park 与 Disney California Adventure 所需的轻量 canonical catalog 输入和确定性目标 normalizer，为 R2 历史回放及实时写入提供一致业务语义。",
+      "dependencies": ["04d1-hosted-persistence-contracts"],
+      "allowed_paths": ["modules/catalog", "modules/observations", "tests/catalog", "tests/observations", "package.json", "packages/contracts/schemas/v1/catalog-entry.schema.json", "packages/contracts/README.zh-CN.md"],
+      "required_reads": [
+        "AGENTS.md",
+        "modules/AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "modules/catalog/README.zh-CN.md",
+        "modules/observations/README.zh-CN.md",
+        "modules/ingestion/README.zh-CN.md",
+        "packages/contracts/README.zh-CN.md",
+        "packages/contracts/schemas/v2/normalized-wait-observation.schema.json",
+        "packages/contracts/schemas/v1/raw-archive-line-reference.schema.json",
+        "docs/adr/0007-posted-wait-and-operational-lifecycle.md",
+        "docs/adr/0008-r2-raw-neon-normalized-persistence.md"
+      ],
+      "acceptance": [
+        "canonical attraction identity and the minimum catalog fields needed for normalization are deterministic and versioned",
+        "normalization consumes an input record supplied by an adapter and has no storage, network, file-format or vendor-SDK dependency",
+        "closed observations normalize to null, an open missing wait remains null, an explicit open zero remains zero, and access_mode remains structured",
+        "normalized outputs retain stable archive-line lineage, UTC event time, park timezone and transformation version",
+        "focused catalog and normalizer tests use small fixtures and are included in npm.cmd run check"
+      ],
+      "decisions": [
+        "Keep canonical identity and wait semantics in their owning domain modules; do not import another module's internal or persistence adapter paths.",
+        "Catalog state and evidence obey catalog-attraction-lifecycle.v1; unsupported, unknown or unreviewed identities fail closed rather than being guessed.",
+        "For the 04d work sequence, package.json is assigned exclusively to 04d2 for catalog/observation npm test wiring; 04d4-04d6 must not edit it and must run their standalone focused test suites through explicit phase commands.",
+        "Manual execution check (not runtime-enforced): owner direction authorizes DeepSeek V4.1 Flash Max as the sole coding executor for Phase 04d; GPT-6 Luna must not be used. The prior validation branch expired 2026-09-30 and must not be treated as a current write target; any later write needs a separately approved current validation target. Before any dependent phase or action behind human_gate, a human must inspect prerequisite evidence and explicitly authorize it; manifest dependencies and human_gate values are planning metadata, not execution locks."
+      ],
+      "required_outputs": [
+        "modules/catalog/index.mjs",
+        "modules/catalog/README.zh-CN.md",
+        "modules/observations/index.mjs",
+        "tests/catalog/hosted-catalog.test.mjs",
+        "tests/observations/hosted-normalization.test.mjs"
+      ],
+      "commands": ["npm.cmd run check"],
+      "human_gate": false
+    },
+    {
+      "id": "04d3-additive-persistence-schema",
+      "title": "Normalized-only additive schema 与持久化 ports",
+      "objective": "新增兼容已有 validation/history 的 additive migration 和 Neon persistence adapters：保存 normalized observation、最低限度 catalog/source health 与 R2 archive-line metadata，不新增 raw observation 行。",
+      "dependencies": ["04d2-catalog-and-normalizer"],
+      "allowed_paths": [
+        "infra/migrations/0004_r2_lineage_normalized_observations.sql",
+        "infra/migrations/run-migrations.mjs",
+        "infra/normalized-observations-postgres.mjs",
+        "infra/archive-line-reference-postgres.mjs",
+        "infra/catalog-postgres.mjs",
+        "infra/restore/verify-restored-storage.mjs",
+        "infra/README.zh-CN.md",
+        "tests/storage/observation-storage.test.mjs",
+        "tests/storage/migration-runner.test.mjs",
+        "tests/storage/restore-verifier.test.mjs"
+      ],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "infra/README.zh-CN.md",
+        "infra/migrations/0001_observation_storage.sql",
+        "infra/migrations/0002_catalog_lifecycle_and_indexes.sql",
+        "infra/migrations/0003_source_health.sql",
+        "infra/migrations/run-migrations.mjs",
+        "infra/source-health-postgres.mjs",
+        "packages/contracts/README.zh-CN.md",
+        "packages/contracts/schemas/v2/normalized-wait-observation.schema.json",
+        "packages/contracts/schemas/v1/raw-archive-line-reference.schema.json"
+      ],
+      "acceptance": [
+        "schema changes are in a new additive migration; applied 0001-0003 are untouched and existing rows are preserved",
+        "normalized lineage resolves through minimal archive-line metadata rather than requiring a newly inserted ingestion.raw_wait_observations row",
+        "legacy runMigrations({ pool }) callers and the default CLI apply no migration later than 0003; 0004 is selectable only by its exact validation-only authorization, unknown options fail before connecting, and all discovered applied-file checksums are verified",
+        "persisted normalized fields include UTC event time, park identity/timezone, quality and transformation metadata required by their contract",
+        "repository ports are idempotent and persist no raw payload or source-observation fields into Neon",
+        "archive-line, catalog, normalized, and existing source-health writes compose through one caller-owned PostgreSQL transaction; new repositories reject bare clients and reject repository methods used after callback completion, individual repositories never issue nested BEGIN/COMMIT, and a failure rolls back all earlier writes in the composition",
+        "an uncertain COMMIT or failed ROLLBACK releases the pg client with an error so the pool destroys it; successful rollback after an ordinary operation failure permits normal release",
+        "repository methods capture and recheck a unique per-transaction token, so an escaped repository remains rejected even if the pool reuses the same client in a later transaction",
+        "read-only restore verification keeps 0001-0003 required, reports unapplied gated 0004 as deferred_optional, verifies 0004 checksum when recorded, and checks its three new relations and immutability triggers when applied",
+        "the same normalized key is idempotent only for an identical persisted payload; conflicting payloads fail closed and cannot be overwritten, and intentional corrections require a new transformation_version",
+        "for a retry key, equality is exact normalized-v2 field equality after excluding only generated_at; an equal retry preserves the first persisted generated_at, while any other field difference fails closed",
+        "catalog snapshot and staleAfterMinutes semantics are pinned to transformation_version; changed semantics require a new version",
+        "tests prove raw-row insert paths are absent and cover reference lineage, retry preserving initial generated_at, access-mode semantic conflicts, closed/null semantics and migration compatibility without a live database"
+      ],
+      "decisions": [
+        "Never edit or replace applied migrations 0001-0003; add a lexically later migration only.",
+        "Pin the default migration runner to 0001-0003; the only opt-in is authorizeValidationOnlyMigration: 0004_r2_lineage_normalized_observations.sql (or its explicit --authorize-validation-only-0004 CLI flag), which may select only 0004 from the real migrations directory. Never authorize 0004 through legacy worker/backfill calls.",
+        "Use a minimal reference-only archive-line relation keyed by stable raw_observation_id and carrying R2 URI, archive SHA-256 and source row number; it is not a raw observation payload table.",
+        "Repositories receive the transaction-bound client and never own transaction boundaries; the caller composes references, catalog, normalized, and source-health writes through one transaction wrapper.",
+        "A repository captures the unique token for its creating transaction and checks that token on every public operation; client-object reuse in a later transaction must not reactivate the repository.",
+        "Keep only primary/natural-key indexes plus the necessary normalized park/event-time index; 0004 apply and 04d4 replay require a measured validation-capacity preflight, bounded batches, and explicit stop thresholds. Full replay is not assumed to fit the reported 512 MiB Free-plan capacity.",
+        "Do not delete or rewrite the existing validation branch's raw archives/raw observations. New production writes must not increase raw observation rows.",
+        "Keep raw object upload and normalized/catalog/source-health persistence behind injected ports; domain modules do not import PostgreSQL or object-storage drivers.",
+        "Applying a migration or writing hosted data is not part of local implementation; any hosted validation application requires the explicit validation-only human gate.",
+        "Manual execution check (not runtime-enforced): owner direction authorizes DeepSeek V4.1 Flash Max as the sole coding executor for Phase 04d; GPT-6 Luna must not be used. The prior validation branch expired 2026-09-30 and must not be treated as a current write target; any later write needs a separately approved current validation target. Before any dependent phase or action behind human_gate, a human must inspect prerequisite evidence and explicitly authorize it; manifest dependencies and human_gate values are planning metadata, not execution locks."
+      ],
+      "required_outputs": [
+        "infra/migrations/0004_r2_lineage_normalized_observations.sql",
+        "infra/migrations/run-migrations.mjs",
+        "infra/normalized-observations-postgres.mjs",
+        "infra/archive-line-reference-postgres.mjs",
+        "infra/catalog-postgres.mjs",
+        "infra/README.zh-CN.md",
+        "tests/storage/observation-storage.test.mjs",
+        "tests/storage/migration-runner.test.mjs",
+        "infra/restore/verify-restored-storage.mjs",
+        "tests/storage/restore-verifier.test.mjs"
+      ],
+      "commands": [
+        "npm.cmd run check",
+        "node --test tests/storage/migration-runner.test.mjs",
+        "node --test tests/storage/restore-verifier.test.mjs"
+      ],
+      "human_gate": "validation_database_migration_and_write_authorization"
+    },
+    {
+      "id": "04d4-r2-normalized-history-replay",
+      "title": "R2 历史 payload 到 normalized-only 回放",
+      "objective": "实现可 dry-run、幂等的 R2 历史回放，将 archive 行记录经 catalog/normalizer 转为 Neon normalized records 与最小行引用元数据；不向 Neon 写 raw observation 行。",
+      "dependencies": ["04d3-additive-persistence-schema"],
+      "allowed_paths": [
+        "infra/backfill",
+        "scripts/replay-r2-archives-to-normalized.mjs",
+        "tests/storage",
+        "packages/contracts/schemas/v1/r2-normalized-replay-report.schema.json",
+        "packages/contracts/README.zh-CN.md"
+      ],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "infra/README.zh-CN.md",
+        "infra/backfill/wait-time-records.mjs",
+        "scripts/backfill-wait-times-to-postgres.mjs",
+        "scripts/report-hosted-backfill.mjs",
+        "packages/contracts/README.zh-CN.md",
+        "packages/contracts/schemas/v1/raw-archive.schema.json",
+        "packages/contracts/schemas/v2/normalized-wait-observation.schema.json",
+        "packages/contracts/schemas/v1/raw-archive-line-reference.schema.json"
+      ],
+      "acceptance": [
+        "dry-run reports planned archives, normalized counts, unresolved identities and failures without opening write connections",
+        "replay reads immutable payloads from R2 and writes only normalized observations, minimum catalog/source-health state and archive-line references to the explicitly selected Neon validation target",
+        "repeated replay is idempotent by archive hash, source line and transformation version",
+        "archive completeness derives each stable raw_observation_id from verified R2 content SHA-256 and one-based row ordinal, then looks up Neon references by primary key; it must not scan raw_archive_line_references by archive_sha256 without a separately approved additive index and capacity gate",
+        "no write batch may begin until a measured capacity preflight, approved stop threshold and retained headroom are recorded; replay uses finite pausable batches with per-batch lineage/parity checks and stops on threshold breach",
+        "a fake R2/database test proves no raw observation insert or payload persistence occurs and failures remain fail-closed",
+        "r2-normalized-replay-report.v1 has a JSON Schema for both replay reports and the CLI offline-check report, validated by focused tests",
+        "no command defaults to production, retries against production, or upgrades a provider plan"
+      ],
+      "decisions": [
+        "Use R2 object content as the raw replay input; do not upload a duplicate raw payload from Git or copy raw row fields into Neon.",
+        "The current validation baseline is 5 archives, 440 legacy raw observations and 0 normalized observations; retain legacy rows and audit that the new replay adds no raw observations.",
+        "Historical R2 evidence currently reports 79/79 archives matching content SHA-256, metadata and byte size; replay must revalidate selected objects and fail closed on mismatch.",
+        "Do not add a broad archive_sha256 B-tree for completeness checks under the current capacity constraint. Recompute stable raw_observation_id from the verified R2 content hash and row ordinal, then look up references through the raw_observation_id primary key; any future archive-hash index needs a separately approved additive migration and measured capacity gate.",
+        "No hosted write is authorized by local implementation. As of 2026-09-30 treat the prior validation branch as expired/unavailable; any later write requires a separately approved current validation target plus measured capacity preflight, bounded batches, and stop thresholds. Never use production as a substitute.",
+        "package.json is assigned to 04d2 for the 04d work sequence; do not edit it in 04d4. Keep replay assertions in the phase-owned tests/storage/r2-normalized-replay.test.mjs suite and run that suite with the explicit node --test command.",
+        "The validation target label is an explicit caller assertion, not an independently verified database identity; local implementation must not imply otherwise. The offline CLI supports --check only; it does not claim to execute the injected replay dry-run.",
+        "Manual execution check (not runtime-enforced): owner direction authorizes DeepSeek V4.1 Flash Max as the sole coding executor for Phase 04d; GPT-6 Luna must not be used. The prior validation branch expired 2026-09-30 and must not be treated as a current write target; any later write needs a separately approved current validation target. Before any dependent phase or action behind human_gate, a human must inspect prerequisite evidence and explicitly authorize it; manifest dependencies and human_gate values are planning metadata, not execution locks."
+      ],
+      "required_outputs": [
+        "infra/backfill/r2-normalized-records.mjs",
+        "scripts/replay-r2-archives-to-normalized.mjs",
+        "tests/storage/r2-normalized-replay.test.mjs",
+        "packages/contracts/schemas/v1/r2-normalized-replay-report.schema.json",
+        "packages/contracts/README.zh-CN.md"
+      ],
+      "commands": ["npm.cmd run check", "node --test tests/storage/r2-normalized-replay.test.mjs", "node scripts/replay-r2-archives-to-normalized.mjs --check"],
+      "human_gate": "validation_branch_write_authorization"
+    },
+    {
+      "id": "04d5-dual-sink-worker-and-git-fallback",
+      "title": "Normalized-only dual sink worker 与 Git fallback",
+      "objective": "演进 collector 旁路，使 Git fallback 先行且保持现有语义；R2 接收 immutable raw payload，Neon 只接收 normalized observations 与必要元数据，并在 hosted 失败时显式降级。",
+      "dependencies": ["04d4-r2-normalized-history-replay"],
+      "allowed_paths": [
+        "workers/collector/dual-write.mjs",
+        "workers/collector/run-dual-write.mjs",
+        "workers/collector/README.zh-CN.md",
+        "modules/ingestion",
+        "infra",
+        ".github/workflows/collect-wait-times.yml",
+        "tests/ingestion"
+      ],
+      "required_reads": [
+        "AGENTS.md",
+        "workers/AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "workers/collector/README.zh-CN.md",
+        "modules/ingestion/README.zh-CN.md",
+        "modules/catalog/README.zh-CN.md",
+        "modules/observations/README.zh-CN.md",
+        "infra/README.zh-CN.md",
+        "packages/contracts/README.zh-CN.md"
+      ],
+      "acceptance": [
+        "bootstrap collector collection, parsing and Git behavior remain characterization-tested and unchanged",
+        "Git fallback is attempted first and remains successful/readable when any hosted R2 or Neon write fails",
+        "R2 receives the complete immutable raw payload while Neon receives only normalized observations, minimum catalog/source-health metadata and archive-line references; the worker issues no raw observation insert",
+        "the hosted path is explicit opt-in, idempotent and emits run ID, versions, health and failure reason",
+        "fake-port tests cover disabled mode, Git failure, R2 failure, Neon failure, retry/idempotency and zero raw-row writes without live APIs or cloud resources"
+      ],
+      "decisions": [
+        "Do not modify scripts/collect-wait-times.mjs, scripts/analyze-wait-times.mjs or scripts/update-cache.mjs behavior; keep the sidecar beside the protected bootstrap path.",
+        "Keep Git fallback active through validation and production observation; stopping Git collection remains a separate explicit human gate.",
+        "A hosted write failure never redirects to production or masks a Git fallback result; no automatic provider plan upgrade is permitted.",
+        "package.json is assigned to 04d2 for the 04d work sequence; do not edit it in 04d5. Keep normalized-only worker assertions in the phase-owned tests/ingestion/normalized-only-dual-write.test.mjs suite and run it with the explicit node --test command.",
+        "Manual execution check (not runtime-enforced): owner direction authorizes DeepSeek V4.1 Flash Max as the sole coding executor for Phase 04d; GPT-6 Luna must not be used. The prior validation branch expired 2026-09-30 and must not be treated as a current write target; any later write needs a separately approved current validation target. Before any dependent phase or action behind human_gate, a human must inspect prerequisite evidence and explicitly authorize it; manifest dependencies and human_gate values are planning metadata, not execution locks."
+      ],
+      "required_outputs": [
+        "workers/collector/dual-write.mjs",
+        "workers/collector/run-dual-write.mjs",
+        "workers/collector/README.zh-CN.md",
+        ".github/workflows/collect-wait-times.yml",
+        "tests/ingestion/normalized-only-dual-write.test.mjs"
+      ],
+      "commands": ["npm.cmd run check", "node --test tests/ingestion/normalized-only-dual-write.test.mjs"],
+      "human_gate": "enable_normalized_only_writes_to_validation_branch"
+    },
+    {
+      "id": "04d6-validation-read-only-audit",
+      "title": "Hosted validation read-only audit",
+      "objective": "只读验收 validation branch 上的新 normalized-only 历史回放与 live dual-write；比较 Git、R2 与 Neon 的 archive lineage、normalized 语义、source health 和写入基线，失败时阻止进入 main gate。",
+      "dependencies": ["04d5-dual-sink-worker-and-git-fallback"],
+      "allowed_paths": ["scripts/audit-hosted-normalized-persistence.mjs", "tests/storage", "packages/contracts/schemas/v1/hosted-normalized-audit-report.schema.json"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/context-map.zh-CN.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "infra/README.zh-CN.md",
+        "docs/data/dual-write-window-2026-09-24.input.json",
+        "docs/data/dual-write-window-2026-09-24.report.json",
+        "docs/data/migration-runbook.zh-CN.md",
+        "packages/contracts/schemas/v1/hosted-backfill-report.schema.json",
+        "packages/contracts/schemas/v1/dual-write-window-report.schema.json"
+      ],
+      "acceptance": [
+        "audit is read-only, targets only the named validation branch and emits a versioned machine-readable report with run ID, checked time, counts, failures and next steps",
+        "all in-scope R2 objects are checked for URI, content SHA-256, metadata and byte-size parity; normalized rows are checked for archive-line lineage, UTC/timezone, identity and closed/zero semantics",
+        "Git fallback coverage, source-health failures, normalized completeness and retry/idempotency are explicit; missing evidence or any mismatch fails closed",
+        "the legacy validation raw-observation baseline is recorded and unchanged by the new writer; the audit does not require deleting historical raw rows and does not treat them as newly written data",
+        "report tests use fixtures/fake readers and make no live production connection or write"
+      ],
+      "decisions": [
+        "The current validation baseline is 5 archives, 440 legacy raw observations and 0 normalized observations; report actual read-only counts and require that the new path adds no raw observation rows.",
+        "Treat the reported 79/79 historical R2 content SHA-256/metadata/byte-size match as a checkpoint to revalidate, not as a substitute for current read-only evidence.",
+        "Complete validation before the branch expires on 2026-09-30. If the target is unavailable or expired, report blocked and obtain a new human-approved validation target; never fall back to production.",
+        "The audit produces evidence only. It does not clean data, apply migrations, enable workflows, change secrets, delete Git history, upgrade a plan or modify production.",
+        "Manual execution check (not runtime-enforced): owner direction authorizes DeepSeek V4.1 Flash Max as the sole coding executor for Phase 04d; GPT-6 Luna must not be used. The prior validation branch expired 2026-09-30 and must not be treated as a current write target; any later write needs a separately approved current validation target. Before any dependent phase or action behind human_gate, a human must inspect prerequisite evidence and explicitly authorize it; manifest dependencies and human_gate values are planning metadata, not execution locks."
+      ],
+      "required_outputs": [
+        "scripts/audit-hosted-normalized-persistence.mjs",
+        "packages/contracts/schemas/v1/hosted-normalized-audit-report.schema.json",
+        "tests/storage/hosted-normalized-audit.test.mjs"
+      ],
+      "commands": ["npm.cmd run check", "node --test tests/storage/hosted-normalized-audit.test.mjs"],
+      "human_gate": "human_acceptance_of_read_only_validation_evidence"
+    },
+    {
+      "id": "04d7-independent-main-production-gates",
+      "title": "Validation 后独立 main review 与 production cutover gate",
+      "objective": "在 validation audit 人工验收之后，记录彼此独立的 main 合并审查与 production 切换授权；本 phase 只更新运行手册/审批证据，不合并分支、不部署、不写 production。",
+      "dependencies": ["04d6-validation-read-only-audit"],
+      "allowed_paths": ["docs/data/migration-runbook.zh-CN.md"],
+      "required_reads": [
+        "AGENTS.md",
+        "docs/ai/agent-change-test-charter.zh-CN.md",
+        "docs/architecture/agent-workflow.zh-CN.md",
+        "docs/data/migration-runbook.zh-CN.md",
+        "docs/data/storage-backup-restore.zh-CN.md",
+        "infra/README.zh-CN.md"
+      ],
+      "acceptance": [
+        "accepted validation evidence is a prerequisite to a separately reviewed and explicitly approved PR/merge into main",
+        "main merge approval and production credentials/schema/write/cutover authorization are separate human decisions with separate evidence; neither is inferred from the other",
+        "this governance phase performs no merge, production connection/write, secret entry, provider resource creation or Git collection shutdown",
+        "the production plan preserves Git fallback until post-cutover health and rollback checks pass; stopping Git remains a separate human gate",
+        "if Neon Free 512MB capacity is insufficient, the plan stops for the project owner to decide/perform any upgrade; no agent or workflow upgrades automatically",
+        "production execution remains subject to the later deployment/canary gate and an explicitly authorized production-only operation"
+      ],
+      "decisions": [
+        "Do not merge the validation branch directly to main or combine code merge and production deployment in one approval/action.",
+        "An expired validation branch (2026-09-30) or an inadequate validation report blocks main review; it never authorizes production as a substitute.",
+        "The production cutover gate is independent from validation acceptance and main merge, and remains subject to the existing 08a/08b/08c staging, canary and production controls.",
+        "No automatic paid-plan upgrade, budget change, production secret write, production database initialization, production data write or Git workflow deletion is authorized by this phase.",
+        "Manual execution check (not runtime-enforced): owner direction authorizes DeepSeek V4.1 Flash Max as the sole coding executor for Phase 04d; GPT-6 Luna must not be used. The prior validation branch expired 2026-09-30 and must not be treated as a current write target; any later write needs a separately approved current validation target. Before any dependent phase or action behind human_gate, a human must inspect prerequisite evidence and explicitly authorize it; manifest dependencies and human_gate values are planning metadata, not execution locks."
+      ],
+      "required_outputs": ["docs/data/migration-runbook.zh-CN.md"],
+      "commands": ["npm.cmd run check"],
+      "human_gate": "separate_main_merge_approval_and_production_cutover_authorization"
+    },
+    {
       "id": "05a-api-contracts",
       "title": "API 版本化 contracts",
       "objective": "为 parks、attractions、status、observations、forecast 与 health 定义版本化 OpenAPI/JSON Schema。",
-      "dependencies": ["04c-source-health-and-dual-write-window"],
+      "dependencies": ["04d6-validation-read-only-audit"],
       "allowed_paths": ["packages/contracts"],
       "required_reads": [
         "AGENTS.md",

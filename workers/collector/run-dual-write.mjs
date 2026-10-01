@@ -4,7 +4,17 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ingestSourceSnapshot } from "../../modules/ingestion/index.mjs";
 import { buildSourceHealthRecord, persistSourceHealthRecord } from "../../modules/ingestion/source-health.mjs";
-import { runMigrations } from "../../infra/migrations/run-migrations.mjs";
+import { createPostgresArchiveLineReferenceRepository } from "../../infra/archive-line-reference-postgres.mjs";
+import { createPostgresCatalogRepository } from "../../infra/catalog-postgres.mjs";
+import {
+  withPostgresStorageTransaction,
+  createPostgresNormalizedObservationRepository
+} from "../../infra/normalized-observations-postgres.mjs";
+import {
+  assertCurrentValidationAuthorization,
+  calculateDatabaseFingerprint,
+  writeNormalizedOnlyHostedSnapshot
+} from "../../infra/normalized-only-hosted-write.mjs";
 import { createPostgresSourceHealthRepository } from "../../infra/source-health-postgres.mjs";
 import { DualWriteError, dualWriteFeatureFlag, isDualWriteEnabled, runDualWrite } from "./dual-write.mjs";
 
@@ -50,7 +60,8 @@ export async function runBootstrapDualWrite(options = {}) {
     }
     await access(input.csvPath);
   };
-  const writeHosted = enabled ? createHostedWriter(input, environment) : undefined;
+  const hosted = enabled ? createNormalizedOnlyHostedWriter({ input, environment, options }) : null;
+  const writeHosted = hosted ? hosted.writeHosted : undefined;
   let result;
   try {
     result = await runDualWrite({
@@ -63,28 +74,45 @@ export async function runBootstrapDualWrite(options = {}) {
     });
   } catch (error) {
     if (!(error instanceof DualWriteError)) throw error;
+    const databaseFallback = await resolveDatabaseFallbackGate({ hosted, environment, options });
     const sourceHealth = await persistSourceHealthForRun({
       envelope,
       result: error.result,
       recordCount: input.latest.rows.length,
       environment,
       repository: options.sourceHealthRepository,
-      clock: options.clock
+      clock: options.clock,
+      allowDatabaseFallback: enabled,
+      databaseFallback,
+      createSourceHealthPool: options.createSourceHealthPool
     });
     const resultWithHealth = deepFreeze({ ...error.result, source_health: sourceHealth });
     error.resultWithHealth = resultWithHealth;
     if (options.log !== false) console.log(JSON.stringify(resultWithHealth, null, 2));
     throw error;
   }
-  const sourceHealth = await persistSourceHealthForRun({
-    envelope,
-    result,
-    recordCount: input.latest.rows.length,
-    environment,
-    repository: options.sourceHealthRepository,
-    clock: options.clock
+  let sourceHealth;
+  if (hosted?.outcome?.source_health) {
+    sourceHealth = hosted.outcome.source_health;
+  } else {
+    const databaseFallback = await resolveDatabaseFallbackGate({ hosted, environment, options });
+    sourceHealth = await persistSourceHealthForRun({
+      envelope,
+      result,
+      recordCount: input.latest.rows.length,
+      environment,
+      repository: options.sourceHealthRepository,
+      clock: options.clock,
+      allowDatabaseFallback: enabled,
+      databaseFallback,
+      createSourceHealthPool: options.createSourceHealthPool
+    });
+  }
+  const resultWithHealth = deepFreeze({
+    ...result,
+    ...(hosted?.outcome?.normalized_only ? { normalized_only: hosted.outcome.normalized_only } : {}),
+    source_health: sourceHealth
   });
-  const resultWithHealth = deepFreeze({ ...result, source_health: sourceHealth });
   if (options.log !== false) console.log(JSON.stringify(resultWithHealth, null, 2));
   return resultWithHealth;
 }
@@ -119,20 +147,34 @@ export async function runBootstrapSourceFailure(options = {}) {
     hosted: { status: "not_attempted", error: null },
     failure_reason: "collector_source_failed"
   });
+  const databaseFallbackEnabled = isDualWriteEnabled(environment.COLLECTOR_DUAL_WRITE_ENABLED);
   const sourceHealth = await persistSourceHealthForRun({
     envelope,
     result,
     recordCount: 0,
     environment,
     repository: options.sourceHealthRepository,
-    clock
+    clock,
+    allowDatabaseFallback: databaseFallbackEnabled,
+    databaseFallback: await resolveDatabaseFallbackGate({ hosted: null, environment, options }),
+    createSourceHealthPool: options.createSourceHealthPool
   });
   const resultWithHealth = deepFreeze({ ...result, source_health: sourceHealth });
   if (options.log !== false) console.log(JSON.stringify(resultWithHealth, null, 2));
   return resultWithHealth;
 }
 
-async function persistSourceHealthForRun({ envelope, result, recordCount, environment, repository, clock }) {
+async function persistSourceHealthForRun({
+  envelope,
+  result,
+  recordCount,
+  environment,
+  repository,
+  clock,
+  allowDatabaseFallback,
+  databaseFallback,
+  createSourceHealthPool
+}) {
   if (repository) {
     try {
       const record = buildSourceHealthRecord({
@@ -148,13 +190,48 @@ async function persistSourceHealthForRun({ envelope, result, recordCount, enviro
       return { status: "failed", source_health_id: null, error: { type: "source_health_write_error", message: safeErrorMessage(error) } };
     }
   }
-  if (!environment.DATABASE_URL) return { status: "not_configured", source_health_id: null, error: null };
+  // Default-disabled cloud behavior: without the explicit hosted opt-in the worker
+  // never opens the hosted database, even when DATABASE_URL is present in the env.
+  if (!allowDatabaseFallback || !environment.DATABASE_URL) {
+    return { status: "not_configured", source_health_id: null, error: null };
+  }
+
+  // The same current validation-only authorization and target fingerprint that gate
+  // normalized-only hosted writes gate every default database fallback, including
+  // routing-override rejection, before any pool is created.
+  let poolFingerprint;
+  try {
+    poolFingerprint = calculateDatabaseFingerprint(environment.DATABASE_URL);
+  } catch (error) {
+    return blockedSourceHealthFallback(error);
+  }
+  try {
+    assertCurrentValidationAuthorization({
+      authorization: databaseFallback?.authorization,
+      expectedTargetFingerprint: databaseFallback?.expectedTargetFingerprint,
+      targetFingerprint: poolFingerprint,
+      now: result.finished_at
+    });
+  } catch (error) {
+    return blockedSourceHealthFallback(error);
+  }
 
   let pool = null;
   try {
-    const { default: pg } = await import("pg");
-    pool = new pg.Pool({ connectionString: environment.DATABASE_URL });
-    await runMigrations({ pool });
+    pool = createSourceHealthPool
+      ? await createSourceHealthPool(environment.DATABASE_URL)
+      : await createDefaultSourceHealthPool(environment.DATABASE_URL);
+    const schema = await pool.query("SELECT to_regclass($1) AS present", ["ingestion.source_health"]);
+    if (!schema.rows?.[0]?.present) {
+      return {
+        status: "failed",
+        source_health_id: null,
+        error: {
+          type: "source_health_schema_not_ready",
+          message: "ingestion.source_health is not present; the sidecar never applies migrations"
+        }
+      };
+    }
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
@@ -182,6 +259,19 @@ async function persistSourceHealthForRun({ envelope, result, recordCount, enviro
   } finally {
     if (pool) await pool.end().catch(() => {});
   }
+}
+
+function blockedSourceHealthFallback(error) {
+  return {
+    status: "blocked",
+    source_health_id: null,
+    error: { type: "source_health_fallback_blocked", message: safeErrorMessage(error) }
+  };
+}
+
+async function createDefaultSourceHealthPool(databaseUrl) {
+  const { default: pg } = await import("pg");
+  return new pg.Pool({ connectionString: databaseUrl });
 }
 
 async function loadLatestSnapshot(rootDir) {
@@ -218,84 +308,201 @@ async function buildSourceEnvelope(input, clock = () => new Date()) {
   });
 }
 
-function createHostedWriter(input, environment) {
-  return async ({ envelope }) => {
-    const bucket = requiredEnvironment(environment.RAW_ARCHIVE_BUCKET, "RAW_ARCHIVE_BUCKET");
-    const databaseUrl = requiredEnvironment(environment.DATABASE_URL, "DATABASE_URL");
-    const objectUri = await uploadArchive({ envelope, input, bucket, environment });
-    await persistRawSnapshot({ envelope, input, databaseUrl, objectUri });
+function createNormalizedOnlyHostedWriter({ input, environment, options }) {
+  const state = { outcome: null, inputs: null };
+  const usesInjectedInputs = Boolean(options.normalizedOnlyHosted);
+
+  const resolveInputs = async () => {
+    if (!state.inputs) {
+      state.inputs = usesInjectedInputs
+        ? options.normalizedOnlyHosted
+        : await loadNormalizedOnlyHostedInputs(environment);
+    }
+    return state.inputs;
   };
+
+  const writeHosted = async ({ envelope, runId }) => {
+    const inputs = await resolveInputs();
+    let adapters = null;
+    try {
+      adapters = usesInjectedInputs ? null : await createNormalizedOnlyAdapters(inputs, environment);
+      const result = await writeNormalizedOnlyHostedSnapshot({
+        envelope,
+        sourceName: input.sourceName,
+        rawRecords: parseSnapshotCsv(envelope.payload).map((row, index) =>
+          toRawRecord(row, envelope.payload_sha256, index + 1)),
+        runId,
+        generatedAt: envelope.ingested_at,
+        bucket: inputs.bucket,
+        r2: inputs.r2 || adapters.r2,
+        database: inputs.database || adapters.database,
+        catalogSnapshot: inputs.catalogSnapshot,
+        accessModeMapping: inputs.accessModeMapping,
+        authorization: inputs.authorization,
+        expectedTargetFingerprint: inputs.expectedTargetFingerprint,
+        targetFingerprint: inputs.targetFingerprint,
+        transformationVersion: inputs.transformationVersion
+      });
+      state.outcome = {
+        source_health: { status: "written", source_health_id: result.source_health_id, error: null },
+        normalized_only: {
+          contract_version: result.contract_version,
+          adapter_version: result.adapter_version,
+          schema_version: result.schema_version,
+          transformation_version: result.transformation_version,
+          archive_sha256: result.archive_sha256,
+          object_uri: result.object_uri,
+          r2_object_created: result.r2_object_created,
+          normalized_records_written: result.normalized_records_written,
+          raw_observation_rows_written: result.raw_observation_rows_written
+        }
+      };
+    } finally {
+      await adapters?.close?.();
+    }
+  };
+
+  const resolveGate = async () => {
+    try {
+      if (usesInjectedInputs) {
+        const inputs = options.normalizedOnlyHosted;
+        return {
+          authorization: inputs.authorization,
+          expectedTargetFingerprint: inputs.expectedTargetFingerprint,
+          targetFingerprint: inputs.targetFingerprint
+        };
+      }
+      return await loadValidationGateFromEnvironment(environment);
+    } catch {
+      return null;
+    }
+  };
+
+  return { writeHosted, resolveDatabaseFallbackGate: resolveGate, get outcome() { return state.outcome; } };
 }
 
-async function uploadArchive({ envelope, input, bucket, environment }) {
-  const { PutObjectCommand, S3Client } = await import("@aws-sdk/client-s3");
-  const region = environment.AWS_REGION || "us-west-2";
+async function loadNormalizedOnlyHostedInputs(environment) {
+  const bucket = requiredEnvironment(environment.RAW_ARCHIVE_BUCKET, "RAW_ARCHIVE_BUCKET");
+  const databaseUrl = requiredEnvironment(environment.DATABASE_URL, "DATABASE_URL");
+  const gate = await loadValidationGateFromEnvironment(environment);
+  const catalogSnapshot = await readJsonInput(
+    requiredEnvironment(environment.NORMALIZED_ONLY_REVIEWED_CATALOG_PATH, "NORMALIZED_ONLY_REVIEWED_CATALOG_PATH")
+  );
+  const accessModeMapping = await readJsonInput(
+    requiredEnvironment(environment.NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH, "NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH")
+  );
+  return { bucket, databaseUrl, catalogSnapshot, accessModeMapping, ...gate };
+}
+
+async function loadValidationGateFromEnvironment(environment) {
+  const databaseUrl = requiredEnvironment(environment.DATABASE_URL, "DATABASE_URL");
+  const targetFingerprint = calculateDatabaseFingerprint(databaseUrl);
+  const authorization = await readJsonInput(
+    requiredEnvironment(environment.NORMALIZED_ONLY_AUTHORIZATION_PATH, "NORMALIZED_ONLY_AUTHORIZATION_PATH")
+  );
+  const expectedTargetFingerprint = requiredEnvironment(
+    environment.NORMALIZED_ONLY_EXPECTED_TARGET_SHA256,
+    "NORMALIZED_ONLY_EXPECTED_TARGET_SHA256"
+  );
+  return { authorization, expectedTargetFingerprint, targetFingerprint };
+}
+
+async function createNormalizedOnlyAdapters(inputs, environment) {
+  const r2 = await createImmutableArchiveStore(environment);
+  const database = await createNormalizedOnlyDatabase(inputs.databaseUrl);
+  return { r2, database, close: () => database.close() };
+}
+
+async function resolveDatabaseFallbackGate({ hosted, environment, options }) {
+  if (hosted) return hosted.resolveDatabaseFallbackGate();
+  if (options.normalizedOnlyHosted) {
+    const config = options.normalizedOnlyHosted;
+    return {
+      authorization: config.authorization,
+      expectedTargetFingerprint: config.expectedTargetFingerprint,
+      targetFingerprint: config.targetFingerprint
+    };
+  }
+  try {
+    return await loadValidationGateFromEnvironment(environment);
+  } catch {
+    return null;
+  }
+}
+
+async function readJsonInput(filePath) {
+  const text = await readFile(filePath, "utf8");
+  return JSON.parse(text);
+}
+
+async function createImmutableArchiveStore(environment) {
+  const { HeadObjectCommand, PutObjectCommand, S3Client } = await import("@aws-sdk/client-s3");
   const client = new S3Client({
-    region,
+    region: environment.AWS_REGION || "us-west-2",
     endpoint: environment.RAW_ARCHIVE_ENDPOINT || undefined,
     forcePathStyle: Boolean(environment.RAW_ARCHIVE_ENDPOINT)
   });
-  const key = `wait-times/${envelope.payload_sha256}/${input.sourceName}`;
-  await client.send(new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-    Body: Buffer.from(envelope.payload, "utf8"),
-    ContentType: "text/csv; charset=utf-8",
-    Metadata: {
-      sha256: envelope.payload_sha256,
-      schema_version: envelope.schema_version
+  return {
+    async putObject({ bucket, key, body, metadata }) {
+      try {
+        await client.send(new PutObjectCommand({
+          Bucket: bucket,
+          Key: key,
+          Body: body,
+          ContentType: "text/csv; charset=utf-8",
+          Metadata: metadata,
+          IfNoneMatch: "*"
+        }));
+        return { created: true };
+      } catch (error) {
+        if (isPreconditionFailure(error)) return { created: false };
+        throw error;
+      }
+    },
+    async headObject({ bucket, key }) {
+      const response = await client.send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+      return { contentLength: response.ContentLength, metadata: response.Metadata || {} };
     }
-  }));
-  return `s3://${bucket}/${key}`;
+  };
 }
 
-export async function persistRawSnapshot({ envelope, input, databaseUrl, objectUri, pool: suppliedPool, migrate = runMigrations }) {
-  const rawArchiveId = envelope.payload_sha256;
-  const rows = parseSnapshotCsv(input.content.toString("utf8"));
-  const rawRecords = rows.map((row, index) => toRawRecord(row, rawArchiveId, index + 1));
-  let pool = suppliedPool;
-  const ownsPool = !pool;
-  if (!pool) {
-    const { default: pg } = await import("pg");
-    pool = new pg.Pool({ connectionString: databaseUrl });
-  }
+function isPreconditionFailure(error) {
+  const status = error?.$metadata?.httpStatusCode;
+  return status === 412 || status === 409 || error?.name === "PreconditionFailed";
+}
 
-  try {
-    await migrate({ pool });
-    const client = await pool.connect();
-    try {
-      await client.query("BEGIN");
-      await insertRows(client, "catalog.parks", ["park_id", "park_name", "timezone"], uniqueBy(
-        rawRecords.map((row) => [row.parkId, row.parkName, row.snapshotTimezone]),
-        (row) => row[0]
-      ));
-      await insertRows(client, "ingestion.raw_archives", ["raw_archive_id", "sha256", "object_uri", "byte_size", "source_name", "schema_version"], [[
-        rawArchiveId,
-        rawArchiveId,
-        objectUri,
-        Buffer.byteLength(envelope.payload, "utf8"),
-        input.sourceName,
-        envelope.schema_version
-      ]]);
-      await insertRows(client, "ingestion.raw_wait_observations", [
-        "raw_observation_id", "raw_archive_id", "source_row_number", "snapshot_utc", "snapshot_park_datetime", "snapshot_park_date", "snapshot_timezone",
-        "park_id", "park_name", "land", "ride_id", "ride_name", "is_open", "wait_time_minutes", "source_last_updated_utc",
-        "source_last_updated_park_datetime", "source_url"
-      ], rawRecords.map((row) => [
-        row.rawObservationId, row.rawArchiveId, row.sourceRowNumber, row.snapshotUtc, row.snapshotParkDatetime, row.snapshotParkDate, row.snapshotTimezone,
-        row.parkId, row.parkName, row.land, row.rideId, row.rideName, row.isOpen, row.waitTimeMinutes, row.sourceLastUpdatedUtc,
-        row.sourceLastUpdatedParkDatetime, row.sourceUrl
-      ]));
-      await client.query("COMMIT");
-    } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
+async function createNormalizedOnlyDatabase(databaseUrl) {
+  const { default: pg } = await import("pg");
+  const pool = new pg.Pool({ connectionString: databaseUrl });
+  return {
+    async verifyNormalizedSchemaReady() {
+      const result = await pool.query(
+        `SELECT to_regclass($1) AS archive_lines,
+                to_regclass($2) AS normalized,
+                to_regclass($3) AS catalog,
+                to_regclass($4) AS source_health`,
+        [
+          "ingestion.raw_archive_line_references",
+          "observations.normalized_wait_observations_v2",
+          "catalog.catalog_entry_snapshots",
+          "ingestion.source_health"
+        ]
+      );
+      const row = result.rows?.[0] || {};
+      return Boolean(row.archive_lines && row.normalized && row.catalog && row.source_health);
+    },
+    async withTransaction(operation) {
+      return withPostgresStorageTransaction(pool, (client) => operation({
+        archiveLines: createPostgresArchiveLineReferenceRepository(client),
+        catalog: createPostgresCatalogRepository(client),
+        normalized: createPostgresNormalizedObservationRepository(client),
+        sourceHealth: createPostgresSourceHealthRepository(client)
+      }));
+    },
+    async close() {
+      await pool.end().catch(() => {});
     }
-  } finally {
-    if (ownsPool) await pool.end();
-  }
+  };
 }
 
 export function toRawRecord(row, rawArchiveId, sourceRowNumber) {
@@ -336,17 +543,6 @@ export function toRawRecord(row, rawArchiveId, sourceRowNumber) {
     sourceLastUpdatedParkDatetime: row.source_last_updated_park_datetime,
     sourceUrl: row.source_url
   };
-}
-
-async function insertRows(client, table, columns, rows) {
-  const batchSize = 200;
-  for (let start = 0; start < rows.length; start += batchSize) {
-    const batch = rows.slice(start, start + batchSize);
-    const placeholders = batch.map((_, rowIndex) =>
-      `(${columns.map((__, columnIndex) => `$${rowIndex * columns.length + columnIndex + 1}`).join(",")})`
-    ).join(",");
-    await client.query(`INSERT INTO ${table} (${columns.join(",")}) VALUES ${placeholders} ON CONFLICT DO NOTHING`, batch.flat());
-  }
 }
 
 export function parseSnapshotCsv(text) {
@@ -400,10 +596,6 @@ function parseNullableNumber(value) {
   const number = Number(value);
   if (!Number.isInteger(number) || number < 0) throw new Error(`invalid wait_time_minutes value: ${value}`);
   return number;
-}
-
-function uniqueBy(rows, key) {
-  return [...new Map(rows.map((row) => [key(row), row])).values()];
 }
 
 function requiredEnvironment(value, name) {
@@ -462,16 +654,33 @@ function deepFreeze(value) {
   return value;
 }
 
+/**
+ * Exit decision for the direct CLI. A hosted failure must fail the workflow step
+ * (making `Surface dual-write failure` reachable) even though the Git fallback
+ * already committed; a disabled or not-attempted hosted leg is not an error.
+ */
+export function resolveSidecarExitCode(result) {
+  if (!result || typeof result !== "object") return 1;
+  if (result.source_health?.status === "failed") return 1;
+  if (result.hosted?.status === "failed") return 1;
+  return 0;
+}
+
 const isDirectExecution = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isDirectExecution) {
   try {
     const result = await runBootstrapDualWrite();
-    if (result.source_health?.status === "failed") {
-      console.error(result.source_health.error?.message || "source health persistence failed");
-      process.exitCode = 1;
+    const exitCode = resolveSidecarExitCode(result);
+    if (exitCode !== 0) {
+      console.error(
+        result?.hosted?.status === "failed"
+          ? safeErrorMessage(result.hosted.error?.message || "hosted normalized write failed")
+          : result?.source_health?.error?.message || "source health persistence failed"
+      );
     }
+    process.exitCode = exitCode;
   } catch (error) {
-    console.error(error instanceof Error ? error.message : error);
+    console.error(safeErrorMessage(error instanceof Error ? error.message : error));
     process.exitCode = 1;
   }
 }

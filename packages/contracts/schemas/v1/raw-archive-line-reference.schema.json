@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/raw-archive-line-reference.schema.json",
+  "title": "Raw archive line reference v1",
+  "description": "Lightweight index from a stable raw observation ID to one logical record in an immutable R2 object. The line number is a one-based data-record ordinal after any format header, not a byte offset.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "raw_observation_id",
+    "raw_archive_id",
+    "r2_uri",
+    "archive_sha256",
+    "archive_byte_size",
+    "source_line_number",
+    "source_name",
+    "archive_schema_version"
+  ],
+  "properties": {
+    "contract_version": { "const": "raw-archive-line-reference.v1" },
+    "raw_observation_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "raw_archive_id": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "r2_uri": { "type": "string", "pattern": "^s3://[^/]+/.+" },
+    "archive_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "archive_byte_size": { "type": "integer", "minimum": 1 },
+    "source_line_number": { "type": "integer", "minimum": 1 },
+    "source_name": { "type": "string", "minLength": 1 },
+    "archive_schema_version": { "type": "string", "minLength": 1 }
+  }
+}

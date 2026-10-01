@@ -1,0 +1,251 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/r2-normalized-replay-report.schema.json",
+  "title": "R2 normalized replay report v1",
+  "description": "Shared report contract for the injected R2-to-normalized replay API and the offline CLI --check gate. The two variants are mutually exclusive by mode.",
+  "oneOf": [
+    { "$ref": "#/$defs/replayReport" },
+    { "$ref": "#/$defs/offlineCheckReport" }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "utcDateTime": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "cursor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope_id", "raw_archive_id", "next_data_row_ordinal"],
+      "properties": {
+        "scope_id": { "$ref": "#/$defs/sha256" },
+        "raw_archive_id": { "$ref": "#/$defs/sha256" },
+        "next_data_row_ordinal": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "diagnosticCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "samples"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 0 },
+        "samples": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "replayCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "archives_requested",
+        "archives_verified",
+        "data_rows",
+        "normalized_records_planned",
+        "rows_remaining_from_cursor",
+        "unresolved_identities",
+        "missing_access_modes",
+        "archive_failures",
+        "normalization_failures",
+        "runtime_failures",
+        "batches_committed",
+        "normalized_records_committed",
+        "raw_observation_rows_written"
+      ],
+      "properties": {
+        "archives_requested": { "type": "integer", "minimum": 0 },
+        "archives_verified": { "type": "integer", "minimum": 0 },
+        "data_rows": { "type": "integer", "minimum": 0 },
+        "normalized_records_planned": { "type": "integer", "minimum": 0 },
+        "rows_remaining_from_cursor": { "type": "integer", "minimum": 0 },
+        "unresolved_identities": { "type": "integer", "minimum": 0 },
+        "missing_access_modes": { "type": "integer", "minimum": 0 },
+        "archive_failures": { "type": "integer", "minimum": 0 },
+        "normalization_failures": { "type": "integer", "minimum": 0 },
+        "runtime_failures": { "type": "integer", "minimum": 0 },
+        "batches_committed": { "type": "integer", "minimum": 0 },
+        "normalized_records_committed": { "type": "integer", "minimum": 0 },
+        "raw_observation_rows_written": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "replayReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "status",
+        "mode",
+        "run_id",
+        "generated_at",
+        "target_label",
+        "scope_id",
+        "write_requested",
+        "write_enabled",
+        "counts",
+        "diagnostics",
+        "blockers",
+        "write_blockers",
+        "raw_observation_baseline",
+        "capacity_gate",
+        "next_cursor",
+        "stop_reason",
+        "resume"
+      ],
+      "properties": {
+        "contract_version": { "const": "r2-normalized-replay-report.v1" },
+        "status": { "enum": ["blocked", "dry_run_complete", "completed", "paused", "failed"] },
+        "mode": { "enum": ["dry-run", "write"] },
+        "run_id": { "type": "string", "minLength": 1 },
+        "generated_at": { "$ref": "#/$defs/utcDateTime" },
+        "target_label": { "type": ["string", "null"] },
+        "scope_id": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/sha256" }
+          ]
+        },
+        "write_requested": { "type": "boolean" },
+        "write_enabled": { "type": "boolean" },
+        "counts": { "$ref": "#/$defs/replayCounts" },
+        "diagnostics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "unresolved_identities",
+            "missing_access_modes",
+            "archive_failures",
+            "normalization_failures",
+            "runtime_failures"
+          ],
+          "properties": {
+            "unresolved_identities": { "$ref": "#/$defs/diagnosticCounts" },
+            "missing_access_modes": { "$ref": "#/$defs/diagnosticCounts" },
+            "archive_failures": { "$ref": "#/$defs/diagnosticCounts" },
+            "normalization_failures": { "$ref": "#/$defs/diagnosticCounts" },
+            "runtime_failures": { "$ref": "#/$defs/diagnosticCounts" }
+          }
+        },
+        "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "write_blockers": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "raw_observation_baseline": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["before", "after", "unchanged"],
+          "properties": {
+            "before": { "type": ["integer", "null"], "minimum": 0 },
+            "after": { "type": ["integer", "null"], "minimum": 0 },
+            "unchanged": { "type": ["boolean", "null"] }
+          }
+        },
+        "capacity_gate": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "measurement_id",
+                "measured_at",
+                "stop_threshold_bytes",
+                "measured_used_bytes_before_replay",
+                "estimated_bytes_per_record",
+                "preflight_status"
+              ],
+              "properties": {
+                "measurement_id": { "type": "string", "minLength": 1 },
+                "measured_at": { "$ref": "#/$defs/dateTime" },
+                "stop_threshold_bytes": { "type": "integer", "minimum": 1 },
+                "measured_used_bytes_before_replay": { "type": "integer", "minimum": 0 },
+                "estimated_bytes_per_record": { "type": "integer", "minimum": 1 },
+                "preflight_status": { "const": "passed" }
+              }
+            }
+          ]
+        },
+        "next_cursor": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/cursor" }
+          ]
+        },
+        "stop_reason": { "type": ["string", "null"] },
+        "resume": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "resumed",
+            "cursor",
+            "archives_skipped_before_cursor",
+            "archives_preflighted_this_invocation"
+          ],
+          "properties": {
+            "resumed": { "type": "boolean" },
+            "cursor": {
+              "oneOf": [
+                { "type": "null" },
+                { "$ref": "#/$defs/cursor" }
+              ]
+            },
+            "archives_skipped_before_cursor": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/sha256" }
+            },
+            "archives_preflighted_this_invocation": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/sha256" }
+            }
+          }
+        }
+      }
+    },
+    "offlineCheckReport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contract_version",
+        "status",
+        "mode",
+        "checked_at",
+        "write_requested",
+        "write_enabled",
+        "external_connections_opened",
+        "blockers",
+        "counts",
+        "next_step"
+      ],
+      "properties": {
+        "contract_version": { "const": "r2-normalized-replay-report.v1" },
+        "status": { "const": "blocked" },
+        "mode": { "const": "offline_check" },
+        "checked_at": { "$ref": "#/$defs/utcDateTime" },
+        "write_requested": { "const": false },
+        "write_enabled": { "const": false },
+        "external_connections_opened": { "const": false },
+        "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "archives_requested",
+            "data_rows",
+            "normalized_records_planned",
+            "raw_observation_rows_written"
+          ],
+          "properties": {
+            "archives_requested": { "type": "integer", "minimum": 0 },
+            "data_rows": { "type": "integer", "minimum": 0 },
+            "normalized_records_planned": { "type": "integer", "minimum": 0 },
+            "raw_observation_rows_written": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "next_step": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

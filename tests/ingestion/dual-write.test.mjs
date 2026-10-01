@@ -10,7 +10,7 @@ import {
   isDualWriteEnabled,
   runDualWrite
 } from "../../workers/collector/dual-write.mjs";
-import { parseSnapshotCsv, persistRawSnapshot, runBootstrapDualWrite, runBootstrapSourceFailure, serializeSnapshotRows, toRawRecord } from "../../workers/collector/run-dual-write.mjs";
+import { parseSnapshotCsv, runBootstrapDualWrite, runBootstrapSourceFailure, serializeSnapshotRows, toRawRecord } from "../../workers/collector/run-dual-write.mjs";
 
 const envelope = Object.freeze({
   contract_version: "source-envelope.v1",
@@ -295,52 +295,18 @@ test("Git fallback failure is persisted to source health before the sidecar fail
   assert.equal(storedHealth.hosted_write_status, "not_attempted");
 });
 
-test("raw persistence validates park dates and maps archive and observation rows", async () => {
-  const queries = [];
-  const client = {
-    async query(text, values = []) { queries.push({ text, values }); },
-    release() {}
-  };
-  const pool = { async connect() { return client; } };
+test("snapshot records validate park dates and map wait types for normalized preflight", () => {
   const payload = serializeSnapshotRows([snapshotRow]);
-  const envelope = {
-    payload_sha256: "c".repeat(64),
-    payload,
-    schema_version: "raw-wait-observation.v1"
-  };
+  const rawRecord = toRawRecord(snapshotRow, "c".repeat(64), 1);
 
-  await persistRawSnapshot({
-    envelope,
-    input: { content: Buffer.from(payload), sourceName: "wait_times_snapshot_test.csv" },
-    objectUri: "s3://raw/wait-times/test.csv",
-    pool,
-    migrate: async () => {}
-  });
-
-  assert.match(queries[1].text, /INSERT INTO catalog\.parks/);
-  assert.deepEqual(queries[1].values, ["disneyland", "Disneyland", "America/Los_Angeles"]);
-  assert.match(queries[2].text, /INSERT INTO ingestion\.raw_archives/);
-  assert.deepEqual(queries[2].values, ["c".repeat(64), "c".repeat(64), "s3://raw/wait-times/test.csv", Buffer.byteLength(payload), "wait_times_snapshot_test.csv", "raw-wait-observation.v1"]);
-  assert.match(queries[3].text, /INSERT INTO ingestion\.raw_wait_observations/);
-  assert.deepEqual(queries[3].values.slice(0, 17), [
-    toRawRecord(snapshotRow, "c".repeat(64), 1).rawObservationId,
-    "c".repeat(64),
-    1,
-    snapshotRow.snapshot_utc,
-    snapshotRow.snapshot_park_datetime,
-    snapshotRow.snapshot_park_date,
-    snapshotRow.snapshot_timezone,
-    snapshotRow.park_id,
-    snapshotRow.park_name,
-    snapshotRow.land,
-    snapshotRow.ride_id,
-    snapshotRow.ride_name,
-    true,
-    25,
-    snapshotRow.source_last_updated_utc,
-    snapshotRow.source_last_updated_park_datetime,
-    snapshotRow.source_url
-  ]);
+  assert.equal(rawRecord.rawArchiveId, "c".repeat(64));
+  assert.equal(rawRecord.sourceRowNumber, 1);
+  assert.equal(rawRecord.snapshotTimezone, "America/Los_Angeles");
+  assert.equal(rawRecord.parkId, "disneyland");
+  assert.equal(rawRecord.rideId, "ride-1");
+  assert.equal(rawRecord.isOpen, true);
+  assert.equal(rawRecord.waitTimeMinutes, 25);
+  assert.deepEqual(parseSnapshotCsv(payload), [snapshotRow]);
   assert.throws(
     () => toRawRecord({ ...snapshotRow, snapshot_park_date: "2026-07-02" }, "c".repeat(64), 1),
     /inconsistent snapshot_park_date/

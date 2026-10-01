@@ -20,11 +20,40 @@ const REQUIRED_RELATIONS = [
   "infrastructure.schema_migrations",
 ];
 
+const REQUIRED_MIGRATION_FILENAMES = [
+  "0001_observation_storage.sql",
+  "0002_catalog_lifecycle_and_indexes.sql",
+  "0003_source_health.sql",
+];
+const OPTIONAL_MIGRATION_FILENAMES = [
+  "0004_r2_lineage_normalized_observations.sql",
+];
+const REQUIRED_0004_RELATIONS = [
+  "ingestion.raw_archive_line_references",
+  "observations.normalized_wait_observations_v2",
+  "catalog.catalog_entry_snapshots",
+];
+
 const REQUIRED_RAW_TRIGGERS = [
   { table: "ingestion.raw_archives", trigger: "raw_archives_are_immutable" },
   {
     table: "ingestion.raw_wait_observations",
     trigger: "raw_wait_observations_are_immutable",
+  },
+];
+
+const REQUIRED_0004_IMMUTABILITY_TRIGGERS = [
+  {
+    table: "ingestion.raw_archive_line_references",
+    trigger: "raw_archive_line_references_are_immutable",
+  },
+  {
+    table: "observations.normalized_wait_observations_v2",
+    trigger: "normalized_wait_observations_v2_are_immutable",
+  },
+  {
+    table: "catalog.catalog_entry_snapshots",
+    trigger: "catalog_entry_snapshots_are_immutable",
   },
 ];
 
@@ -111,29 +140,49 @@ export async function verifyRestoredStorage(client) {
       missing: missingRelations,
     });
 
-    // 2. Migration ledger: all discovered migration files present with matching checksums
+    // 2. Legacy migrations stay required; gated 0004 is optional until its ledger entry exists.
     const migrations = await discoverMigrations(MIGRATIONS_DIR);
     const migrationFiles = migrations.map((m) => m.filename);
     const migrationChecksums = Object.fromEntries(
       migrations.map((m) => [m.filename, m.checksum])
     );
+    let ledger = new Map();
     if (availableRelations.has("infrastructure.schema_migrations")) {
       const ledgerResult = await client.query(
         `SELECT filename, checksum FROM infrastructure.schema_migrations ORDER BY filename`
       );
-      const ledger = new Map(
+      ledger = new Map(
         ledgerResult.rows.map((r) => [r.filename, r.checksum])
       );
-      const ledgerMissing = migrationFiles.filter((f) => !ledger.has(f));
+      const requiredFiles = new Set([
+        ...REQUIRED_MIGRATION_FILENAMES,
+        ...migrationFiles.filter(
+          (filename) => !OPTIONAL_MIGRATION_FILENAMES.includes(filename)
+        ),
+      ]);
+      const missingFiles = [...requiredFiles].filter(
+        (filename) => !Object.hasOwn(migrationChecksums, filename)
+      );
+      const ledgerMissing = [...requiredFiles].filter((f) => !ledger.has(f));
       const ledgerMismatch = migrationFiles.filter(
         (f) => ledger.has(f) && ledger.get(f) !== migrationChecksums[f]
       );
+      const appliedWithoutMigrationFile = [...ledger.keys()].filter(
+        (filename) => !Object.hasOwn(migrationChecksums, filename)
+      );
+      const deferredOptional = OPTIONAL_MIGRATION_FILENAMES.filter(
+        (filename) => !ledger.has(filename)
+      );
       addCheck(
         "migration_ledger",
-        ledgerMissing.length === 0 && ledgerMismatch.length === 0,
+        missingFiles.length === 0 && ledgerMissing.length === 0 &&
+          ledgerMismatch.length === 0 && appliedWithoutMigrationFile.length === 0,
         {
           missing: ledgerMissing,
+          missing_files: missingFiles,
           checksum_mismatch: ledgerMismatch,
+          applied_without_migration_file: appliedWithoutMigrationFile,
+          deferred_optional: deferredOptional,
           expected: migrationChecksums,
           found: Object.fromEntries(ledger),
         }
@@ -141,6 +190,50 @@ export async function verifyRestoredStorage(client) {
     } else {
       addCheck("migration_ledger", false, {
         skipped_due_to_missing_relations: ["infrastructure.schema_migrations"],
+      });
+    }
+
+    const migration0004Applied = ledger.has(
+      "0004_r2_lineage_normalized_observations.sql"
+    );
+    if (migration0004Applied) {
+      const missingV2Relations = [];
+      for (const relation of REQUIRED_0004_RELATIONS) {
+        const result = await client.query("SELECT to_regclass($1) AS regclass", [
+          relation,
+        ]);
+        if (!result.rows[0].regclass) {
+          missingV2Relations.push(relation);
+        } else {
+          availableRelations.add(relation);
+        }
+      }
+      addCheck("required_0004_relations", missingV2Relations.length === 0, {
+        missing: missingV2Relations,
+      });
+
+      const missingV2Triggers = [];
+      for (const { table, trigger } of REQUIRED_0004_IMMUTABILITY_TRIGGERS) {
+        if (!availableRelations.has(table)) {
+          missingV2Triggers.push({ table, trigger });
+          continue;
+        }
+        const result = await client.query(
+          `SELECT 1
+           FROM pg_trigger t
+           JOIN pg_class c ON c.oid = t.tgrelid
+           JOIN pg_namespace n ON n.oid = c.relnamespace
+           WHERE n.nspname || '.' || c.relname = $1
+             AND t.tgname = $2
+             AND NOT t.tgisinternal`,
+          [table, trigger]
+        );
+        if (result.rowCount === 0) {
+          missingV2Triggers.push({ table, trigger });
+        }
+      }
+      addCheck("required_0004_immutability_triggers", missingV2Triggers.length === 0, {
+        missing: missingV2Triggers,
       });
     }
 

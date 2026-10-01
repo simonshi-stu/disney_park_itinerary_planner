@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://disney-park-itinerary-planner.local/contracts/v1/hosted-normalized-audit-report.schema.json",
+  "title": "Hosted normalized persistence audit report v1",
+  "description": "Read-only audit evidence for the normalized-only hosted path. The same closed shape covers passed, failed, and blocked reports; status conditionals require a passed report to be a complete live read-only run within fresh capacity, a blocked report to have closed no connection, and a failed report to carry at least one failure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract_version",
+    "run_id",
+    "checked_at",
+    "status",
+    "read_only",
+    "mode",
+    "connections_opened",
+    "complete",
+    "target",
+    "versions",
+    "counts",
+    "source_health",
+    "raw_baseline",
+    "capacity",
+    "inventory",
+    "failures",
+    "blockers",
+    "next_steps"
+  ],
+  "properties": {
+    "contract_version": { "const": "hosted-normalized-audit-report.v1" },
+    "run_id": { "type": "string", "minLength": 1 },
+    "checked_at": { "type": "string", "format": "date-time", "pattern": "Z$" },
+    "status": { "enum": ["passed", "failed", "blocked"] },
+    "read_only": { "const": true },
+    "mode": { "enum": ["offline-check", "live-read-only"] },
+    "connections_opened": { "type": "boolean" },
+    "complete": { "type": "boolean" },
+    "target": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "fingerprint", "authorization"],
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "fingerprint": { "$ref": "#/$defs/sha256" },
+            "authorization": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "approved_by", "approved_at", "expires_at"],
+              "properties": {
+                "kind": { "const": "read-only-validation" },
+                "approved_by": { "type": "string", "minLength": 1 },
+                "approved_at": { "type": "string", "format": "date-time" },
+                "expires_at": { "type": "string", "format": "date-time" }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "versions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "audit_adapter_version",
+        "raw_schema_version",
+        "normalized_schema_version",
+        "archive_reference_version",
+        "source_health_version",
+        "catalog_version",
+        "transformation_versions",
+        "audited_transformation_versions"
+      ],
+      "properties": {
+        "audit_adapter_version": { "type": "string", "minLength": 1 },
+        "raw_schema_version": { "type": "string", "minLength": 1 },
+        "normalized_schema_version": { "const": "normalized-wait-observation.v2" },
+        "archive_reference_version": { "const": "raw-archive-line-reference.v1" },
+        "source_health_version": { "type": "string", "minLength": 1 },
+        "catalog_version": { "type": ["string", "null"] },
+        "transformation_versions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "audited_transformation_versions": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "git_archives",
+        "git_history_archives",
+        "git_live_archives",
+        "git_runs",
+        "r2_objects_listed",
+        "r2_objects_matched",
+        "r2_objects_extra",
+        "r2_objects_verified",
+        "raw_rows_expected",
+        "raw_rows_processed",
+        "archive_line_references_found",
+        "archive_line_references_missing",
+        "archive_line_references_conflicting",
+        "normalized_expected",
+        "normalized_found",
+        "normalized_missing",
+        "normalized_semantic_mismatches",
+        "canonical_unresolved",
+        "access_modes_missing",
+        "normalization_failures",
+        "db_raw_archives",
+        "db_raw_observations",
+        "db_normalized_v2",
+        "db_archive_line_references",
+        "db_catalog_entries",
+        "db_source_health"
+      ],
+      "properties": {
+        "git_archives": { "type": "integer", "minimum": 0 },
+        "git_history_archives": { "type": "integer", "minimum": 0 },
+        "git_live_archives": { "type": "integer", "minimum": 0 },
+        "git_runs": { "type": "integer", "minimum": 0 },
+        "r2_objects_listed": { "type": "integer", "minimum": 0 },
+        "r2_objects_matched": { "type": "integer", "minimum": 0 },
+        "r2_objects_extra": { "type": "integer", "minimum": 0 },
+        "r2_objects_verified": { "type": "integer", "minimum": 0 },
+        "raw_rows_expected": { "type": "integer", "minimum": 0 },
+        "raw_rows_processed": { "type": "integer", "minimum": 0 },
+        "archive_line_references_found": { "type": "integer", "minimum": 0 },
+        "archive_line_references_missing": { "type": "integer", "minimum": 0 },
+        "archive_line_references_conflicting": { "type": "integer", "minimum": 0 },
+        "normalized_expected": { "type": "integer", "minimum": 0 },
+        "normalized_found": { "type": "integer", "minimum": 0 },
+        "normalized_missing": { "type": "integer", "minimum": 0 },
+        "normalized_semantic_mismatches": { "type": "integer", "minimum": 0 },
+        "canonical_unresolved": { "type": "integer", "minimum": 0 },
+        "access_modes_missing": { "type": "integer", "minimum": 0 },
+        "normalization_failures": { "type": "integer", "minimum": 0 },
+        "db_raw_archives": { "type": "integer", "minimum": 0 },
+        "db_raw_observations": { "type": "integer", "minimum": 0 },
+        "db_normalized_v2": { "type": "integer", "minimum": 0 },
+        "db_archive_line_references": { "type": "integer", "minimum": 0 },
+        "db_catalog_entries": { "type": "integer", "minimum": 0 },
+        "db_source_health": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "source_health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected_runs",
+        "matched_runs",
+        "missing_runs",
+        "failed_runs",
+        "outage_runs",
+        "stale_runs",
+        "mismatched_runs",
+        "duplicate_runs",
+        "retried_runs"
+      ],
+      "properties": {
+        "expected_runs": { "type": "integer", "minimum": 0 },
+        "matched_runs": { "type": "integer", "minimum": 0 },
+        "missing_runs": { "type": "integer", "minimum": 0 },
+        "failed_runs": { "type": "integer", "minimum": 0 },
+        "outage_runs": { "type": "integer", "minimum": 0 },
+        "stale_runs": { "type": "integer", "minimum": 0 },
+        "mismatched_runs": { "type": "integer", "minimum": 0 },
+        "duplicate_runs": { "type": "integer", "minimum": 0 },
+        "retried_runs": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "raw_baseline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supplied", "expected", "observed", "unchanged", "new_raw_rows"],
+      "properties": {
+        "supplied": { "type": "boolean" },
+        "expected": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["archives", "raw_observations", "normalized_observations"],
+              "properties": {
+                "archives": { "type": "integer", "minimum": 0 },
+                "raw_observations": { "type": "integer", "minimum": 0 },
+                "normalized_observations": { "type": "integer", "minimum": 0 }
+              }
+            }
+          ]
+        },
+        "observed": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["archives", "raw_observations"],
+              "properties": {
+                "archives": { "type": "integer", "minimum": 0 },
+                "raw_observations": { "type": "integer", "minimum": 0 }
+              }
+            }
+          ]
+        },
+        "unchanged": { "type": ["boolean", "null"] },
+        "new_raw_rows": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "capacity": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "measurement_id",
+            "measured_at",
+            "used_bytes",
+            "max_capacity_bytes",
+            "stop_threshold_bytes",
+            "reserved_headroom_bytes",
+            "target_fingerprint",
+            "within_threshold",
+            "remaining_to_stop_bytes",
+            "fresh"
+          ],
+          "properties": {
+            "measurement_id": { "type": "string", "minLength": 1 },
+            "measured_at": { "type": "string", "format": "date-time" },
+            "used_bytes": { "type": "integer", "minimum": 0 },
+            "max_capacity_bytes": { "type": "integer", "minimum": 1 },
+            "stop_threshold_bytes": { "type": "integer", "minimum": 1 },
+            "reserved_headroom_bytes": { "type": "integer", "minimum": 0 },
+            "target_fingerprint": { "$ref": "#/$defs/sha256" },
+            "within_threshold": { "type": "boolean" },
+            "remaining_to_stop_bytes": { "type": "integer" },
+            "fresh": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "git_archive_count", "r2_object_count", "matched", "extra", "missing", "samples"],
+      "properties": {
+        "status": { "enum": ["complete", "incomplete", "not_checked"] },
+        "git_archive_count": { "type": "integer", "minimum": 0 },
+        "r2_object_count": { "type": "integer", "minimum": 0 },
+        "matched": { "type": "integer", "minimum": 0 },
+        "extra": { "type": "integer", "minimum": 0 },
+        "missing": { "type": "integer", "minimum": 0 },
+        "samples": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/failure" }
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "next_steps": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "passed" } }
+      },
+      "then": {
+        "required": ["mode", "connections_opened", "complete", "target", "capacity", "inventory", "failures", "blockers"],
+        "properties": {
+          "mode": { "const": "live-read-only" },
+          "connections_opened": { "const": true },
+          "complete": { "const": true },
+          "read_only": { "const": true },
+          "target": { "type": "object" },
+          "capacity": {
+            "type": "object",
+            "required": ["fresh", "within_threshold"],
+            "properties": {
+              "fresh": { "const": true },
+              "within_threshold": { "const": true }
+            }
+          },
+          "inventory": {
+            "type": "object",
+            "required": ["status"],
+            "properties": { "status": { "const": "complete" } }
+          },
+          "failures": { "maxItems": 0 },
+          "blockers": { "maxItems": 0 },
+          "versions": {
+            "type": "object",
+            "required": ["audited_transformation_versions"],
+            "properties": { "audited_transformation_versions": { "minItems": 1 } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "blocked" } }
+      },
+      "then": {
+        "required": ["complete", "connections_opened", "blockers"],
+        "properties": {
+          "complete": { "const": false },
+          "connections_opened": { "const": false },
+          "blockers": { "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["status"],
+        "properties": { "status": { "const": "failed" } }
+      },
+      "then": {
+        "required": ["complete", "failures"],
+        "properties": {
+          "complete": { "const": false },
+          "failures": { "minItems": 1 }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "failure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["category", "count", "included_count", "omitted_count", "samples"],
+      "properties": {
+        "category": { "type": "string", "minLength": 1 },
+        "count": { "type": "integer", "minimum": 0 },
+        "included_count": { "type": "integer", "minimum": 0 },
+        "omitted_count": { "type": "integer", "minimum": 0 },
+        "samples": { "type": "array", "items": { "type": "object" } }
+      }
+    }
+  }
+}
