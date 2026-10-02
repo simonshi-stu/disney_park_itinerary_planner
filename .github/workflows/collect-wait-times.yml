@@ -78,8 +78,10 @@ jobs:
         id: dual_write_inputs
         # Human gate: only when COLLECTOR_DUAL_WRITE_ENABLED is exactly true materialize
         # reviewed inputs from non-secret Variables and the validation authorization from
-        # an encrypted Secret into 0600 files under RUNNER_TEMP. JSON values are never
-        # echoed and only the ephemeral file paths leave this step via GITHUB_OUTPUT.
+        # an encrypted Secret into 0600 files under RUNNER_TEMP. Each JSON input accepts
+        # either plain JSON object text or "gzip-base64:" + base64(gzip(JSON)) to fit the
+        # 48 KiB Actions Variable limit. Values are never echoed and only the ephemeral
+        # file paths leave this step via GITHUB_OUTPUT.
         if: ${{ always() && (steps.collect.outcome == 'failure' || (steps.collect.outcome == 'success' && steps.collect.outputs.snapshot_written == 'true')) }}
         env:
           COLLECTOR_DUAL_WRITE_ENABLED: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED || 'false' }}
@@ -103,6 +105,55 @@ jobs:
           AUTHORIZATION_PATH="$authorization_path" \
           node <<'NODE'
           const { writeFileSync } = require("node:fs");
+          const { gunzipSync } = require("node:zlib");
+
+          const GZIP_BASE64_PREFIX = "gzip-base64:";
+          const MAX_DECOMPRESSED_BYTES = 1024 * 1024;
+
+          function decodeInput(name, raw) {
+            if (typeof raw !== "string" || raw.trim() === "") {
+              throw new Error(`${name} must be a nonempty GitHub Variable or Secret before the sidecar can run`);
+            }
+            let jsonText = raw;
+            if (raw.startsWith(GZIP_BASE64_PREFIX)) {
+              const encoded = raw.slice(GZIP_BASE64_PREFIX.length);
+              if (encoded === "" || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) {
+                throw new Error(`${name} gzip-base64 payload is not valid base64`);
+              }
+              const unpadded = encoded.replace(/=+$/, "");
+              if (unpadded.length % 4 === 1) {
+                throw new Error(`${name} gzip-base64 payload is not valid base64`);
+              }
+              const compressed = Buffer.from(unpadded, "base64");
+              if (compressed.length === 0 || compressed.toString("base64").replace(/=+$/, "") !== unpadded) {
+                throw new Error(`${name} gzip-base64 payload is not valid base64`);
+              }
+              let decompressed;
+              try {
+                decompressed = gunzipSync(compressed, { maxOutputLength: MAX_DECOMPRESSED_BYTES });
+              } catch {
+                throw new Error(`${name} gzip-base64 payload could not be gunzipped within the ${MAX_DECOMPRESSED_BYTES} byte decompressed limit`);
+              }
+              if (decompressed.length === 0) {
+                throw new Error(`${name} gzip-base64 payload decompressed to an empty value`);
+              }
+              try {
+                jsonText = new TextDecoder("utf-8", { fatal: true }).decode(decompressed);
+              } catch {
+                throw new Error(`${name} gzip-base64 payload is not valid UTF-8`);
+              }
+            }
+            let parsed;
+            try {
+              parsed = JSON.parse(jsonText);
+            } catch {
+              throw new Error(`${name} must contain valid JSON before the sidecar can run`);
+            }
+            if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+              throw new Error(`${name} must contain a JSON object before the sidecar can run`);
+            }
+            return parsed;
+          }
 
           const inputs = [
             ["NORMALIZED_ONLY_REVIEWED_CATALOG_JSON", process.env.REVIEWED_CATALOG_PATH],
@@ -110,19 +161,7 @@ jobs:
             ["NORMALIZED_ONLY_AUTHORIZATION_JSON", process.env.AUTHORIZATION_PATH]
           ];
           for (const [name, filePath] of inputs) {
-            const raw = process.env[name];
-            if (typeof raw !== "string" || raw.trim() === "") {
-              throw new Error(`${name} must be a nonempty GitHub Variable or Secret before the sidecar can run`);
-            }
-            let parsed;
-            try {
-              parsed = JSON.parse(raw);
-            } catch {
-              throw new Error(`${name} must contain valid JSON before the sidecar can run`);
-            }
-            if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
-              throw new Error(`${name} must contain a JSON object before the sidecar can run`);
-            }
+            const parsed = decodeInput(name, process.env[name]);
             writeFileSync(filePath, `${JSON.stringify(parsed)}\n`, { mode: 0o600, flag: "wx" });
           }
           NODE

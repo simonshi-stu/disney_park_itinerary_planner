@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
+import { gzipSync } from "node:zlib";
 import { createPostgresArchiveLineReferenceRepository } from "../../infra/archive-line-reference-postgres.mjs";
 import { createPostgresCatalogRepository } from "../../infra/catalog-postgres.mjs";
 import {
@@ -19,6 +22,7 @@ import { resolveSidecarExitCode, runBootstrapDualWrite, runBootstrapSourceFailur
 import { DualWriteError } from "../../workers/collector/dual-write.mjs";
 
 const targetFingerprint = "a".repeat(64);
+const execFileAsync = promisify(execFile);
 const NORMALIZED_FIELDS = [
   "normalized_observation_id", "contract_version", "raw_observation_id", "operator_id", "resort_id",
   "park_id", "park_timezone", "observed_at_utc", "canonical_attraction_id", "canonical_attraction_name",
@@ -718,6 +722,14 @@ test("workflow materializes normalized-only inputs from Variables and a Secret b
     /parsed === null \|\| typeof parsed !== "object" \|\| Array\.isArray\(parsed\)/,
     "array JSON must be rejected before any cloud access"
   );
+
+  // Every protected JSON input also accepts "gzip-base64:" + base64(gzip(JSON))
+  // with a 1 MiB decompressed cap enforced during decode.
+  assert.ok(prep.includes("gzip-base64:"));
+  assert.ok(prep.includes("const MAX_DECOMPRESSED_BYTES = 1024 * 1024"));
+  assert.ok(prep.includes("maxOutputLength: MAX_DECOMPRESSED_BYTES"));
+  assert.ok(prep.includes("gunzipSync"));
+  assert.ok(prep.includes('new TextDecoder("utf-8", { fatal: true })'));
   assert.ok(sidecar.includes("steps.dual_write_inputs.outcome == 'success'"));
   assert.ok(sidecar.includes(
     "NORMALIZED_ONLY_REVIEWED_CATALOG_PATH: ${{ vars.COLLECTOR_DUAL_WRITE_ENABLED == 'true' && steps.dual_write_inputs.outputs.reviewed_catalog_path || '' }}"
@@ -754,6 +766,154 @@ test("workflow materializes normalized-only inputs from Variables and a Secret b
   assert.ok(surfacePrep.includes("before any cloud connection"));
   assert.ok(surfacePrep.includes("exit 1"));
 });
+
+test("embedded preparation script accepts plain and gzip-base64 JSON and fails closed", async (t) => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+  const workflow = (await readFile(path.join(root, ".github/workflows/collect-wait-times.yml"), "utf8"))
+    .replaceAll("\r\n", "\n");
+  const script = extractPreparationNodeScript(workflow);
+
+  const catalog = { contract_version: "catalog-entry.v1", entries: [] };
+  const access = { status: "reviewed", catalog_version: "test.v1", mappings: [] };
+  const authorization = {
+    kind: "validation-only",
+    approvedBy: "test",
+    approvedAt: "2026-10-01T00:00:00.000Z",
+    expiresAt: "2026-12-31T00:00:00.000Z",
+    targetFingerprint: "a".repeat(64)
+  };
+  const gzipBase64 = (value) =>
+    `gzip-base64:${gzipSync(Buffer.from(JSON.stringify(value), "utf8")).toString("base64")}`;
+
+  // Plain JSON object acceptance is unchanged for all three protected inputs.
+  {
+    const run = await runPreparationScript(t, script, {
+      NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: JSON.stringify(catalog),
+      NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: JSON.stringify(access),
+      NORMALIZED_ONLY_AUTHORIZATION_JSON: JSON.stringify(authorization)
+    });
+    assert.equal(run.code, 0, run.stderr);
+    assert.deepEqual(JSON.parse(await readFile(run.paths.catalogPath, "utf8")), catalog);
+    assert.deepEqual(JSON.parse(await readFile(run.paths.accessPath, "utf8")), access);
+    assert.deepEqual(JSON.parse(await readFile(run.paths.authorizationPath, "utf8")), authorization);
+  }
+
+  // gzip-base64 acceptance applies generically to catalog, access mapping and authorization.
+  {
+    const run = await runPreparationScript(t, script, {
+      NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: gzipBase64(catalog),
+      NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: gzipBase64(access),
+      NORMALIZED_ONLY_AUTHORIZATION_JSON: gzipBase64(authorization)
+    });
+    assert.equal(run.code, 0, run.stderr);
+    assert.deepEqual(JSON.parse(await readFile(run.paths.catalogPath, "utf8")), catalog);
+    assert.deepEqual(JSON.parse(await readFile(run.paths.accessPath, "utf8")), access);
+    assert.deepEqual(JSON.parse(await readFile(run.paths.authorizationPath, "utf8")), authorization);
+  }
+
+  // Fail closed before any file is written: malformed base64, invalid gzip,
+  // invalid UTF-8 and oversized decompressed payloads.
+  const rejectedInputs = [
+    { name: "malformed base64", value: "gzip-base64:not base64!!", expected: /not valid base64/ },
+    { name: "invalid gzip", value: `gzip-base64:${Buffer.from("not gzip").toString("base64")}`, expected: /could not be gunzipped/ },
+    { name: "invalid utf-8", value: `gzip-base64:${gzipSync(Buffer.from([0xff, 0xfe, 0xfd])).toString("base64")}`, expected: /not valid UTF-8/ },
+    { name: "oversized", value: gzipBase64(Buffer.alloc(1024 * 1024 + 16, 0x61).toString("utf8")), expected: /decompressed limit/ }
+  ];
+  for (const testCase of rejectedInputs) {
+    const run = await runPreparationScript(t, script, {
+      NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: testCase.value,
+      NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: JSON.stringify(access),
+      NORMALIZED_ONLY_AUTHORIZATION_JSON: JSON.stringify(authorization)
+    });
+    assert.notEqual(run.code, 0, testCase.name);
+    assert.match(run.stderr, testCase.expected, testCase.name);
+    await assert.rejects(readFile(run.paths.catalogPath, "utf8"), testCase.name);
+  }
+
+  // Arrays and null are rejected for both plain and gzip-base64 encodings.
+  for (const value of ["[]", "null", gzipBase64([]), gzipBase64(null)]) {
+    const run = await runPreparationScript(t, script, {
+      NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: value,
+      NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: JSON.stringify(access),
+      NORMALIZED_ONLY_AUTHORIZATION_JSON: JSON.stringify(authorization)
+    });
+    assert.notEqual(run.code, 0, value);
+    assert.match(run.stderr, /must contain a JSON object/);
+  }
+
+  // Secret contents never appear in stdout, stderr or GITHUB_OUTPUT.
+  const sentinel = "SENTINEL_SECRET_MUST_NOT_LEAK_9f3a";
+  {
+    const run = await runPreparationScript(t, script, {
+      NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: gzipBase64({ ...catalog, sentinel }),
+      NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: JSON.stringify(access),
+      NORMALIZED_ONLY_AUTHORIZATION_JSON: JSON.stringify({ ...authorization, sentinel })
+    });
+    assert.equal(run.code, 0, run.stderr);
+    const output = await readFile(run.paths.outputPath, "utf8");
+    for (const text of [run.stdout, run.stderr, output]) {
+      assert.equal(text.includes(sentinel), false, "secret content must not be emitted");
+    }
+  }
+  {
+    const run = await runPreparationScript(t, script, {
+      NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: `gzip-base64:${Buffer.from("not gzip").toString("base64")}`,
+      NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: JSON.stringify(access),
+      NORMALIZED_ONLY_AUTHORIZATION_JSON: JSON.stringify({ ...authorization, sentinel })
+    });
+    assert.notEqual(run.code, 0);
+    assert.equal(run.stderr.includes(sentinel), false, "failure output must not leak secret content");
+  }
+});
+
+function extractPreparationNodeScript(workflow) {
+  const match = /node <<'NODE'\n([\s\S]*?)\n[ ]*NODE\b/.exec(workflow);
+  assert.ok(match, "preparation step must embed its Node script in a quoted heredoc");
+  const lines = match[1].split("\n");
+  const indents = lines
+    .filter((line) => line.trim() !== "")
+    .map((line) => line.match(/^ */)[0].length);
+  const dedent = Math.min(...indents);
+  return `${lines.map((line) => line.slice(dedent)).join("\n")}\n`;
+}
+
+async function runPreparationScript(t, script, inputs) {
+  const sandbox = await mkdtemp(path.join(os.tmpdir(), "normalized-prep-"));
+  t.after(() => rm(sandbox, { recursive: true, force: true }));
+  const scriptPath = path.join(sandbox, "prepare.cjs");
+  await writeFile(scriptPath, script, "utf8");
+  const paths = {
+    catalogPath: path.join(sandbox, "reviewed-catalog.json"),
+    accessPath: path.join(sandbox, "access-mode-mapping.json"),
+    authorizationPath: path.join(sandbox, "authorization.json"),
+    outputPath: path.join(sandbox, "github_output")
+  };
+  await writeFile(paths.outputPath, "", "utf8");
+  const environment = {
+    ...process.env,
+    COLLECTOR_DUAL_WRITE_ENABLED: "true",
+    GITHUB_OUTPUT: paths.outputPath,
+    RUNNER_TEMP: sandbox,
+    REVIEWED_CATALOG_PATH: paths.catalogPath,
+    ACCESS_MODE_MAPPING_PATH: paths.accessPath,
+    AUTHORIZATION_PATH: paths.authorizationPath,
+    NORMALIZED_ONLY_REVIEWED_CATALOG_JSON: "",
+    NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON: "",
+    NORMALIZED_ONLY_AUTHORIZATION_JSON: "",
+    ...inputs
+  };
+  try {
+    const { stdout, stderr } = await execFileAsync(process.execPath, [scriptPath], { env: environment, encoding: "utf8" });
+    return { code: 0, stdout, stderr, paths };
+  } catch (error) {
+    return {
+      code: typeof error.code === "number" ? error.code : 1,
+      stdout: error.stdout ?? "",
+      stderr: error.stderr ?? "",
+      paths
+    };
+  }
+}
 
 function createFakeR2({ failPut = false } = {}) {
   const objects = new Map();

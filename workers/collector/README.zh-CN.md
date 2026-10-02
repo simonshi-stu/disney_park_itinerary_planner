@@ -21,18 +21,25 @@ GitHub repository/environment Variables 与 Secret 不会在 runner 上创建文
 非 secret 配置（GitHub Variables）：
 
 - `COLLECTOR_DUAL_WRITE_ENABLED`：唯一启用开关，`true` 以外的值一律视为关闭。
-- `NORMALIZED_ONLY_REVIEWED_CATALOG_JSON`：reviewed `catalog-entry.v1` snapshot 的 JSON 文本。
-- `NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON`：结构化 `(park_id, ride_id) -> access_mode` mapping 的 JSON 文本。
+- `NORMALIZED_ONLY_REVIEWED_CATALOG_JSON`：reviewed `catalog-entry.v1` snapshot 的 JSON 文本（可用 `gzip-base64:` 编码，见下）。
+- `NORMALIZED_ONLY_ACCESS_MODE_MAPPING_JSON`：结构化 `(park_id, ride_id) -> access_mode` mapping 的 JSON 文本（可用 `gzip-base64:` 编码，见下）。
 - `NORMALIZED_ONLY_EXPECTED_TARGET_SHA256`：期望的 normalized database fingerprint（由 `DATABASE_URL` 的 host/port/database 计算）。
 - `RAW_ARCHIVE_BUCKET`、`RAW_ARCHIVE_ENDPOINT`、`AWS_REGION`：R2 配置；其中 `AWS_REGION` 缺省为 `us-west-2`。
 
 加密 Secret：
 
-- `NORMALIZED_ONLY_AUTHORIZATION_JSON`：当前有效的 `validation-only` authorization JSON。
+- `NORMALIZED_ONLY_AUTHORIZATION_JSON`：当前有效的 `validation-only` authorization JSON（可用 `gzip-base64:` 编码，见下）。
 - `DATABASE_URL`：validation database 连接串。
 - `AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`：最小权限 R2 凭据。
 
 物化步骤在 `umask 077` 下用 `mktemp -d "$RUNNER_TEMP/normalized-only-inputs-XXXXXXXX"` 创建目录，并以 Node 写入三个 `0600` 文件（`mode: 0o600`、`flag: "wx"`）：`reviewed-catalog.json`、`access-mode-mapping.json`、`authorization.json`。它校验三者非空、为合法 JSON 且必须是 JSON object（显式拒绝数组与 `null`），绝不回显内容，只通过 `GITHUB_OUTPUT` 输出 `RUNNER_TEMP` 文件路径；sidecar 再通过 `NORMALIZED_ONLY_REVIEWED_CATALOG_PATH`、`NORMALIZED_ONLY_ACCESS_MODE_MAPPING_PATH`、`NORMALIZED_ONLY_AUTHORIZATION_PATH` 读取这些临时路径。runner 是临时的，文件随 job 结束清理。
+
+三个 JSON 输入（catalog、access mapping、authorization）都支持两种编码，解码在 preparation 步骤内、连接任何云资源之前本地完成：
+
+- 纯 JSON object 文本（原有行为，保持不变）；
+- `gzip-base64:` 前缀 + gzip 字节的标准 base64（例如 `gzip -c reviewed-catalog.json | base64 -w0`），解码后的 UTF-8 内容必须是 JSON object。这是绕过 GitHub Actions Variable 48 KiB 文本上限的推荐方式（当前 reviewed catalog 的纯 JSON 约 97,296 字节，超过该上限）。base64 必须为单行标准编码：允许省略 `=` 填充，但不接受换行、空白或 URL-safe 字符（`-`/`_`）。
+
+fail-closed 规则：base64 不合法、gzip 解压失败、解压后不是合法 UTF-8、解压结果为空、解压后超过 **1 MiB（1,048,576 字节）**、JSON 解析失败、以及数组或 `null` 都会在连接 R2/Neon 之前让步骤失败并阻止 sidecar 运行；1 MiB 上限用于防止解压炸弹，解码期间即强制执行。失败信息只包含输入名和原因类别，不包含任何输入内容。
 
 物化失败会使 workflow 变红（`Surface hosted input preparation failure`）且不建立任何 R2/Neon 连接；此前已完成的 Git fallback 不撤销、不阻断，sidecar 在该失败下不会运行，因此不会出现带云访问的误导性尝试。配置缺失、空值或非法 JSON 同样在连接云资源之前 fail closed。所有云相关 env（`DATABASE_URL`、R2/AWS 凭据与配置、三个 `NORMALIZED_ONLY_*_PATH`）都只在 `COLLECTOR_DUAL_WRITE_ENABLED == 'true'` 时注入 sidecar；flag 不为 `true` 时该步骤不物化文件，sidecar 不收到任何云配置。
 
